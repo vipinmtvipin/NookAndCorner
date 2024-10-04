@@ -1,5 +1,4 @@
 import 'package:customerapp/core/localization/localization_keys.dart';
-import 'package:customerapp/core/routes/app_routes.dart';
 import 'package:customerapp/core/theme/app_text_style.dart';
 import 'package:customerapp/core/theme/color_constant.dart';
 import 'package:customerapp/generated/assets.gen.dart';
@@ -14,23 +13,27 @@ import 'package:get/get.dart';
 import '../../core/utils/common_util.dart';
 import '../../core/utils/size_utils.dart';
 
-class LoginScreen extends GetView<AuthController> {
-  const LoginScreen({super.key});
+class SignupScreen extends GetView<AuthController> {
+  const SignupScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    Future.delayed(Duration.zero, () {
+      controller.clearState();
+    });
+
     return SafeArea(
       top: false,
       bottom: false,
       child: Scaffold(
         body: Container(
-          child: loginView(),
+          child: signupView(),
         ),
       ),
     );
   }
 
-  Widget loginView() {
+  Widget signupView() {
     return GestureDetector(onTap: () {
       CommonUtil().keyboardHide(Get.context!);
     }, child: LayoutBuilder(
@@ -84,41 +87,24 @@ class LoginScreen extends GetView<AuthController> {
                         Text(LocalizationKeys.welcome.tr,
                             style: AppTextStyle.txt16),
                         const SizedBox(height: 5),
-                        Text(LocalizationKeys.loginSignInHeading.tr,
+                        Text('Sign up to continue',
                             style: AppTextStyle.txtBold24),
                         const SizedBox(height: 25),
                         Obx(() {
                           switch (controller.authStatus.value) {
                             case AuthStatus.validMobile:
-                              return loginOtpView();
+                              return signupOtpView();
                             case AuthStatus.validEmail:
-                              return loginPasswordView();
+                              return signupPasswordView();
                             default:
-                              return loginInitialView();
+                              return signupInitialView();
                           }
                         }),
-                        const SizedBox(height: 10),
-                        Obx(
-                          () => Visibility(
-                            visible: (controller.authStatus.value !=
-                                    AuthStatus.validEmail &&
-                                controller.authStatus.value !=
-                                    AuthStatus.validMobile),
-                            child: GestureDetector(
-                              onTap: () {
-                                Get.toNamed(AppRoutes.forgotPasswordScreen);
-                              },
-                              child: Text("Forget Password?",
-                                  style: AppTextStyle.txt14Secondary,
-                                  textAlign: TextAlign.end),
-                            ),
-                          ),
-                        ),
                         const SizedBox(height: 20),
                         NookCornerButton(
                             outlinedColor: AppColors.primaryColor,
                             textStyle: AppTextStyle.txtBoldWhite14,
-                            text: LocalizationKeys.login.tr,
+                            text: 'Sign Up',
                             backGroundColor: AppColors.primaryColor,
                             onPressed: onTapSignIn),
                         const SizedBox(height: 20),
@@ -126,7 +112,7 @@ class LoginScreen extends GetView<AuthController> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text("Don't have a account?",
+                              Text("Already have an account?",
                                   style: AppTextStyle.txtBold14,
                                   textAlign: TextAlign.center),
                               const SizedBox(
@@ -134,9 +120,9 @@ class LoginScreen extends GetView<AuthController> {
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  Get.toNamed(AppRoutes.signupScreen);
+                                  Get.back();
                                 },
-                                child: Text("Create One",
+                                child: Text("SignIn now",
                                     style: AppTextStyle.txt14Secondary,
                                     textAlign: TextAlign.center),
                               ),
@@ -152,7 +138,7 @@ class LoginScreen extends GetView<AuthController> {
     ));
   }
 
-  Widget loginInitialView() {
+  Widget signupInitialView() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -209,7 +195,7 @@ class LoginScreen extends GetView<AuthController> {
     );
   }
 
-  Widget loginPasswordView() {
+  Widget signupPasswordView() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -230,7 +216,7 @@ class LoginScreen extends GetView<AuthController> {
     );
   }
 
-  Widget loginOtpView() {
+  Widget signupOtpView() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -264,6 +250,6 @@ class LoginScreen extends GetView<AuthController> {
   }
 
   void onTapSignIn() {
-    controller.callLogin();
+    controller.callSignUp();
   }
 }

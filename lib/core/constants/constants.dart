@@ -8,12 +8,18 @@ class NetworkKeys {
 
   static const String baseUrl = staging;
 
-  static const String staging = 'https://staging-api.nookandcorner.org';
+  static const String staging = 'https://staging-api.nookandcorner.org/api/v1';
   static const String production = 'https://api.nookandcorner.org';
 
-  static const String loginMobile = '/auth/mobileLogin';
-  static const String loginEmail = ' /auth/emailCheck';
+  static const String loginMobile = '/auth/verify-phone';
+  static const String loginEmail = '/auth/verify-email';
   static const String login = '/auth/login';
+
+  static const String signupMobile = '/auth/register/phone';
+  static const String signupEmail = '/auth/register/email';
+  static const String signup = '/auth/register/verify-otp';
+
+  static const String forgetPassword = '/auth/forgot-password';
 
   static const String city = '/cities';
   static const String cityService = '/customer-category/city';

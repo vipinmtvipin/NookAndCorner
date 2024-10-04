@@ -155,7 +155,7 @@ Widget _buildMainScreen() {
                     .map((e) => CarouselItem(
                           navigationPath: e.routePath,
                           image: NetworkImageView(
-                            borderRadius: 12,
+                            borderRadius: 25,
                             url: e.image,
                             width: double.infinity,
                             fit: BoxFit.fill,

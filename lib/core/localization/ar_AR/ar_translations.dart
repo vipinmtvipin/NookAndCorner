@@ -12,7 +12,6 @@ final Map<String, String> arAR = {
   LocalizationKeys.logout: "تسجيل الخروج",
   LocalizationKeys.password: "كلمة المرور",
   LocalizationKeys.account: "حساب",
-  LocalizationKeys.loginGoogle: "تسجيل الدخول باستخدام جوجل",
   LocalizationKeys.register: "يسجل",
   LocalizationKeys.settings: "إعدادات",
   LocalizationKeys.welcome: "مرحباً",
@@ -26,8 +25,5 @@ final Map<String, String> arAR = {
   LocalizationKeys.close: "قريب",
   LocalizationKeys.loginSignInHeading: "تسجيل الدخول إلى حسابك",
   LocalizationKeys.otpVerification: "التحقق من OTP",
-  LocalizationKeys.incorrectOTP: "OTP غير صحيح",
-  LocalizationKeys.saudiArabia: "المملكة العربية السعودية",
-  LocalizationKeys.bahrain: "البحرين",
-  LocalizationKeys.kuwait: "الكويت",
+  LocalizationKeys.incorrectOTP: "OTP غير صحيح"
 };

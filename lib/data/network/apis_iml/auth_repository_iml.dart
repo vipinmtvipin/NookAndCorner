@@ -74,8 +74,87 @@ class AuthRepositoryIml extends AuthRepository {
   }
 
   @override
-  Future<LoginResponds?> signup(LoginRequest request) {
-    // TODO: implement signup
-    throw UnimplementedError();
+  Future<LoginResponds?> signupMobile(String username) async {
+    try {
+      Response response =
+          await GetIt.I.get<ApiService>().post(NetworkKeys.signupMobile,
+              data: {
+                'phone': username,
+              },
+              options: Options(
+                contentType: 'application/json',
+              ));
+
+      final LoginResponds data = loginRespondsFromJson(response.toString());
+
+      return data;
+    } on DioException catch (e) {
+      var error = DioExceptionData.fromDioError(e);
+      throw error.errorMessage;
+    }
+  }
+
+  @override
+  Future<LoginResponds?> signupEmail(String username) async {
+    try {
+      Response response =
+          await GetIt.I.get<ApiService>().post(NetworkKeys.signupEmail,
+              data: {
+                'email': username,
+              },
+              options: Options(
+                contentType: 'application/json',
+              ));
+
+      final LoginResponds data = loginRespondsFromJson(response.toString());
+
+      return data;
+    } on DioException catch (e) {
+      var error = DioExceptionData.fromDioError(e);
+      throw error.errorMessage;
+    }
+  }
+
+  @override
+  Future<LoginResponds?> signup(LoginRequest request) async {
+    try {
+      Response response =
+          await GetIt.I.get<ApiService>().post(NetworkKeys.signup,
+              data: {
+                'phone': request.username,
+                'otp': request.password,
+              },
+              options: Options(
+                contentType: 'application/json',
+              ));
+
+      final LoginResponds data = loginRespondsFromJson(response.toString());
+
+      return data;
+    } on DioException catch (e) {
+      var error = DioExceptionData.fromDioError(e);
+      throw error.errorMessage;
+    }
+  }
+
+  @override
+  Future<LoginResponds?> forgetPassword(String request) async {
+    try {
+      Response response =
+          await GetIt.I.get<ApiService>().post(NetworkKeys.forgetPassword,
+              data: {
+                'email': request,
+              },
+              options: Options(
+                contentType: 'application/json',
+              ));
+
+      final LoginResponds data = loginRespondsFromJson(response.toString());
+
+      return data;
+    } on DioException catch (e) {
+      var error = DioExceptionData.fromDioError(e);
+      throw error.errorMessage;
+    }
   }
 }

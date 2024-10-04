@@ -7,116 +7,137 @@ String loginRespondsToJson(LoginResponds data) => json.encode(data.toJson());
 
 class LoginResponds {
   LoginResponds({
-    this.statusCode,
+    this.success,
     this.message,
+    this.statusCode,
     this.error,
-    this.success = false,
-    this.accessToken,
-    this.userInfo,
+    this.data,
   });
 
-  final int? statusCode;
-  final String? message;
-  final String? error;
   final bool? success;
-  final String? accessToken;
-  final UserInfo? userInfo;
+  final String? message;
+  final int? statusCode;
+  final String? error;
+  final LoginData? data;
 
   factory LoginResponds.fromJson(Map<String, dynamic> json) {
     return LoginResponds(
-      statusCode: json["statusCode"],
-      message: json["message"],
-      error: json["error"],
       success: json["success"],
-      accessToken: json["access_token"],
-      userInfo:
-          json["userInfo"] == null ? null : UserInfo.fromJson(json["userInfo"]),
+      message: json["message"],
+      statusCode: json["statusCode"],
+      error: json["error"],
+      data: json["data"] == null ? null : LoginData.fromJson(json["data"]),
     );
   }
 
   Map<String, dynamic> toJson() => {
-        "statusCode": statusCode,
-        "message": message,
-        "error": error,
         "success": success,
-        "access_token": accessToken,
-        "userInfo": userInfo?.toJson(),
+        "message": message,
+        "statusCode": statusCode,
+        "error": error,
+        "data": data?.toJson(),
       };
 }
 
-class UserInfo {
-  UserInfo({
+class LoginData {
+  LoginData({
+    required this.accessToken,
+    required this.user,
+  });
+
+  final String? accessToken;
+  final User? user;
+
+  factory LoginData.fromJson(Map<String, dynamic> json) {
+    return LoginData(
+      accessToken: json["accessToken"],
+      user: json["user"] == null ? null : User.fromJson(json["user"]),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        "accessToken": accessToken,
+        "user": user?.toJson(),
+      };
+}
+
+class User {
+  User({
     required this.userId,
+    required this.phone,
+    required this.userGroupId,
     required this.username,
     required this.email,
-    required this.phone,
+    required this.password,
     required this.aadhaarCardNum,
     required this.delete,
     required this.status,
-    required this.userGroupId,
     required this.primaryAddressId,
-    required this.otp,
     required this.panCardNum,
     required this.ifscCode,
     required this.accountNum,
     required this.userGroup,
-    required this.primaryAddress,
+    required this.updatedAt,
+    required this.createdAt,
   });
 
   final int? userId;
-  final String? username;
-  final String? email;
-  final dynamic phone;
+  final String? phone;
+  final int? userGroupId;
+  final dynamic username;
+  final dynamic email;
+  final dynamic password;
   final dynamic aadhaarCardNum;
   final dynamic delete;
   final dynamic status;
-  final int? userGroupId;
-  final int? primaryAddressId;
-  final dynamic otp;
+  final dynamic primaryAddressId;
   final dynamic panCardNum;
   final dynamic ifscCode;
   final dynamic accountNum;
   final UserGroup? userGroup;
-  final dynamic primaryAddress;
+  final DateTime? updatedAt;
+  final DateTime? createdAt;
 
-  factory UserInfo.fromJson(Map<String, dynamic> json) {
-    return UserInfo(
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
       userId: json["userId"],
+      phone: json["phone"],
+      userGroupId: json["userGroupId"],
       username: json["username"],
       email: json["email"],
-      phone: json["phone"],
+      password: json["password"],
       aadhaarCardNum: json["aadhaarCardNum"],
       delete: json["delete"],
       status: json["status"],
-      userGroupId: json["userGroupId"],
       primaryAddressId: json["primaryAddressId"],
-      otp: json["otp"],
       panCardNum: json["panCardNum"],
       ifscCode: json["ifscCode"],
       accountNum: json["accountNum"],
       userGroup: json["userGroup"] == null
           ? null
           : UserGroup.fromJson(json["userGroup"]),
-      primaryAddress: json["primaryAddress"],
+      updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
+      createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
     );
   }
 
   Map<String, dynamic> toJson() => {
         "userId": userId,
+        "phone": phone,
+        "userGroupId": userGroupId,
         "username": username,
         "email": email,
-        "phone": phone,
+        "password": password,
         "aadhaarCardNum": aadhaarCardNum,
         "delete": delete,
         "status": status,
-        "userGroupId": userGroupId,
         "primaryAddressId": primaryAddressId,
-        "otp": otp,
         "panCardNum": panCardNum,
         "ifscCode": ifscCode,
         "accountNum": accountNum,
         "userGroup": userGroup?.toJson(),
-        "primaryAddress": primaryAddress,
+        "updatedAt": updatedAt?.toIso8601String(),
+        "createdAt": createdAt?.toIso8601String(),
       };
 }
 

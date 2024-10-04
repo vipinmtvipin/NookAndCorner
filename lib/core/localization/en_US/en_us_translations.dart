@@ -12,7 +12,6 @@ final Map<String, String> enUs = {
   LocalizationKeys.logout: "Logout",
   LocalizationKeys.password: "Password",
   LocalizationKeys.account: "Account",
-  LocalizationKeys.loginGoogle: "Log in with Google",
   LocalizationKeys.register: "Register",
   LocalizationKeys.settings: "Settings",
   LocalizationKeys.welcome: "Welcome",
@@ -26,5 +25,5 @@ final Map<String, String> enUs = {
   LocalizationKeys.close: "Close",
   LocalizationKeys.loginSignInHeading: "Sign in to your account",
   LocalizationKeys.otpVerification: "OTP Verification",
-  LocalizationKeys.incorrectOTP: "Incorrect OTP",
+  LocalizationKeys.incorrectOTP: "Incorrect OTP"
 };

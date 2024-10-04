@@ -3,8 +3,6 @@ import 'package:get_storage/get_storage.dart';
 
 import '../constants/constants.dart';
 
-const String apiKEY = "";
-
 class RequestHeaderInterceptor extends Interceptor {
   final sessionStorage = GetStorage();
 
@@ -19,12 +17,14 @@ class RequestHeaderInterceptor extends Interceptor {
   Future<Map<String, dynamic>> getCustomHeaders(RequestOptions options) async {
     var customHeaders = <String, dynamic>{};
     customHeaders['Content-Type'] = 'application/json';
+
     if (_needAuthorizationHeader(options)) {
       //* Request methods PUT, POST, PATCH, DELETE needs access token,
       // * which needs to be passed with "Authorization" header as Bearer token.
       customHeaders['Authorization'] =
-          'Bearer ${sessionStorage.read(StorageKeys.token)}';
+          'Bearer ${sessionStorage.read(StorageKeys.token) ?? ''}';
     }
+
     return customHeaders;
   }
 

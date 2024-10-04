@@ -11,7 +11,7 @@ class SplashController extends BaseController {
 
     Future.delayed(const Duration(milliseconds: 3000), () {
       Get.offAllNamed(
-        AppRoutes.loginScreen,
+        AppRoutes.mainScreen,
       );
     });
   }

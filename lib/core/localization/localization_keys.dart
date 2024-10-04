@@ -11,7 +11,6 @@ class LocalizationKeys {
   static const logout = "Logout";
   static const password = "Password";
   static const account = "Account";
-  static const loginGoogle = "LoginwithGoogle";
   static const register = "Register";
   static const settings = "Settings";
   static const welcome = "Welcome";
@@ -26,7 +25,4 @@ class LocalizationKeys {
   static const loginSignInHeading = "loginSignInHeading";
   static const otpVerification = "OtpVerification";
   static const incorrectOTP = "incorrectOTP";
-  static const saudiArabia = "SaudiArabia";
-  static const bahrain = "Bahrain";
-  static const kuwait = "Kuwait";
 }
