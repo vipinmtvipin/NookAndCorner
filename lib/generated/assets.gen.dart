@@ -71,8 +71,13 @@ class $AssetsImagesGen {
   AssetGenImage get nookCornerRound =>
       const AssetGenImage('assets/images/nook_corner_round.png');
 
+  /// File path: assets/images/profile_bg.svg
+  SvgGenImage get profileBg =>
+      const SvgGenImage('assets/images/profile_bg.svg');
+
   /// List of all assets
-  List<AssetGenImage> get values => [google, nookCornerLogo, nookCornerRound];
+  List<dynamic> get values =>
+      [google, nookCornerLogo, nookCornerRound, profileBg];
 }
 
 class $AssetsLottieGen {

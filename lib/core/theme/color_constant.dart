@@ -10,7 +10,7 @@ class AppColors {
   static const error = Color(0xffE4626F);
   static const accentColorLight = Color(0xff9a8462);
 
-  static const examCardLight = Color(0xffbe9f31);
+  static const examCardLight = Color(0xff8a8a91);
   static const examCardHard = Color(0xffbd780e);
 
   static const lightFont = Color(0xff2a2f34);

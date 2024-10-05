@@ -76,7 +76,7 @@ class MainScreen extends GetView<MainScreenController> {
                               color: Colors.black,
                               size: 25,
                             ),
-                            const SizedBox(width: 8),
+                            const SizedBox(width: 10),
                           ],
                         ),
                       ),
@@ -92,16 +92,23 @@ class MainScreen extends GetView<MainScreenController> {
               color: Colors.black,
               size: getSize(23),
             ),
-            onPressed: () {},
+            onPressed: () {
+              Get.toNamed(AppRoutes.settingsScreen);
+            },
           ),
           Obx(() {
             return controller.loggedIn.value == true
                 ? Padding(
                     padding: const EdgeInsets.only(right: 16.0),
-                    child: Icon(
-                      Icons.account_circle_rounded,
-                      color: Colors.black,
-                      size: getSize(25),
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.account_circle_rounded,
+                        color: Colors.black,
+                        size: getSize(23),
+                      ),
+                      onPressed: () {
+                        Get.toNamed(AppRoutes.accountScreen);
+                      },
                     ),
                   )
                 : Padding(
@@ -155,7 +162,7 @@ Widget _buildMainScreen() {
                     .map((e) => CarouselItem(
                           navigationPath: e.routePath,
                           image: NetworkImageView(
-                            borderRadius: 25,
+                            borderRadius: 15,
                             url: e.image,
                             width: double.infinity,
                             fit: BoxFit.fill,

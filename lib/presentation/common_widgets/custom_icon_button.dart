@@ -106,7 +106,7 @@ class CustomIconButton extends StatelessWidget {
       case IconButtonVariant.OutlineBlue50:
         return AppColors.black;
       default:
-        return AppColors.examCardLight;
+        return AppColors.black;
     }
   }
 
@@ -117,7 +117,7 @@ class CustomIconButton extends StatelessWidget {
         return null;
       default:
         return Border.all(
-          color: AppColors.secondaryColor,
+          color: AppColors.black,
           width: getHorizontalSize(
             0.5,
           ),
@@ -153,7 +153,7 @@ class CustomIconButton extends StatelessWidget {
       case IconButtonVariant.OutlineLightblueA2003d:
         return [
           BoxShadow(
-            color: AppColors.examCardLight,
+            color: AppColors.black,
             spreadRadius: getHorizontalSize(
               2.00,
             ),
