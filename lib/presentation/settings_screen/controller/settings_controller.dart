@@ -1,3 +1,3 @@
-import 'package:get/get_state_manager/src/simple/get_controllers.dart';
+import 'package:customerapp/presentation/base_controller.dart';
 
-class SettingsController extends GetxController {}
+class SettingsController extends BaseController {}

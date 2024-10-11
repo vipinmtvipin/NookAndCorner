@@ -9,6 +9,8 @@ import 'package:customerapp/domain/model/home/mid_banner_responds.dart';
 import 'package:customerapp/domain/usecases/home/city_service_use_case.dart';
 import 'package:customerapp/domain/usecases/home/home_use_case.dart';
 import 'package:customerapp/presentation/base_controller.dart';
+import 'package:customerapp/presentation/main_screen/widgets/city_bottomsheet.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -37,6 +39,10 @@ class MainScreenController extends BaseController {
   @override
   void onInit() {
     loggedIn.value = sessionStorage.read(StorageKeys.loggedIn) ?? false;
+    final value = sessionStorage.read(StorageKeys.selectedCity);
+    if (value != null) {
+      selectedCity.value = CityResponds.fromJson(value);
+    }
     super.onInit();
   }
 
@@ -56,7 +62,27 @@ class MainScreenController extends BaseController {
         activeBanners.value = responds.item2;
         midBanners.value = responds.item3;
 
-        if (cityInfo.value.isNotNullOrEmpty) {
+        if (selectedCity.value.cityId != null &&
+            selectedCity.value.cityId.toString().isNotEmpty) {
+          var services = await _cityServiceUseCase
+              .execute(selectedCity.value.cityId.toString());
+          cityServices.value = services ?? [];
+        } else if (cityInfo.value.isNotNullOrEmpty) {
+          Get.bottomSheet(
+            isDismissible: false,
+            backgroundColor: Colors.white,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            CityBottomSheet(
+              city: cityInfo.value,
+              onCitySelected: (city) {
+                Get.back();
+                onCitySelected(city);
+              },
+            ),
+          );
+
           selectedCity.value = cityInfo.value.first;
           var services = await _cityServiceUseCase
               .execute(cityInfo.value.first.cityId.toString());
@@ -77,6 +103,8 @@ class MainScreenController extends BaseController {
     if (await _connectivityService.isConnected()) {
       try {
         showLoadingDialog();
+
+        sessionStorage.write(StorageKeys.selectedCity, city.toJson());
 
         var services = await _cityServiceUseCase
             .execute(selectedCity.value.cityId.toString());

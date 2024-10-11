@@ -1,3 +1,4 @@
+import 'package:customerapp/core/extensions/list_extensions.dart';
 import 'package:customerapp/core/extensions/sheet_extension.dart';
 import 'package:customerapp/core/routes/app_routes.dart';
 import 'package:customerapp/core/theme/app_text_style.dart';
@@ -5,6 +6,7 @@ import 'package:customerapp/core/theme/color_constant.dart';
 import 'package:customerapp/core/utils/size_utils.dart';
 import 'package:customerapp/generated/assets.gen.dart';
 import 'package:customerapp/presentation/common_widgets/carousel_with_indicator.dart';
+import 'package:customerapp/presentation/common_widgets/conditional_widget.dart';
 import 'package:customerapp/presentation/common_widgets/network_image_view.dart';
 import 'package:customerapp/presentation/common_widgets/responsive_text.dart';
 import 'package:customerapp/presentation/main_screen/controller/main_controller.dart';
@@ -23,7 +25,7 @@ class MainScreen extends GetView<MainScreenController> {
       appBar: AppBar(
         toolbarHeight: getSize(70),
         backgroundColor: Colors.white,
-        leadingWidth: getHorizontalSize(170),
+        leadingWidth: getHorizontalSize(175),
         elevation: 0,
         leading: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 14),
@@ -116,12 +118,15 @@ class MainScreen extends GetView<MainScreenController> {
                         const EdgeInsets.only(right: 10, top: 18, bottom: 18),
                     child: GestureDetector(
                       onTap: () {
-                        Get.toNamed(AppRoutes.loginScreen);
+                        //   Get.toNamed(AppRoutes.loginScreen);
+                        Get.toNamed(
+                          AppRoutes.serviceScreen,
+                        );
                       },
                       child: Container(
                         width: getSize(60),
                         alignment: Alignment.center,
-                        height: getSize(40),
+                        height: getSize(45),
                         margin: const EdgeInsets.all(1),
                         decoration: BoxDecoration(
                           color: AppColors.black,
@@ -156,19 +161,23 @@ Widget _buildMainScreen() {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CarouselWithIndicator(
-                height: 150,
-                carouselSliderItems: controller.activeBanners.value
-                    .map((e) => CarouselItem(
-                          navigationPath: e.routePath,
-                          image: NetworkImageView(
-                            borderRadius: 15,
-                            url: e.image,
-                            width: double.infinity,
-                            fit: BoxFit.fill,
-                          ),
-                        ))
-                    .toList(),
+              ConditionalWidget(
+                condition: controller.activeBanners.value.isNotNullOrEmpty,
+                onFalse: const SizedBox.shrink(),
+                child: CarouselWithIndicator(
+                  height: 150,
+                  carouselSliderItems: controller.activeBanners.value
+                      .map((e) => CarouselItem(
+                            navigationPath: e.routePath,
+                            image: NetworkImageView(
+                              borderRadius: 15,
+                              url: e.image,
+                              width: double.infinity,
+                              fit: BoxFit.fill,
+                            ),
+                          ))
+                      .toList(),
+                ),
               ),
               SizedBox(
                 height: getSize(15),
@@ -212,26 +221,29 @@ Widget _buildMainScreen() {
                 );
               }),
               const SizedBox(height: 20),
-              CarouselWithIndicator(
-                height: 80,
-                isIndicatorVisible: false,
-                carouselSliderItems: controller.midBanners.value
-                    .map((e) => CarouselItem(
-                          navigationPath: e.routePath,
-                          image: NetworkImageView(
-                            borderRadius: 12,
-                            url: e.image,
-                            width: double.infinity,
-                            fit: BoxFit.fill,
-                          ),
-                        ))
-                    .toList(),
+              ConditionalWidget(
+                condition: controller.activeBanners.value.isNotNullOrEmpty,
+                onFalse: const SizedBox.shrink(),
+                child: CarouselWithIndicator(
+                  height: 100,
+                  isIndicatorVisible: false,
+                  carouselSliderItems: controller.midBanners.value
+                      .map((e) => CarouselItem(
+                            navigationPath: e.routePath,
+                            image: NetworkImageView(
+                              borderRadius: 12,
+                              url: e.image,
+                              width: double.infinity,
+                              fit: BoxFit.fill,
+                            ),
+                          ))
+                      .toList(),
+                ),
               ),
               const SizedBox(height: 20),
             ],
           ),
         ),
-        const BottomSectionWidget(),
       ],
     ),
   );

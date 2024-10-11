@@ -1,9 +1,9 @@
 import 'package:customerapp/core/theme/color_constant.dart';
 import 'package:customerapp/generated/assets.gen.dart';
 import 'package:customerapp/presentation/account_screen/controller/account_controller.dart';
-import 'package:customerapp/presentation/common_widgets/custom_icon_button.dart';
 import 'package:customerapp/presentation/common_widgets/nookcorner_button.dart';
 import 'package:customerapp/presentation/common_widgets/responsive_text.dart';
+import 'package:customerapp/presentation/common_widgets/title_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -53,38 +53,7 @@ class AccountScreen extends GetView<AccountController> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          CustomIconButton(
-                              height: 28,
-                              width: 28,
-                              onTap: () {
-                                onTapArrowLeft();
-                              },
-                              alignment: Alignment.topLeft,
-                              shape: IconButtonShape.CircleBorder35,
-                              child: const Padding(
-                                padding: EdgeInsets.only(left: 5.0),
-                                child: Icon(
-                                  Icons.arrow_back_ios,
-                                  size: 16,
-                                  color: AppColors.white,
-                                ),
-                              )),
-                          Expanded(
-                            child: Text('Profile',
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.center,
-                                style: AppTextStyle.txtBold18.copyWith(
-                                    letterSpacing: getHorizontalSize(
-                                      5,
-                                    ),
-                                    color: AppColors.black)),
-                          ),
-                        ],
-                      ),
+                      const TitleBarWidget(title: "My Account"),
                       const SizedBox(
                         height: 20,
                       ),

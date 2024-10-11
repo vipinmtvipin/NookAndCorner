@@ -1,6 +1,6 @@
 import 'package:customerapp/core/theme/color_constant.dart';
-import 'package:customerapp/presentation/account_screen/controller/account_controller.dart';
-import 'package:customerapp/presentation/common_widgets/custom_icon_button.dart';
+import 'package:customerapp/presentation/common_widgets/title_bar_widget.dart';
+import 'package:customerapp/presentation/settings_screen/controller/settings_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -9,7 +9,7 @@ import '../../core/theme/app_text_style.dart';
 import '../../core/utils/common_util.dart';
 import '../../core/utils/size_utils.dart';
 
-class SettingsScreen extends GetView<AccountController> {
+class SettingsScreen extends GetView<SettingsController> {
   const SettingsScreen({super.key});
 
   @override
@@ -40,38 +40,7 @@ class SettingsScreen extends GetView<AccountController> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          CustomIconButton(
-                              height: 28,
-                              width: 28,
-                              onTap: () {
-                                onTapArrowLeft();
-                              },
-                              alignment: Alignment.topLeft,
-                              shape: IconButtonShape.CircleBorder35,
-                              child: const Padding(
-                                padding: EdgeInsets.only(left: 5.0),
-                                child: Icon(
-                                  Icons.arrow_back_ios,
-                                  size: 16,
-                                  color: AppColors.white,
-                                ),
-                              )),
-                          Expanded(
-                            child: Text('Settings',
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.center,
-                                style: AppTextStyle.txtBold18.copyWith(
-                                    letterSpacing: getHorizontalSize(
-                                      5,
-                                    ),
-                                    color: AppColors.black)),
-                          ),
-                        ],
-                      ),
+                      const TitleBarWidget(title: "Settings"),
                       const SizedBox(
                         height: 30,
                       ),

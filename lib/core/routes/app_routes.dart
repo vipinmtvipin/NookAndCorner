@@ -3,6 +3,8 @@ import 'package:customerapp/presentation/account_screen/binding/account_binding.
 import 'package:customerapp/presentation/forget_password_screen/forget_password_screen.dart';
 import 'package:customerapp/presentation/main_screen/binding/main_binding.dart';
 import 'package:customerapp/presentation/main_screen/main_screen.dart';
+import 'package:customerapp/presentation/services_screen/binding/service_binding.dart';
+import 'package:customerapp/presentation/services_screen/service_screen.dart';
 import 'package:customerapp/presentation/settings_screen/binding/settings_binding.dart';
 import 'package:customerapp/presentation/settings_screen/settings_screen.dart';
 import 'package:customerapp/presentation/signup_screen/signup_screen.dart';
@@ -21,6 +23,7 @@ class AppRoutes {
   static const String forgotPasswordScreen = '/forgot_password_screen';
   static const String accountScreen = '/account-screen';
   static const String settingsScreen = '/settings-screen';
+  static const String serviceScreen = '/service-screen';
 
   static List<GetPage> pages = [
     GetPage(
@@ -70,6 +73,13 @@ class AppRoutes {
       page: () => const SettingsScreen(),
       bindings: [
         SettingsBinding(),
+      ],
+    ),
+    GetPage(
+      name: serviceScreen,
+      page: () => const ServiceScreen(),
+      bindings: [
+        ServiceBinding(),
       ],
     ),
   ];

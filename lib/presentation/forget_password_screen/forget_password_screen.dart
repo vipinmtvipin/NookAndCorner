@@ -2,6 +2,7 @@ import 'package:customerapp/core/localization/localization_keys.dart';
 import 'package:customerapp/core/theme/app_text_style.dart';
 import 'package:customerapp/core/theme/color_constant.dart';
 import 'package:customerapp/generated/assets.gen.dart';
+import 'package:customerapp/presentation/common_widgets/custom_icon_button.dart';
 import 'package:customerapp/presentation/common_widgets/nookcorner_button.dart';
 import 'package:customerapp/presentation/common_widgets/nookcorner_text_field.dart';
 import 'package:customerapp/presentation/login_screen/controller/auth_controller.dart';
@@ -49,19 +50,20 @@ class ForgetPasswordScreen extends GetView<AuthController> {
                       children: [
                         Assets.images.nookCornerRound
                             .image(fit: BoxFit.contain, height: 60, width: 60),
-                        GestureDetector(
+                        CustomIconButton(
+                          height: 30,
+                          width: 30,
                           onTap: () {
                             Get.back();
                           },
-                          child: Row(
-                            children: [
-                              Text(LocalizationKeys.close.tr,
-                                  style: AppTextStyle.txt14),
-                              const SizedBox(width: 10),
-                              Assets.icons.close.svg(height: 15, width: 15),
-                            ],
+                          alignment: Alignment.topLeft,
+                          shape: IconButtonShape.CircleBorder35,
+                          child: const Icon(
+                            Icons.close,
+                            size: 16,
+                            color: AppColors.white,
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),

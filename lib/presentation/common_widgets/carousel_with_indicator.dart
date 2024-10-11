@@ -53,20 +53,6 @@ class _CarouselWithIndicatorState extends State<CarouselWithIndicator> {
             },
           ),
         ),
-        Visibility(
-          visible: widget.carouselSliderItems[_currentIndex].title != null,
-          child: Text(
-            widget.carouselSliderItems[_currentIndex].title ?? "",
-            textAlign: TextAlign.center,
-          ),
-        ),
-        Visibility(
-          visible: widget.carouselSliderItems[_currentIndex].subtitle != null,
-          child: Text(
-            widget.carouselSliderItems[_currentIndex].subtitle ?? "",
-            textAlign: TextAlign.center,
-          ),
-        ),
         const SizedBox(height: 5),
         Visibility(
           visible: widget.isIndicatorVisible ?? true,
