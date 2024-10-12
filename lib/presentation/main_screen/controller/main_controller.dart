@@ -28,12 +28,12 @@ class MainScreenController extends BaseController {
   late final _connectivityService = getIt<ConnectivityService>();
 
   var homeStatus = HomeStatus.unknown.obs;
-  Rx<List<CityResponds>> cityInfo = Rx([]);
+  Rx<List<CityData>> cityInfo = Rx([]);
 
-  Rx<CityResponds> selectedCity = Rx(CityResponds());
-  Rx<List<ActiveBannerResponds>> activeBanners = Rx([]);
-  Rx<List<MidBannerResponds>> midBanners = Rx([]);
-  Rx<List<CityServiceResponds>> cityServices = Rx([]);
+  Rx<CityData> selectedCity = Rx(CityData());
+  Rx<List<ActiveBannerData>> activeBanners = Rx([]);
+  Rx<List<MidBannerData>> midBanners = Rx([]);
+  Rx<List<CityServiceData>> cityServices = Rx([]);
   Rx<bool> loggedIn = Rx(false);
 
   @override
@@ -41,7 +41,7 @@ class MainScreenController extends BaseController {
     loggedIn.value = sessionStorage.read(StorageKeys.loggedIn) ?? false;
     final value = sessionStorage.read(StorageKeys.selectedCity);
     if (value != null) {
-      selectedCity.value = CityResponds.fromJson(value);
+      selectedCity.value = CityData.fromJson(value);
     }
     super.onInit();
   }
@@ -58,35 +58,34 @@ class MainScreenController extends BaseController {
       try {
         final responds = await _homeUseCase.execute();
 
-        cityInfo.value = responds.item1;
-        activeBanners.value = responds.item2;
-        midBanners.value = responds.item3;
+        cityInfo.value = responds.item1.data ?? [];
+        activeBanners.value = responds.item2.data ?? [];
+        midBanners.value = responds.item3.data ?? [];
 
         if (selectedCity.value.cityId != null &&
             selectedCity.value.cityId.toString().isNotEmpty) {
           var services = await _cityServiceUseCase
               .execute(selectedCity.value.cityId.toString());
-          cityServices.value = services ?? [];
+          cityServices.value = services?.data ?? [];
         } else if (cityInfo.value.isNotNullOrEmpty) {
-          Get.bottomSheet(
+          await Get.bottomSheet(
             isDismissible: false,
             backgroundColor: Colors.white,
+            elevation: 6,
             shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
             ),
             CityBottomSheet(
               city: cityInfo.value,
+              height: cityInfo.value.length > 3 ? 500 : 280,
+              padding: const EdgeInsets.only(
+                  top: 40, left: 12, right: 12, bottom: 5),
               onCitySelected: (city) {
                 Get.back();
                 onCitySelected(city);
               },
             ),
           );
-
-          selectedCity.value = cityInfo.value.first;
-          var services = await _cityServiceUseCase
-              .execute(cityInfo.value.first.cityId.toString());
-          cityServices.value = services ?? [];
         }
 
         homeStatus.value = HomeStatus.loaded;
@@ -98,7 +97,7 @@ class MainScreenController extends BaseController {
     }
   }
 
-  Future<void> onCitySelected(CityResponds city) async {
+  Future<void> onCitySelected(CityData city) async {
     selectedCity.value = city;
     if (await _connectivityService.isConnected()) {
       try {
@@ -108,7 +107,7 @@ class MainScreenController extends BaseController {
 
         var services = await _cityServiceUseCase
             .execute(selectedCity.value.cityId.toString());
-        cityServices.value = services ?? [];
+        cityServices.value = services?.data ?? [];
         hideLoadingDialog();
       } catch (e) {
         hideLoadingDialog();

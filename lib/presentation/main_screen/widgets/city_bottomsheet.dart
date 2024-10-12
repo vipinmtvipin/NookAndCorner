@@ -5,20 +5,25 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class CityBottomSheet extends StatelessWidget {
-  final Function(CityResponds city) onCitySelected;
-  final List<CityResponds> city;
+  final Function(CityData city) onCitySelected;
+  final List<CityData> city;
+  final double? height;
+  final EdgeInsets? padding;
 
   const CityBottomSheet({
     super.key,
     required this.city,
     required this.onCitySelected,
+    this.height,
+    this.padding,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(5.0),
+      height: height,
+      padding: padding ?? const EdgeInsets.all(5.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,

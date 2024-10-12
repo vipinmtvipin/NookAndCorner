@@ -1,5 +1,50 @@
+import 'dart:convert';
+
+MidBannerResponds midBannerRespondsFromJson(String str) =>
+    MidBannerResponds.fromJson(json.decode(str));
+
+String midBannerServiceRespondsToJson(MidBannerResponds data) =>
+    json.encode(data.toJson());
+
 class MidBannerResponds {
   MidBannerResponds({
+    this.success,
+    this.message,
+    this.statusCode,
+    this.error,
+    this.data,
+  });
+
+  final bool? success;
+  final String? message;
+  final int? statusCode;
+  final String? error;
+  final List<MidBannerData>? data;
+
+  factory MidBannerResponds.fromJson(Map<String, dynamic> json) {
+    return MidBannerResponds(
+      success: json["success"],
+      message: json["message"],
+      statusCode: json["statusCode"],
+      error: json["error"],
+      data: json["data"] == null
+          ? []
+          : List<MidBannerData>.from(
+              json["data"]!.map((x) => MidBannerData.fromJson(x))),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        "success": success,
+        "message": message,
+        "statusCode": statusCode,
+        "error": error,
+        "data": data?.map((x) => x?.toJson()).toList(),
+      };
+}
+
+class MidBannerData {
+  MidBannerData({
     required this.midBannerId,
     required this.routePath,
     required this.image,
@@ -15,8 +60,8 @@ class MidBannerResponds {
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
-  factory MidBannerResponds.fromJson(Map<String, dynamic> json) {
-    return MidBannerResponds(
+  factory MidBannerData.fromJson(Map<String, dynamic> json) {
+    return MidBannerData(
       midBannerId: json["midBannerId"],
       routePath: json["routePath"],
       image: json["image"],
@@ -34,8 +79,4 @@ class MidBannerResponds {
         "createdAt": createdAt?.toIso8601String(),
         "updatedAt": updatedAt?.toIso8601String(),
       };
-
-  static List<MidBannerResponds> fromJsonList(List<dynamic> jsonList) {
-    return jsonList.map((json) => MidBannerResponds.fromJson(json)).toList();
-  }
 }

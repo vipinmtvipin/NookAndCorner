@@ -1,5 +1,7 @@
 import 'package:customerapp/core/theme/app_text_style.dart';
 import 'package:customerapp/core/theme/color_constant.dart';
+import 'package:customerapp/domain/model/service/service_details_responds.dart';
+import 'package:customerapp/domain/model/service/time_slote_responds.dart';
 import 'package:customerapp/presentation/common_widgets/conditional_widget.dart';
 import 'package:customerapp/presentation/common_widgets/custom_icon_button.dart';
 import 'package:customerapp/presentation/common_widgets/network_image_view.dart';
@@ -8,14 +10,15 @@ import 'package:customerapp/presentation/common_widgets/responsive_text.dart';
 import 'package:customerapp/presentation/services_screen/controller/service_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class ServiceBookingDateBottomSheet extends GetView<ServiceController> {
-  final Function(String date) onDateSelected;
-  final List<String> dates;
+  final Function(TimeSlotData date) onDateSelected;
+  final ServiceData service;
 
   const ServiceBookingDateBottomSheet({
     super.key,
-    required this.dates,
+    required this.service,
     required this.onDateSelected,
   });
 
@@ -24,9 +27,11 @@ class ServiceBookingDateBottomSheet extends GetView<ServiceController> {
     return Obx(() {
       return SizedBox(
         width: double.infinity,
-        height: controller.homeStatus.value == HomeStatus.dateDataLoaded
-            ? 460.0
-            : 200.0,
+        height:
+            (controller.serviceStatus.value == ServiceStatus.dateDataLoaded &&
+                    controller.timeSlots.value.isNotEmpty)
+                ? 460.0
+                : 200.0,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -83,8 +88,9 @@ class ServiceBookingDateBottomSheet extends GetView<ServiceController> {
                 ),
                 const SizedBox(height: 16),
                 ConditionalWidget(
-                  condition:
-                      controller.homeStatus.value == HomeStatus.dateDataLoaded,
+                  condition: (controller.serviceStatus.value ==
+                          ServiceStatus.dateDataLoaded &&
+                      controller.timeSlots.value.isNotEmpty),
                   onFalse: Container(
                       alignment: Alignment.center,
                       margin: const EdgeInsets.only(top: 20),
@@ -107,22 +113,29 @@ class ServiceBookingDateBottomSheet extends GetView<ServiceController> {
                               mainAxisSpacing: 15,
                               mainAxisExtent: 35,
                             ),
-                            itemCount: 55,
+                            itemCount: controller.timeSlots.value.length,
                             itemBuilder: (context, index) {
-                              return Container(
-                                alignment: Alignment.center,
-                                height: 30,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(
-                                    color: Colors.grey,
-                                    width: 1,
+                              var item = controller.timeSlots.value[index];
+                              return GestureDetector(
+                                onTap: () {
+                                  onDateSelected(item);
+                                },
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  height: 30,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                      color: Colors.grey,
+                                      width: 1,
+                                    ),
                                   ),
-                                ),
-                                child: Text(
-                                  '10 AM',
-                                  style: AppTextStyle.txt14,
+                                  child: Text(
+                                    DateFormat('hh:mm aa')
+                                        .format(item.slotStart!),
+                                    style: AppTextStyle.txt14,
+                                  ),
                                 ),
                               );
                             }),
@@ -159,31 +172,8 @@ class ServiceBookingDateBottomSheet extends GetView<ServiceController> {
       lastDate: DateTime(2101),
     );
     if (picked != null && picked != controller.selectedDate.value) {
-      controller.dateSelected(picked);
+      controller.dateSelected(service, picked);
     }
-  }
-
-  List<String> _getTimeSlots() {
-    return [
-      '8:00 am',
-      '8:15 am',
-      '8:30 am',
-      '8:45 am',
-      '9:00 am',
-      '9:15 am',
-      '9:30 am',
-      '9:45 am',
-      '10:00 am',
-      '10:15 am',
-      '10:30 am',
-      '10:45 am',
-      '11:00 am',
-      '11:15 am',
-      '11:30 am',
-      '11:45 am',
-      '12:00 pm',
-      '12:15 pm',
-    ];
   }
 }
 

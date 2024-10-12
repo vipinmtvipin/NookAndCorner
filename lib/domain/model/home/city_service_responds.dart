@@ -1,5 +1,50 @@
+import 'dart:convert';
+
+CityServiceResponds cityServiceRespondsFromJson(String str) =>
+    CityServiceResponds.fromJson(json.decode(str));
+
+String cityServiceRespondsToJson(CityServiceResponds data) =>
+    json.encode(data.toJson());
+
 class CityServiceResponds {
   CityServiceResponds({
+    this.success,
+    this.message,
+    this.statusCode,
+    this.error,
+    this.data,
+  });
+
+  final bool? success;
+  final String? message;
+  final int? statusCode;
+  final String? error;
+  final List<CityServiceData>? data;
+
+  factory CityServiceResponds.fromJson(Map<String, dynamic> json) {
+    return CityServiceResponds(
+      success: json["success"],
+      message: json["message"],
+      statusCode: json["statusCode"],
+      error: json["error"],
+      data: json["data"] == null
+          ? []
+          : List<CityServiceData>.from(
+              json["data"]!.map((x) => CityServiceData.fromJson(x))),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        "success": success,
+        "message": message,
+        "statusCode": statusCode,
+        "error": error,
+        "data": data?.map((x) => x?.toJson()).toList(),
+      };
+}
+
+class CityServiceData {
+  CityServiceData({
     required this.catid,
     required this.name,
     required this.description,
@@ -23,8 +68,8 @@ class CityServiceResponds {
   final DateTime? updatedAt;
   final City? city;
 
-  factory CityServiceResponds.fromJson(Map<String, dynamic> json) {
-    return CityServiceResponds(
+  factory CityServiceData.fromJson(Map<String, dynamic> json) {
+    return CityServiceData(
       catid: json["catid"],
       name: json["name"],
       description: json["description"],

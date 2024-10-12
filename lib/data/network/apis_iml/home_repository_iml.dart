@@ -11,14 +11,14 @@ import 'package:get_it/get_it.dart';
 
 class HomeRepositoryIml extends HomeRepository {
   @override
-  Future<List<CityResponds>?> getCity() async {
+  Future<CityResponds?> getCity() async {
     try {
       Response response = await GetIt.I.get<ApiService>().get(NetworkKeys.city,
           options: Options(
             contentType: 'application/json',
           ));
 
-      final List<CityResponds> data = CityResponds.fromJsonList(response.data);
+      final CityResponds data = cityRespondsFromJson(response.toString());
 
       return data;
     } on DioException catch (e) {
@@ -28,7 +28,7 @@ class HomeRepositoryIml extends HomeRepository {
   }
 
   @override
-  Future<List<CityServiceResponds>?> getCityServices(String cityId) async {
+  Future<CityServiceResponds?> getCityServices(String cityId) async {
     try {
       Response response = await GetIt.I
           .get<ApiService>()
@@ -37,8 +37,8 @@ class HomeRepositoryIml extends HomeRepository {
                 contentType: 'application/json',
               ));
 
-      final List<CityServiceResponds> data =
-          CityServiceResponds.fromJsonList(response.data);
+      final CityServiceResponds data =
+          cityServiceRespondsFromJson(response.toString());
 
       return data;
     } on DioException catch (e) {
@@ -48,7 +48,7 @@ class HomeRepositoryIml extends HomeRepository {
   }
 
   @override
-  Future<List<MidBannerResponds>?> getMidBanner() async {
+  Future<MidBannerResponds?> getMidBanner() async {
     try {
       Response response =
           await GetIt.I.get<ApiService>().get(NetworkKeys.midBanner,
@@ -56,8 +56,8 @@ class HomeRepositoryIml extends HomeRepository {
                 contentType: 'application/json',
               ));
 
-      final List<MidBannerResponds> data =
-          MidBannerResponds.fromJsonList(response.data);
+      final MidBannerResponds data =
+          midBannerRespondsFromJson(response.toString());
 
       return data;
     } on DioException catch (e) {
@@ -67,7 +67,7 @@ class HomeRepositoryIml extends HomeRepository {
   }
 
   @override
-  Future<List<ActiveBannerResponds>?> getActiveBanner() async {
+  Future<ActiveBannerResponds?> getActiveBanner() async {
     try {
       Response response =
           await GetIt.I.get<ApiService>().get(NetworkKeys.activeBanner,
@@ -75,8 +75,8 @@ class HomeRepositoryIml extends HomeRepository {
                 contentType: 'application/json',
               ));
 
-      final List<ActiveBannerResponds> data =
-          ActiveBannerResponds.fromJsonList(response.data);
+      final ActiveBannerResponds data =
+          bannerRespondsFromJson(response.toString());
 
       return data;
     } on DioException catch (e) {

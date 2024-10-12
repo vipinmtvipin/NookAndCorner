@@ -25,6 +25,11 @@ class NetworkKeys {
   static const String cityService = '/customer-category/city';
   static const String midBanner = '/mid-banner/ban/active';
   static const String activeBanner = '/banner/ban/active';
+
+  static const String timeSlot = '/job/time/slot';
+  static const String serviceDetails = '/customer-service/cat';
+  static const String serviceTag = '/category-tag/category';
+  static const String serviceTagItems = '/service/tags';
 }
 
 /// Constants for Session storage

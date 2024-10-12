@@ -8,6 +8,8 @@ import 'package:customerapp/presentation/services_screen/service_screen.dart';
 import 'package:customerapp/presentation/settings_screen/binding/settings_binding.dart';
 import 'package:customerapp/presentation/settings_screen/settings_screen.dart';
 import 'package:customerapp/presentation/signup_screen/signup_screen.dart';
+import 'package:customerapp/presentation/summery_screen/binding/summery_binding.dart';
+import 'package:customerapp/presentation/summery_screen/summery_screen.dart';
 import 'package:get/get.dart';
 
 import '../../presentation/login_screen/binding/auth_binding.dart';
@@ -24,6 +26,7 @@ class AppRoutes {
   static const String accountScreen = '/account-screen';
   static const String settingsScreen = '/settings-screen';
   static const String serviceScreen = '/service-screen';
+  static const String summeryScreen = '/summery-screen';
 
   static List<GetPage> pages = [
     GetPage(
@@ -80,6 +83,13 @@ class AppRoutes {
       page: () => const ServiceScreen(),
       bindings: [
         ServiceBinding(),
+      ],
+    ),
+    GetPage(
+      name: summeryScreen,
+      page: () => const SummeryScreen(),
+      bindings: [
+        SummeryBinding(),
       ],
     ),
   ];

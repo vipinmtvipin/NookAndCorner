@@ -1,8 +1,18 @@
+import 'package:customerapp/core/localization/localization_keys.dart';
+import 'package:customerapp/core/network/connectivity_service.dart';
+import 'package:customerapp/domain/model/service/service_details_responds.dart';
+import 'package:customerapp/domain/model/service/tag_responds.dart';
+import 'package:customerapp/domain/model/service/time_slote_request.dart';
+import 'package:customerapp/domain/model/service/time_slote_responds.dart';
+import 'package:customerapp/domain/usecases/service/service_by_tag_use_case.dart';
+import 'package:customerapp/domain/usecases/service/service_details_use_case.dart';
+import 'package:customerapp/domain/usecases/service/service_slots_use_case.dart';
+import 'package:customerapp/domain/usecases/service/service_tags_use_case.dart';
 import 'package:customerapp/presentation/base_controller.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-enum HomeStatus {
+enum ServiceStatus {
   unknown,
   loaded,
   initiated,
@@ -10,16 +20,132 @@ enum HomeStatus {
 }
 
 class ServiceController extends BaseController {
+  final ServiceDetailsByTagUseCase _serviceDetailsByTagUseCase;
+  final ServiceDetailsUseCase _serviceDetailsUseCase;
+  final ServiceTagsUseCase _serviceTagUseCase;
+  final ServiceSlotsUseCase _serviceSlotsUseCase;
+  ServiceController(
+      this._serviceDetailsByTagUseCase,
+      this._serviceDetailsUseCase,
+      this._serviceTagUseCase,
+      this._serviceSlotsUseCase);
+
+  late final _connectivityService = getIt<ConnectivityService>();
+  Rx<List<ServiceData>> serviceInfo = Rx([]);
+  Rx<List<TimeSlotData>> timeSlots = Rx([]);
+  Rx<List<TagData>> tagData = Rx([]);
+
   Rx<DateTime> selectedDate = Rx(DateTime.now());
   // Rx<String> selectedDateValue = Rx('Select Date');
   var selectedDateValue = 'Select Date'.obs;
 
-  var homeStatus = HomeStatus.unknown.obs;
+  var serviceStatus = ServiceStatus.unknown.obs;
 
-  void dateSelected(DateTime date) {
+  var categoryId = Get.parameters['categoryId'] ?? '';
+  var categoryName = Get.parameters['categoryName'] ?? '';
+  var categoryDescription = Get.parameters['categoryDescription'] ?? '';
+
+  @override
+  void onInit() {
+    super.onInit();
+    getServiceDetails(categoryId.toString());
+  }
+
+  Future<void> getServiceDetails(String categoryId,
+      {bool fromTag = false}) async {
+    if (await _connectivityService.isConnected()) {
+      try {
+        showLoadingDialog();
+
+        var services = await _serviceDetailsUseCase.execute(categoryId);
+        serviceInfo.value = services?.data ?? [];
+        if (fromTag) {
+          await getServiceTags(categoryId);
+        }
+
+        serviceStatus.value = ServiceStatus.loaded;
+
+        hideLoadingDialog();
+      } catch (e) {
+        hideLoadingDialog();
+        e.printInfo();
+      }
+    } else {
+      showToast(LocalizationKeys.noNetwork.tr);
+    }
+  }
+
+  Future<void> getServiceByTagClick(String tagId) async {
+    if (await _connectivityService.isConnected()) {
+      try {
+        showLoadingDialog();
+
+        var updatedTagData = tagData.value.map((element) {
+          if (element.catTagId.toString() == tagId) {
+            return element.copyWith(isSelected: true);
+          } else {
+            return element.copyWith(isSelected: false);
+          }
+        }).toList();
+        tagData.value = updatedTagData;
+        serviceInfo.value = [];
+        timeSlots.value = [];
+
+        TimeSlotRequest request = TimeSlotRequest(
+          categoryId: categoryId,
+          tagId: tagId,
+        );
+        var services = await _serviceDetailsByTagUseCase.execute(request);
+        serviceInfo.value = services?.data ?? [];
+        hideLoadingDialog();
+      } catch (e) {
+        hideLoadingDialog();
+        e.printInfo();
+      }
+    } else {
+      showToast(LocalizationKeys.noNetwork.tr);
+    }
+  }
+
+  Future<void> getServiceTags(String categoryId) async {
+    if (await _connectivityService.isConnected()) {
+      try {
+        var services = await _serviceTagUseCase.execute(categoryId);
+        tagData.value = services?.data ?? [];
+      } catch (e) {
+        e.printInfo();
+      }
+    }
+  }
+
+  Future<void> getTimeSlots(TimeSlotRequest request) async {
+    if (await _connectivityService.isConnected()) {
+      try {
+        showLoadingDialog();
+        var services = await _serviceSlotsUseCase.execute(request);
+        timeSlots.value = services?.data ?? [];
+        serviceStatus.value = ServiceStatus.dateDataLoaded;
+        hideLoadingDialog();
+      } catch (e) {
+        hideLoadingDialog();
+        e.printInfo();
+      }
+    } else {
+      showToast(LocalizationKeys.noNetwork.tr);
+    }
+  }
+
+  void dateSelected(ServiceData service, DateTime date) {
     selectedDate.value = date;
     selectedDateValue.value = DateFormat('dd/MM/yyyy').format(date);
 
-    homeStatus.value = HomeStatus.dateDataLoaded;
+    TimeSlotRequest request = TimeSlotRequest(
+      categoryId: categoryId,
+      tagId: service.tags.first.id.toString(),
+      jobDate: DateFormat('yyyy-MM-dd').format(selectedDate.value),
+      serviceId: service.servId.toString(),
+    );
+
+    getTimeSlots(request);
   }
 }

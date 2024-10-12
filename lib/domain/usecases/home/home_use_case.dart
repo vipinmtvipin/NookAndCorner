@@ -9,42 +9,39 @@ import 'package:tuple/tuple.dart';
 import 'package:zip_future/zip_future.dart';
 
 class HomeUseCase extends NoParamUseCase<
-    Tuple3<List<CityResponds>, List<ActiveBannerResponds>,
-        List<MidBannerResponds>>> {
+    Tuple3<CityResponds, ActiveBannerResponds, MidBannerResponds>> {
   final HomeRepository _repo;
   HomeUseCase(this._repo);
 
   @override
-  Future<
-      Tuple3<List<CityResponds>, List<ActiveBannerResponds>,
-          List<MidBannerResponds>>> execute() async {
+  Future<Tuple3<CityResponds, ActiveBannerResponds, MidBannerResponds>>
+      execute() async {
     final homeData = await ZipFuture.zip([
       _repo.getCity(),
       _repo.getActiveBanner(),
       _repo.getMidBanner(),
     ]).executeThenMap<
-        Tuple3<List<CityResponds>, List<ActiveBannerResponds>,
-            List<MidBannerResponds>>>(
+        Tuple3<CityResponds, ActiveBannerResponds, MidBannerResponds>>(
       (results) {
-        List<CityResponds>? citys = [];
-        List<ActiveBannerResponds> banners = [];
-        List<MidBannerResponds> midBanners = [];
+        CityResponds? city;
+        ActiveBannerResponds? banners;
+        MidBannerResponds? midBanners;
 
         results.forEachIndexed((index, element) {
           switch (element) {
-            case List<CityResponds> _:
-              citys = element;
+            case CityResponds _:
+              city = element;
               break;
-            case List<ActiveBannerResponds> _:
+            case ActiveBannerResponds _:
               banners = element;
               break;
-            case List<MidBannerResponds> _:
+            case MidBannerResponds _:
               midBanners = element;
               break;
           }
         });
 
-        return Tuple3(citys!, banners, midBanners);
+        return Tuple3(city!, banners!, midBanners!);
       },
       onError: (index, error) {
         Logger.e('Error while fetching notification details:', '$error');

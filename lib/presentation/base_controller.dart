@@ -38,10 +38,9 @@ class BaseController extends GetxController {
   );
 
   static const spinKitLoader = Center(
-    child: SpinKitPouringHourGlassRefined(
-      color: AppColors.warning,
-      size: 70,
-      strokeWidth: 2,
+    child: SpinKitFadingCube(
+      color: AppColors.white,
+      size: 60,
     ),
   );
 

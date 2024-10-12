@@ -118,10 +118,8 @@ class MainScreen extends GetView<MainScreenController> {
                         const EdgeInsets.only(right: 10, top: 18, bottom: 18),
                     child: GestureDetector(
                       onTap: () {
-                        //   Get.toNamed(AppRoutes.loginScreen);
-                        Get.toNamed(
-                          AppRoutes.serviceScreen,
-                        );
+                        Get.toNamed(AppRoutes.summeryScreen);
+                        //     Get.toNamed(AppRoutes.loginScreen);
                       },
                       child: Container(
                         width: getSize(60),
@@ -194,7 +192,8 @@ Widget _buildMainScreen() {
               const SizedBox(height: 20),
               Obx(() {
                 if (controller.cityServices.value.isEmpty) {
-                  return const NotDataFound(message: 'No Service Available');
+                  return const NotDataFound(
+                      message: 'No Service Available Now');
                 }
                 return GridView.builder(
                   shrinkWrap: true,
@@ -210,7 +209,14 @@ Widget _buildMainScreen() {
                     final item = controller.cityServices.value[index];
                     return GestureDetector(
                       onTap: () {
-                        //     Get.toNamed(AppRoutes.serviceDetailScreen);
+                        Get.toNamed(
+                          AppRoutes.serviceScreen,
+                          arguments: {
+                            'categoryId': item.catid,
+                            'categoryName': item.name,
+                            'categoryDescription': item.description,
+                          },
+                        );
                       },
                       child: ServiceCard(
                         image: item.logo,

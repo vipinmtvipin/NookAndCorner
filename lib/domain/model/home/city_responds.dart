@@ -1,5 +1,48 @@
+import 'dart:convert';
+
+CityResponds cityRespondsFromJson(String str) =>
+    CityResponds.fromJson(json.decode(str));
+
+String cityRespondsToJson(CityResponds data) => json.encode(data.toJson());
+
 class CityResponds {
   CityResponds({
+    this.success,
+    this.message,
+    this.statusCode,
+    this.error,
+    this.data,
+  });
+
+  final bool? success;
+  final String? message;
+  final int? statusCode;
+  final String? error;
+  final List<CityData>? data;
+
+  factory CityResponds.fromJson(Map<String, dynamic> json) {
+    return CityResponds(
+      success: json["success"],
+      message: json["message"],
+      statusCode: json["statusCode"],
+      error: json["error"],
+      data: json["data"] == null
+          ? []
+          : List<CityData>.from(json["data"]!.map((x) => CityData.fromJson(x))),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        "success": success,
+        "message": message,
+        "statusCode": statusCode,
+        "error": error,
+        "data": data?.map((x) => x?.toJson()).toList(),
+      };
+}
+
+class CityData {
+  CityData({
     this.cityId,
     this.cityName,
     this.location,
@@ -23,8 +66,8 @@ class CityResponds {
   final dynamic delete;
   final String? status;
 
-  factory CityResponds.fromJson(Map<String, dynamic> json) {
-    return CityResponds(
+  factory CityData.fromJson(Map<String, dynamic> json) {
+    return CityData(
       cityId: json["cityId"],
       cityName: json["cityName"],
       location: json["location"],
@@ -50,8 +93,4 @@ class CityResponds {
         "delete": delete,
         "status": status,
       };
-
-  static List<CityResponds> fromJsonList(List<dynamic> jsonList) {
-    return jsonList.map((json) => CityResponds.fromJson(json)).toList();
-  }
 }
