@@ -36,14 +36,29 @@ class TimeSlotData {
   TimeSlotData({
     required this.slotStart,
     required this.supervisors,
+    this.isSelected,
   });
 
+  final bool? isSelected;
   final DateTime? slotStart;
-  final List<int> supervisors;
+  final List<int>? supervisors;
+
+  TimeSlotData copyWith({
+    bool? isSelected,
+    DateTime? slotStart,
+    List<int>? supervisors,
+  }) {
+    return TimeSlotData(
+      slotStart: slotStart ?? this.slotStart,
+      supervisors: supervisors ?? this.supervisors,
+      isSelected: isSelected ?? this.isSelected,
+    );
+  }
 
   factory TimeSlotData.fromJson(Map<String, dynamic> json) {
     return TimeSlotData(
       slotStart: DateTime.tryParse(json["slot_start"] ?? ""),
+      isSelected: false,
       supervisors: json["supervisors"] == null
           ? []
           : List<int>.from(json["supervisors"]!.map((x) => x)),
@@ -52,6 +67,6 @@ class TimeSlotData {
 
   Map<String, dynamic> toJson() => {
         "slot_start": slotStart?.toIso8601String(),
-        "supervisors": supervisors.map((x) => x).toList(),
+        "supervisors": supervisors?.map((x) => x).toList(),
       };
 }

@@ -7,7 +7,12 @@ import 'package:get/get.dart';
 
 class TitleBarWidget extends StatelessWidget {
   final String title;
-  const TitleBarWidget({super.key, required this.title});
+  final Function()? onBack;
+  const TitleBarWidget({
+    super.key,
+    required this.title,
+    this.onBack,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +25,7 @@ class TitleBarWidget extends StatelessWidget {
             width: 30,
             onTap: () {
               Get.back();
+              onBack?.call();
             },
             alignment: Alignment.topLeft,
             shape: IconButtonShape.CircleBorder35,

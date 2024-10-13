@@ -1,14 +1,17 @@
 import 'package:customerapp/presentation/account_screen/account_screen.dart';
 import 'package:customerapp/presentation/account_screen/binding/account_binding.dart';
+import 'package:customerapp/presentation/address_screen/add_address_screen.dart';
+import 'package:customerapp/presentation/address_screen/address_screen.dart';
+import 'package:customerapp/presentation/address_screen/binding/address_binding.dart';
 import 'package:customerapp/presentation/forget_password_screen/forget_password_screen.dart';
 import 'package:customerapp/presentation/main_screen/binding/main_binding.dart';
 import 'package:customerapp/presentation/main_screen/main_screen.dart';
+import 'package:customerapp/presentation/payment_section_screens/confirm_address_screen.dart';
 import 'package:customerapp/presentation/services_screen/binding/service_binding.dart';
 import 'package:customerapp/presentation/services_screen/service_screen.dart';
 import 'package:customerapp/presentation/settings_screen/binding/settings_binding.dart';
 import 'package:customerapp/presentation/settings_screen/settings_screen.dart';
 import 'package:customerapp/presentation/signup_screen/signup_screen.dart';
-import 'package:customerapp/presentation/summery_screen/binding/summery_binding.dart';
 import 'package:customerapp/presentation/summery_screen/summery_screen.dart';
 import 'package:get/get.dart';
 
@@ -27,6 +30,9 @@ class AppRoutes {
   static const String settingsScreen = '/settings-screen';
   static const String serviceScreen = '/service-screen';
   static const String summeryScreen = '/summery-screen';
+  static const String addressScreen = '/address-screen';
+  static const String addAddressScreen = '/add-address-screen';
+  static const String confirmAddressScreen = '/confirm-address-screen';
 
   static List<GetPage> pages = [
     GetPage(
@@ -88,9 +94,21 @@ class AppRoutes {
     GetPage(
       name: summeryScreen,
       page: () => const SummeryScreen(),
+    ),
+    GetPage(
+      name: addressScreen,
+      page: () => const AddressScreen(),
       bindings: [
-        SummeryBinding(),
+        AddressBinding(),
       ],
+    ),
+    GetPage(
+      name: addAddressScreen,
+      page: () => const AddAddressScreen(),
+    ),
+    GetPage(
+      name: confirmAddressScreen,
+      page: () => const ConfirmAddressScreen(),
     ),
   ];
 }

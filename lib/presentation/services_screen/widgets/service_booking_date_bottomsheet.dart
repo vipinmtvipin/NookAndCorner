@@ -1,7 +1,8 @@
+import 'package:customerapp/core/extensions/string_extensions.dart';
+import 'package:customerapp/core/routes/app_routes.dart';
 import 'package:customerapp/core/theme/app_text_style.dart';
 import 'package:customerapp/core/theme/color_constant.dart';
 import 'package:customerapp/domain/model/service/service_details_responds.dart';
-import 'package:customerapp/domain/model/service/time_slote_responds.dart';
 import 'package:customerapp/presentation/common_widgets/conditional_widget.dart';
 import 'package:customerapp/presentation/common_widgets/custom_icon_button.dart';
 import 'package:customerapp/presentation/common_widgets/network_image_view.dart';
@@ -9,17 +10,21 @@ import 'package:customerapp/presentation/common_widgets/nookcorner_button.dart';
 import 'package:customerapp/presentation/common_widgets/responsive_text.dart';
 import 'package:customerapp/presentation/services_screen/controller/service_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class ServiceBookingDateBottomSheet extends GetView<ServiceController> {
-  final Function(TimeSlotData date) onDateSelected;
+  final Function(String) onDateSelected;
   final ServiceData service;
+
+  final bool isFromSummery;
 
   const ServiceBookingDateBottomSheet({
     super.key,
     required this.service,
     required this.onDateSelected,
+    this.isFromSummery = false,
   });
 
   @override
@@ -30,7 +35,7 @@ class ServiceBookingDateBottomSheet extends GetView<ServiceController> {
         height:
             (controller.serviceStatus.value == ServiceStatus.dateDataLoaded &&
                     controller.timeSlots.value.isNotEmpty)
-                ? 460.0
+                ? 470.0
                 : 200.0,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -103,7 +108,7 @@ class ServiceBookingDateBottomSheet extends GetView<ServiceController> {
                   child: Column(
                     children: [
                       SizedBox(
-                        height: 200,
+                        height: 210,
                         child: GridView.builder(
                             shrinkWrap: true,
                             gridDelegate:
@@ -118,17 +123,35 @@ class ServiceBookingDateBottomSheet extends GetView<ServiceController> {
                               var item = controller.timeSlots.value[index];
                               return GestureDetector(
                                 onTap: () {
-                                  onDateSelected(item);
+                                  var updatedData =
+                                      controller.timeSlots.value.map((element) {
+                                    if (element.slotStart == item.slotStart) {
+                                      return element.copyWith(isSelected: true);
+                                    } else {
+                                      return element.copyWith(
+                                          isSelected: false);
+                                    }
+                                  }).toList();
+
+                                  controller.timeSlots.value = updatedData;
+
+                                  onDateSelected(
+                                    DateFormat('hh:mm aa')
+                                        .format(item.slotStart!),
+                                  );
                                 },
                                 child: Container(
                                   alignment: Alignment.center,
-                                  height: 30,
+                                  height: 35,
+                                  padding: const EdgeInsets.all(1.0),
                                   decoration: BoxDecoration(
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(8),
                                     border: Border.all(
-                                      color: Colors.grey,
-                                      width: 1,
+                                      color: (item.isSelected ?? false)
+                                          ? AppColors.secondaryColor
+                                          : Colors.grey,
+                                      width: (item.isSelected ?? false) ? 2 : 1,
                                     ),
                                   ),
                                   child: Text(
@@ -149,9 +172,21 @@ class ServiceBookingDateBottomSheet extends GetView<ServiceController> {
                       NookCornerButton(
                         outlinedColor: AppColors.primaryColor,
                         textStyle: AppTextStyle.txtBoldWhite14,
-                        text: 'Confirm and Proceed',
+                        text: isFromSummery ? 'Update' : 'Confirm and Proceed',
                         backGroundColor: AppColors.primaryColor,
-                        onPressed: () {},
+                        onPressed: () {
+                          if (isFromSummery) {
+                            Get.back();
+                          } else {
+                            if (controller.selectedTime.value.isEmpty) {
+                              'Please select a time slot'
+                                  .showToast(ToastGravity.CENTER);
+                              return;
+                            }
+                            Get.back();
+                            Get.toNamed(AppRoutes.summeryScreen);
+                          }
+                        },
                       ),
                     ],
                   ),

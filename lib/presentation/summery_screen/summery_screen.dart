@@ -1,14 +1,17 @@
+import 'package:customerapp/core/extensions/sheet_extension.dart';
 import 'package:customerapp/core/theme/app_text_style.dart';
 import 'package:customerapp/core/theme/color_constant.dart';
 import 'package:customerapp/core/utils/size_utils.dart';
 import 'package:customerapp/presentation/common_widgets/nookcorner_button.dart';
 import 'package:customerapp/presentation/common_widgets/responsive_text.dart';
 import 'package:customerapp/presentation/common_widgets/title_bar_widget.dart';
-import 'package:customerapp/presentation/summery_screen/controller/summery_controller.dart';
+import 'package:customerapp/presentation/services_screen/controller/service_controller.dart';
+import 'package:customerapp/presentation/services_screen/widgets/service_booking_date_bottomsheet.dart';
+import 'package:customerapp/presentation/summery_screen/force_login_bottomsheet.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class SummeryScreen extends GetView<SummeryController> {
+class SummeryScreen extends GetView<ServiceController> {
   const SummeryScreen({super.key});
 
   @override
@@ -22,7 +25,9 @@ class SummeryScreen extends GetView<SummeryController> {
           child: Column(
             children: [
               const SizedBox(height: 40),
-              const TitleBarWidget(title: "Summary"),
+              const TitleBarWidget(
+                title: "Summary",
+              ),
               const SizedBox(height: 25),
               Expanded(
                 child: SingleChildScrollView(
@@ -44,17 +49,20 @@ class SummeryScreen extends GetView<SummeryController> {
                         children: [
                           Flexible(
                             child: ResponsiveText(
-                              text: '2 BHK Furnished',
-                              style: AppTextStyle.txtBold14,
+                              text: controller.selectedService.value.name ?? '',
+                              style: AppTextStyle.txtBold14
+                                  .copyWith(color: AppColors.green[800]),
                             ),
                           ),
                           Flexible(
                             child: ResponsiveText(
-                              text: 'Rs 6000/-',
-                              style: AppTextStyle.txtBold14,
+                              text:
+                                  ' ${controller.selectedService.value.price ?? ''} Rs',
+                              style: AppTextStyle.txtBold14
+                                  .copyWith(color: AppColors.green),
                             ),
                           ),
-                          Card(
+                          /*  Card(
                             elevation: 6,
                             color: Colors.grey[200],
                             shape: RoundedRectangleBorder(
@@ -66,10 +74,10 @@ class SummeryScreen extends GetView<SummeryController> {
                             ),
                             child: const Padding(
                               padding: EdgeInsets.symmetric(
-                                  horizontal: 15.0, vertical: 10),
+                                  horizontal: 10.0, vertical: 5),
                               child: Text('Remove'),
                             ),
-                          ),
+                          ),*/
                         ],
                       ),
                       const SizedBox(height: 20),
@@ -84,20 +92,33 @@ class SummeryScreen extends GetView<SummeryController> {
                         ),
                       ),
                       const SizedBox(height: 10),
+
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Card(
+                          Card(
                             elevation: 6,
                             color: Colors.white,
                             child: Padding(
-                              padding: EdgeInsets.symmetric(
+                              padding: const EdgeInsets.symmetric(
                                   horizontal: 15.0, vertical: 10),
-                              child: const Text('30-09-2024'),
+                              child: Obx(() =>
+                                  Text(controller.selectedDateValue.value)),
                             ),
                           ),
                           const SizedBox(width: 10),
                           GestureDetector(
-                            onTap: () {},
+                            onTap: () {
+                              context.showBottomSheet(
+                                body: ServiceBookingDateBottomSheet(
+                                  isFromSummery: true,
+                                  onDateSelected: (timeSlot) {
+                                    controller.selectedTime.value = timeSlot;
+                                  },
+                                  service: controller.selectedService.value,
+                                ),
+                              );
+                            },
                             child: Card(
                               elevation: 1,
                               color: Colors.white,
@@ -110,7 +131,7 @@ class SummeryScreen extends GetView<SummeryController> {
                               ),
                               child: const Padding(
                                 padding: EdgeInsets.symmetric(
-                                    horizontal: 15.0, vertical: 10),
+                                    horizontal: 10.0, vertical: 6),
                                 child: Row(
                                   children: [
                                     Icon(
@@ -143,13 +164,15 @@ class SummeryScreen extends GetView<SummeryController> {
                       ),
                       const SizedBox(height: 10),
 
-                      const Card(
+                      Card(
                         elevation: 6,
                         color: Colors.white,
                         child: Padding(
-                          padding: EdgeInsets.symmetric(
+                          padding: const EdgeInsets.symmetric(
                               horizontal: 15.0, vertical: 10),
-                          child: Text('11:15 am'),
+                          child: Obx(
+                            () => Text(controller.selectedTime.value),
+                          ),
                         ),
                       ),
 
@@ -191,6 +214,15 @@ class SummeryScreen extends GetView<SummeryController> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              Text(
+                                'Promo Code',
+                                style: AppTextStyle.txtBold16.copyWith(
+                                  letterSpacing: getHorizontalSize(
+                                    3,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 10),
                               Row(
                                 children: [
                                   Expanded(
@@ -212,8 +244,19 @@ class SummeryScreen extends GetView<SummeryController> {
                                   ),
                                   const SizedBox(width: 8),
                                   ElevatedButton(
-                                    onPressed: () {},
-                                    child: const Text('Apply'),
+                                    onPressed: () {
+                                      controller.couponApplied.value = true;
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 6.0, right: 6),
+                                      child: Obx(
+                                        () => Text(
+                                            controller.couponApplied.value
+                                                ? 'Remove '
+                                                : 'Apply'),
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),
@@ -247,8 +290,11 @@ class SummeryScreen extends GetView<SummeryController> {
                         value: '0/-',
                         hasInfoIcon: true,
                       ),
-                      const PaymentSummaryRow(
-                          title: 'Coupon Discount', value: 'NOT APPLIED'),
+                      PaymentSummaryRow(
+                          title: 'Coupon Discount',
+                          value: controller.couponApplied.value
+                              ? '0/-'
+                              : 'NOT APPLIED'),
                       const SizedBox(height: 16),
 
                       const Divider(
@@ -307,12 +353,12 @@ class SummeryScreen extends GetView<SummeryController> {
             ],
           ),
         ),
-        bottomNavigationBar: bottomSectionUI(),
+        bottomNavigationBar: bottomSectionUI(context),
       ),
     );
   }
 
-  Widget bottomSectionUI() {
+  Widget bottomSectionUI(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       height: 130,
@@ -320,7 +366,13 @@ class SummeryScreen extends GetView<SummeryController> {
         children: [
           Row(
             children: [
-              Checkbox(value: true, onChanged: (value) {}),
+              Obx(
+                () => Checkbox(
+                    value: controller.termsAndConditionApply.value,
+                    onChanged: (value) {
+                      controller.termsAndConditionApply.value = value ?? false;
+                    }),
+              ),
               const ResponsiveText(
                 text: 'I agree to the ',
                 maxLines: 1,
@@ -345,7 +397,18 @@ class SummeryScreen extends GetView<SummeryController> {
           ),
           const SizedBox(height: 5),
           NookCornerButton(
-              text: 'Proceed with Advance Payment', onPressed: () {}),
+              text: 'Proceed with Advance Payment',
+              onPressed: () {
+                if (controller.isLogin) {
+                  //    Get.toNamed('/payment');
+                } else {
+                  context.showBottomSheet(
+                    body: ForceLoginBottomSheet(
+                      onloggedIn: (login) {},
+                    ),
+                  );
+                }
+              }),
         ],
       ),
     );

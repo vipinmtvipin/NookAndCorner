@@ -5,6 +5,7 @@ import 'package:customerapp/domain/model/service/service_details_responds.dart';
 import 'package:customerapp/domain/model/service/tag_responds.dart';
 import 'package:customerapp/presentation/common_widgets/conditional_widget.dart';
 import 'package:customerapp/presentation/common_widgets/network_image_view.dart';
+import 'package:customerapp/presentation/common_widgets/nookcorner_button.dart';
 import 'package:customerapp/presentation/common_widgets/responsive_text.dart';
 import 'package:customerapp/presentation/common_widgets/title_bar_widget.dart';
 import 'package:customerapp/presentation/main_screen/main_screen.dart';
@@ -24,71 +25,65 @@ class ServiceScreen extends GetView<ServiceController> {
       top: false,
       bottom: false,
       child: Scaffold(
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 40),
-              const TitleBarWidget(title: "Services"),
-              const SizedBox(height: 25),
-              Text(controller.categoryName, style: AppTextStyle.txtBold16),
-              const SizedBox(height: 8),
-              Text(controller.categoryDescription, style: AppTextStyle.txt12),
-              const SizedBox(height: 20),
-              ConditionalWidget(
-                condition: controller.tagData.value.isNotEmpty,
-                onFalse: const SizedBox.shrink(),
-                child: SizedBox(
-                  height: 50,
-                  child: ListView.builder(
-                    itemCount: controller.tagData.value.length,
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (context, index) {
-                      var tag = controller.tagData.value[index];
-                      return BuildCategoryChip(
-                          tag: tag,
-                          onTap: (tagId) {
-                            controller.getServiceByTagClick(tagId);
-                          });
-                    },
+        body: Obx(
+          () => Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 40),
+                const TitleBarWidget(title: "Services"),
+                const SizedBox(height: 30),
+                Text(controller.categoryName.value.toString(),
+                    style: AppTextStyle.txtBold16),
+                const SizedBox(height: 10),
+                Text(controller.categoryDescription.value.toString(),
+                    style: AppTextStyle.txt12),
+                const SizedBox(height: 20),
+                ConditionalWidget(
+                  condition: controller.tagData.value.isNotEmpty,
+                  onFalse: const SizedBox.shrink(),
+                  child: SizedBox(
+                    height: 50,
+                    child: ListView.builder(
+                      itemCount: controller.tagData.value.length,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, index) {
+                        var tag = controller.tagData.value[index];
+                        return BuildCategoryChip(
+                            tag: tag,
+                            onTap: (tagId) {
+                              controller.getServiceByTagClick(tagId);
+                            });
+                      },
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 5),
-              const Divider(
-                color: Colors.grey,
-                thickness: 0.3,
-                indent: 15,
-                endIndent: 25,
-              ),
-              ConditionalWidget(
-                condition: controller.serviceInfo.value.isNotEmpty,
-                onFalse:
-                    const NotDataFound(message: 'No services available now'),
-                child: Expanded(
-                  child: ListView.builder(
-                    itemCount: controller.serviceInfo.value.length,
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          controller.timeSlots.value = [];
-                          context.showBottomSheet(
-                            body: ServiceBookingDateBottomSheet(
-                              onDateSelected: (timeSlot) {},
-                              service: controller.serviceInfo.value[index],
-                            ),
-                          );
-                        },
-                        child: ServiceCardWidget(
-                            serviceData: controller.serviceInfo.value[index]),
-                      );
-                    },
+                const SizedBox(height: 5),
+                const Divider(
+                  color: Colors.grey,
+                  thickness: 0.3,
+                  indent: 15,
+                  endIndent: 25,
+                ),
+                ConditionalWidget(
+                  condition: controller.serviceInfo.value.isNotEmpty,
+                  onFalse: const Expanded(
+                      child:
+                          NotDataFound(message: 'No services available now')),
+                  child: Expanded(
+                    child: ListView.builder(
+                      itemCount: controller.serviceInfo.value.length,
+                      itemBuilder: (context, index) {
+                        return ServiceCardWidget(
+                            serviceData: controller.serviceInfo.value[index]);
+                      },
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -120,14 +115,25 @@ class BuildCategoryChip extends StatelessWidget {
       child: ChoiceChip(
         side: BorderSide(
           color: tag.isSelected ? Colors.white : Colors.grey,
-          width: 0.1,
+          width: 0.5,
+          style: BorderStyle.solid,
         ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(40),
         ),
+        elevation: 3,
+        checkmarkColor: tag.isSelected ? Colors.white : Colors.grey[800],
         label: Text(tag.categoryTag ?? ''),
         selected: tag.isSelected,
-        onSelected: onTap(tag.catTagId.toString()),
+        onSelected: (select) {
+          if (select) {
+            if (tag.categoryTag == 'All') {
+              onTap("All").call();
+            } else {
+              onTap(tag.catTagId.toString()).call();
+            }
+          }
+        },
         selectedColor: Colors.orange[300],
         backgroundColor: Colors.grey[200],
         labelStyle: TextStyle(
@@ -148,6 +154,7 @@ class ServiceCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.find<ServiceController>();
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5.0),
       child: Card(
@@ -213,6 +220,27 @@ class ServiceCardWidget extends StatelessWidget {
                 style: AppTextStyle.txt12.copyWith(
                   color: AppColors.darkGray,
                 ),
+              ),
+              const SizedBox(height: 15),
+              NookCornerButton(
+                outlinedColor: AppColors.primaryColor,
+                textStyle: AppTextStyle.txtBoldWhite14,
+                text: 'Book Now',
+                height: 46,
+                backGroundColor: AppColors.primaryColor,
+                onPressed: () {
+                  controller.timeSlots.value = [];
+                  controller.selectedService.value = serviceData;
+                  context.showBottomSheet(
+                    body: ServiceBookingDateBottomSheet(
+                      isFromSummery: false,
+                      onDateSelected: (timeSlot) {
+                        controller.selectedTime.value = timeSlot;
+                      },
+                      service: serviceData,
+                    ),
+                  );
+                },
               ),
             ],
           ),

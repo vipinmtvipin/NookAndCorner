@@ -28,8 +28,10 @@ class NetworkImageView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final defaultIcon = CustomImageView(
-      imagePath: Assets.images.nookCornerRound.path,
+      imagePath: Assets.images.nookCornerLogo.path,
       fit: BoxFit.cover,
+      height: 40,
+      width: 40,
     );
 
     return InkWell(

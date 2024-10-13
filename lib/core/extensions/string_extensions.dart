@@ -1,3 +1,4 @@
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
 extension StringUtil on String? {
@@ -27,6 +28,14 @@ extension StringUtil on String? {
     }
 
     return result;
+  }
+
+  showToast(ToastGravity? gravity) {
+    Fluttertoast.showToast(
+        msg: this!,
+        gravity: gravity ?? ToastGravity.BOTTOM,
+        toastLength: Toast.LENGTH_SHORT,
+        timeInSecForIosWeb: 2);
   }
 
   String formatAsDate(String format, {String? fromFormat}) {

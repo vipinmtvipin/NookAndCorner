@@ -52,6 +52,24 @@ class ServiceData {
     required this.tags,
   });
 
+  ServiceData.empty()
+      : servId = 0,
+        name = '',
+        description = '',
+        logo = '',
+        price = '',
+        delete = null,
+        minNoEmployees = 0,
+        maxNoEmployees = 0,
+        minWorkHours = 0,
+        maxWorkHours = 0,
+        categoryId = 0,
+        defaultAssignedUserId = null,
+        status = '',
+        createdAt = DateTime.now(),
+        updatedAt = DateTime.now(),
+        tags = [];
+
   final int? servId;
   final String? name;
   final String? description;

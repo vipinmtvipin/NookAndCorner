@@ -118,8 +118,8 @@ class MainScreen extends GetView<MainScreenController> {
                         const EdgeInsets.only(right: 10, top: 18, bottom: 18),
                     child: GestureDetector(
                       onTap: () {
-                        Get.toNamed(AppRoutes.summeryScreen);
-                        //     Get.toNamed(AppRoutes.loginScreen);
+                        //    Get.toNamed(AppRoutes.loginScreen);
+                        Get.toNamed(AppRoutes.addAddressScreen);
                       },
                       child: Container(
                         width: getSize(60),
@@ -212,7 +212,7 @@ Widget _buildMainScreen() {
                         Get.toNamed(
                           AppRoutes.serviceScreen,
                           arguments: {
-                            'categoryId': item.catid,
+                            'categoryId': item.catid.toString(),
                             'categoryName': item.name,
                             'categoryDescription': item.description,
                           },
