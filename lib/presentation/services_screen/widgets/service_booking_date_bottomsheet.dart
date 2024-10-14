@@ -116,7 +116,7 @@ class ServiceBookingDateBottomSheet extends GetView<ServiceController> {
                               crossAxisCount: 4,
                               crossAxisSpacing: 15,
                               mainAxisSpacing: 15,
-                              mainAxisExtent: 35,
+                              mainAxisExtent: 36,
                             ),
                             itemCount: controller.timeSlots.value.length,
                             itemBuilder: (context, index) {
@@ -140,25 +140,68 @@ class ServiceBookingDateBottomSheet extends GetView<ServiceController> {
                                         .format(item.slotStart!),
                                   );
                                 },
-                                child: Container(
-                                  alignment: Alignment.center,
-                                  height: 35,
-                                  padding: const EdgeInsets.all(1.0),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(
-                                      color: (item.isSelected ?? false)
-                                          ? AppColors.secondaryColor
-                                          : Colors.grey,
-                                      width: (item.isSelected ?? false) ? 2 : 1,
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                      alignment: Alignment.center,
+                                      margin:
+                                          controller.isAfter6PM(item.slotStart)
+                                              ? const EdgeInsets.only(
+                                                  top: 10.0, right: 5)
+                                              : const EdgeInsets.all(0),
+                                      padding: const EdgeInsets.all(1.0),
+                                      decoration: BoxDecoration(
+                                        color: controller
+                                                .isAfter6PM(item.slotStart)
+                                            ? AppColors.secondaryColor
+                                            : Colors.white,
+                                        borderRadius: BorderRadius.circular(4),
+                                        border: Border.all(
+                                          color: (item.isSelected ?? false)
+                                              ? (controller.isAfter6PM(
+                                                      item.slotStart)
+                                                  ? AppColors.green
+                                                  : AppColors.secondaryColor)
+                                              : Colors.grey,
+                                          width: (item.isSelected ?? false)
+                                              ? 2
+                                              : 1,
+                                        ),
+                                      ),
+                                      child: Text(
+                                        DateFormat('hh:mm aa')
+                                            .format(item.slotStart!),
+                                        style: controller
+                                                .isAfter6PM(item.slotStart)
+                                            ? AppTextStyle.txtWhite12
+                                            : AppTextStyle.txt12,
+                                      ),
                                     ),
-                                  ),
-                                  child: Text(
-                                    DateFormat('hh:mm aa')
-                                        .format(item.slotStart!),
-                                    style: AppTextStyle.txt14,
-                                  ),
+                                    ConditionalWidget(
+                                      condition:
+                                          controller.isAfter6PM(item.slotStart),
+                                      onFalse: const SizedBox.shrink(),
+                                      child: Positioned(
+                                        right: 0,
+                                        top: 5,
+                                        child: Container(
+                                          alignment: Alignment.center,
+                                          height: 10,
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 5),
+                                          decoration: BoxDecoration(
+                                            color: Colors.green,
+                                            borderRadius:
+                                                BorderRadius.circular(2),
+                                          ),
+                                          child: Text(
+                                            'Extra',
+                                            style: AppTextStyle.txtWhite6,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               );
                             }),

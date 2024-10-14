@@ -48,7 +48,10 @@ class SettingsScreen extends GetView<SettingsController> {
                         iconData: Icons.info,
                         label: "About us",
                         onTap: () {
-                          //  Get.toNamed(AppRoutes.resultPage);
+                          Get.toNamed(AppRoutes.webScreen, arguments: {
+                            "title": "About us",
+                            "url": "https://www.nookandcorner.org/aboutus"
+                          });
                         },
                       ),
                       const Divider(
@@ -61,7 +64,10 @@ class SettingsScreen extends GetView<SettingsController> {
                         iconData: Icons.privacy_tip_sharp,
                         label: "Privacy Policy",
                         onTap: () {
-                          Get.back();
+                          Get.toNamed(AppRoutes.webScreen, arguments: {
+                            "title": "Privacy Policy",
+                            "url": "https://www.nookandcorner.org/privacy"
+                          });
                         },
                       ),
                       const Divider(
@@ -74,7 +80,7 @@ class SettingsScreen extends GetView<SettingsController> {
                         iconData: Icons.contact_support,
                         label: "Contact us",
                         onTap: () {
-                          Get.back();
+                          Get.toNamed(AppRoutes.contactScreen);
                         },
                       ),
                       const Divider(
@@ -87,7 +93,7 @@ class SettingsScreen extends GetView<SettingsController> {
                         iconData: Icons.rate_review_sharp,
                         label: "Reviews",
                         onTap: () {
-                          Get.back();
+                          Get.toNamed(AppRoutes.reviewScreen);
                         },
                       ),
                     ])),

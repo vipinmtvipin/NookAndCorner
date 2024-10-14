@@ -184,4 +184,14 @@ class ServiceController extends BaseController {
 
     getTimeSlots(request);
   }
+
+  bool isAfter6PM(DateTime? date) {
+    int hour = date?.hour ?? 0;
+    int minute = date?.minute ?? 0;
+    // Check if the time is after 6 PM
+    if (hour >= 18 || (hour == 18 && minute > 0)) {
+      return true;
+    }
+    return false;
+  }
 }

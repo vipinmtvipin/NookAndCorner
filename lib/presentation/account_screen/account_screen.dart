@@ -157,7 +157,7 @@ class AccountScreen extends GetView<AccountController> {
                       const SizedBox(
                         height: 20,
                       ),
-                      ProfileItemsWidget(
+                      MoveClickItemsWidget(
                         iconData: Icons.edit_location,
                         label: "Edit Profile",
                         onTap: () {
@@ -170,11 +170,11 @@ class AccountScreen extends GetView<AccountController> {
                         indent: 15,
                         endIndent: 25,
                       ),
-                      ProfileItemsWidget(
+                      MoveClickItemsWidget(
                         iconData: Icons.home,
                         label: "Address",
                         onTap: () {
-                          Get.back();
+                          Get.toNamed(AppRoutes.addressScreen);
                         },
                       ),
                       const Divider(
@@ -183,11 +183,11 @@ class AccountScreen extends GetView<AccountController> {
                         indent: 15,
                         endIndent: 25,
                       ),
-                      ProfileItemsWidget(
+                      MoveClickItemsWidget(
                         iconData: Icons.note_alt,
                         label: "My Bookings",
                         onTap: () {
-                          Get.back();
+                          Get.toNamed(AppRoutes.myBookingScreen);
                         },
                       ),
                     ])),
@@ -208,16 +208,18 @@ onTapLoginNavigation() {
   );
 }
 
-class ProfileItemsWidget extends StatelessWidget {
+class MoveClickItemsWidget extends StatelessWidget {
   final IconData iconData;
   final String label;
+  final String? subTile;
   final Function() onTap;
 
-  const ProfileItemsWidget({
+  const MoveClickItemsWidget({
     super.key,
     required this.iconData,
     required this.label,
     required this.onTap,
+    this.subTile = "",
   });
 
   @override
@@ -229,10 +231,16 @@ class ProfileItemsWidget extends StatelessWidget {
         size: 20,
         color: AppColors.darkGray,
       ),
-      title: Text(label,
-          overflow: TextOverflow.ellipsis,
+      title: ResponsiveText(
+          text: label,
           textAlign: TextAlign.left,
           style: AppTextStyle.txtBold14.copyWith(color: AppColors.black)),
+      subtitle: subTile!.isNotEmpty
+          ? ResponsiveText(
+              text: subTile ?? "",
+              style: AppTextStyle.txtBold14.copyWith(color: AppColors.gray),
+            )
+          : null,
       trailing: const Icon(
         Icons.arrow_forward_ios,
         size: 15,

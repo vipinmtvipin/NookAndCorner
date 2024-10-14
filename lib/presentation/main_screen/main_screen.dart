@@ -105,8 +105,8 @@ class MainScreen extends GetView<MainScreenController> {
                     child: IconButton(
                       icon: Icon(
                         Icons.account_circle_rounded,
-                        color: Colors.black,
-                        size: getSize(23),
+                        color: AppColors.secondaryColor,
+                        size: getSize(25),
                       ),
                       onPressed: () {
                         Get.toNamed(AppRoutes.accountScreen);
@@ -118,8 +118,7 @@ class MainScreen extends GetView<MainScreenController> {
                         const EdgeInsets.only(right: 10, top: 18, bottom: 18),
                     child: GestureDetector(
                       onTap: () {
-                        //    Get.toNamed(AppRoutes.loginScreen);
-                        Get.toNamed(AppRoutes.addAddressScreen);
+                        Get.toNamed(AppRoutes.loginScreen);
                       },
                       child: Container(
                         width: getSize(60),
@@ -334,7 +333,11 @@ class ServiceCard extends StatelessWidget {
 class NotDataFound extends StatelessWidget {
   final String message;
 
-  const NotDataFound({super.key, required this.message});
+  final double? size;
+
+  final TextStyle? style;
+
+  const NotDataFound({super.key, required this.message, this.size, this.style});
 
   @override
   Widget build(BuildContext context) {
@@ -347,16 +350,16 @@ class NotDataFound extends StatelessWidget {
             Assets.lottie.nodata,
             alignment: Alignment.center,
             fit: BoxFit.contain,
-            height: 90,
-            width: 90,
+            height: size ?? 90,
+            width: size ?? 90,
             repeat: true,
           ),
           const SizedBox(
             height: 2,
           ),
-          Text(
-            message,
-            style: AppTextStyle.txtGray12,
+          ResponsiveText(
+            text: message,
+            style: style ?? AppTextStyle.txtGray12,
           ),
           const SizedBox(
             height: 10,

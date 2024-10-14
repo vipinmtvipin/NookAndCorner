@@ -30,6 +30,13 @@ class NetworkKeys {
   static const String serviceDetails = '/customer-service/cat';
   static const String serviceTag = '/category-tag/category';
   static const String serviceTagItems = '/service/tags';
+  static const String getAddress = '/service/tags';
+  static const String saveAddress = '/service/tags';
+
+  static const String applyCoupon = '/service/tags';
+  static const String summeryDetails = '/service/tags';
+  static const String createOrder = '/service/tags';
+  static const String addOnActivity = '/service/tags';
 }
 
 /// Constants for Session storage

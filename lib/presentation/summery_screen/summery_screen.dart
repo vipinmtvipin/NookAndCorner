@@ -1,4 +1,5 @@
 import 'package:customerapp/core/extensions/sheet_extension.dart';
+import 'package:customerapp/core/routes/app_routes.dart';
 import 'package:customerapp/core/theme/app_text_style.dart';
 import 'package:customerapp/core/theme/color_constant.dart';
 import 'package:customerapp/core/utils/size_utils.dart';
@@ -62,22 +63,27 @@ class SummeryScreen extends GetView<ServiceController> {
                                   .copyWith(color: AppColors.green),
                             ),
                           ),
-                          /*  Card(
-                            elevation: 6,
-                            color: Colors.grey[200],
-                            shape: RoundedRectangleBorder(
-                              side: const BorderSide(
-                                color: Colors.grey,
-                                width: 0.5,
+                          GestureDetector(
+                            onTap: () {
+                              Get.offAndToNamed(AppRoutes.mainScreen);
+                            },
+                            child: Card(
+                              elevation: 6,
+                              color: Colors.grey[200],
+                              shape: RoundedRectangleBorder(
+                                side: const BorderSide(
+                                  color: Colors.grey,
+                                  width: 0.5,
+                                ),
+                                borderRadius: BorderRadius.circular(12.0),
                               ),
-                              borderRadius: BorderRadius.circular(12.0),
+                              child: const Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 10.0, vertical: 5),
+                                child: Text('Remove'),
+                              ),
                             ),
-                            child: const Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 10.0, vertical: 5),
-                              child: Text('Remove'),
-                            ),
-                          ),*/
+                          ),
                         ],
                       ),
                       const SizedBox(height: 20),

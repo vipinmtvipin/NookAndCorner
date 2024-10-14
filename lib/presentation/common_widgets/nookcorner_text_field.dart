@@ -88,7 +88,7 @@ class _DalTextFieldState extends State<NookCornerTextField> {
   bool _obscureText = false;
 
   final textInputFormatters = [
-    LengthLimitingTextInputFormatter(50),
+    LengthLimitingTextInputFormatter(500),
   ];
 
   final idInputFormatters = [

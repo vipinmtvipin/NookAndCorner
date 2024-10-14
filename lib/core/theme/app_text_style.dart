@@ -159,6 +159,13 @@ class AppTextStyle {
       ),
       fontWeight: FontWeight.w400,
       fontFamily: FontFamily.poppins);
+  static TextStyle txtWhite6 = TextStyle(
+      color: AppColors.white,
+      fontSize: getFontSize(
+        6,
+      ),
+      fontWeight: FontWeight.w400,
+      fontFamily: FontFamily.poppins);
 
   static TextStyle txtGray12 = TextStyle(
       color: AppColors.gray,

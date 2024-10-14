@@ -6,13 +6,18 @@ import 'package:customerapp/presentation/address_screen/binding/address_binding.
 import 'package:customerapp/presentation/forget_password_screen/forget_password_screen.dart';
 import 'package:customerapp/presentation/main_screen/binding/main_binding.dart';
 import 'package:customerapp/presentation/main_screen/main_screen.dart';
+import 'package:customerapp/presentation/my_booking_screen/binding/mybooking_binding.dart';
+import 'package:customerapp/presentation/my_booking_screen/mybooking_screen.dart';
 import 'package:customerapp/presentation/payment_section_screens/confirm_address_screen.dart';
 import 'package:customerapp/presentation/services_screen/binding/service_binding.dart';
 import 'package:customerapp/presentation/services_screen/service_screen.dart';
 import 'package:customerapp/presentation/settings_screen/binding/settings_binding.dart';
+import 'package:customerapp/presentation/settings_screen/contact_screen.dart';
+import 'package:customerapp/presentation/settings_screen/reviews_screen.dart';
 import 'package:customerapp/presentation/settings_screen/settings_screen.dart';
 import 'package:customerapp/presentation/signup_screen/signup_screen.dart';
 import 'package:customerapp/presentation/summery_screen/summery_screen.dart';
+import 'package:customerapp/presentation/web_uri_screen/web_screen.dart';
 import 'package:get/get.dart';
 
 import '../../presentation/login_screen/binding/auth_binding.dart';
@@ -33,7 +38,10 @@ class AppRoutes {
   static const String addressScreen = '/address-screen';
   static const String addAddressScreen = '/add-address-screen';
   static const String confirmAddressScreen = '/confirm-address-screen';
-
+  static const String webScreen = '/web-screen';
+  static const String myBookingScreen = '/my-booking-screen';
+  static const String reviewScreen = '/review-screen';
+  static const String contactScreen = '/contact-screen';
   static List<GetPage> pages = [
     GetPage(
       name: initialRoute,
@@ -105,10 +113,32 @@ class AppRoutes {
     GetPage(
       name: addAddressScreen,
       page: () => const AddAddressScreen(),
+      bindings: [
+        AddressBinding(),
+      ],
+    ),
+    GetPage(
+      name: myBookingScreen,
+      page: () => const MyBookingScreen(),
+      bindings: [
+        MyBookingBinding(),
+      ],
     ),
     GetPage(
       name: confirmAddressScreen,
       page: () => const ConfirmAddressScreen(),
+    ),
+    GetPage(
+      name: webScreen,
+      page: () => const WebScreen(),
+    ),
+    GetPage(
+      name: reviewScreen,
+      page: () => const ReviewsScreen(),
+    ),
+    GetPage(
+      name: contactScreen,
+      page: () => const ContactScreen(),
     ),
   ];
 }

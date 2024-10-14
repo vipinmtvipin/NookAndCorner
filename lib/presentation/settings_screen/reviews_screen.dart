@@ -1,16 +1,18 @@
-import 'package:customerapp/core/routes/app_routes.dart';
 import 'package:customerapp/core/theme/color_constant.dart';
-import 'package:customerapp/presentation/address_screen/controller/address_controller.dart';
-import 'package:customerapp/presentation/common_widgets/nookcorner_button.dart';
+import 'package:customerapp/presentation/common_widgets/conditional_widget.dart';
+import 'package:customerapp/presentation/common_widgets/responsive_text.dart';
 import 'package:customerapp/presentation/common_widgets/title_bar_widget.dart';
+import 'package:customerapp/presentation/main_screen/main_screen.dart';
+import 'package:customerapp/presentation/settings_screen/controller/settings_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
 
 import '../../core/theme/app_text_style.dart';
 import '../../core/utils/size_utils.dart';
 
-class AddressScreen extends GetView<AddressController> {
-  const AddressScreen({super.key});
+class ReviewsScreen extends GetView<SettingsController> {
+  const ReviewsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,15 +21,6 @@ class AddressScreen extends GetView<AddressController> {
       bottom: false,
       child: Scaffold(
         body: mobileView(),
-        bottomNavigationBar: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: NookCornerButton(
-            text: 'Add Address',
-            onPressed: () {
-              Get.toNamed(AppRoutes.addAddressScreen);
-            },
-          ),
-        ),
       ),
     );
   }
@@ -39,25 +32,33 @@ class AddressScreen extends GetView<AddressController> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const TitleBarWidget(title: "Address"),
+              const TitleBarWidget(title: "Reviews"),
               Flexible(
-                child: ListView.builder(
-                  itemCount: 5,
-                  itemBuilder: (context, index) {
-                    return AddressCardWidget(
-                        label: 'Address $index', onTap: () {});
-                  },
+                child: ConditionalWidget(
+                  condition: false,
+                  onFalse: NotDataFound(
+                    message: "No Reviews yet, be the first to review.",
+                    size: 150,
+                    style: AppTextStyle.txtBold16,
+                  ),
+                  child: ListView.builder(
+                    itemCount: 5,
+                    itemBuilder: (context, index) {
+                      return ReviewCardWidget(
+                          label: 'Address $index', onTap: () {});
+                    },
+                  ),
                 ),
               ),
             ]));
   }
 }
 
-class AddressCardWidget extends StatelessWidget {
+class ReviewCardWidget extends StatelessWidget {
   final String label;
   final Function() onTap;
 
-  const AddressCardWidget({
+  const ReviewCardWidget({
     super.key,
     required this.label,
     required this.onTap,
@@ -90,23 +91,28 @@ class AddressCardWidget extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Home",
-                        style: AppTextStyle.txtBold16
-                            .copyWith(color: AppColors.secondaryColor)),
-                    SizedBox(
-                      height: 30,
-                      child: Checkbox(
-                        value: true,
-                        onChanged: (selected) {},
-                        activeColor: AppColors.primaryColor,
+                    Expanded(
+                      child: ResponsiveText(
+                          text: "User Name",
+                          style: AppTextStyle.txtBold14
+                              .copyWith(color: AppColors.secondaryColor)),
+                    ),
+                    RatingBarIndicator(
+                      rating: 3.5,
+                      itemBuilder: (context, index) => Icon(
+                        Icons.star,
+                        color: Colors.yellow,
                       ),
-                    )
+                      itemCount: 5,
+                      itemSize: 12.0,
+                      unratedColor: Colors.grey,
+                      direction: Axis.horizontal,
+                    ),
                   ],
                 ),
                 const SizedBox(height: 2),
-                Text("Flat Infos...", style: AppTextStyle.txt14),
-                const SizedBox(height: 2),
-                Text("Details",
+                Text(
+                    "User added review details we can show here, the top items.",
                     style: AppTextStyle.txt14
                         .copyWith(color: AppColors.lightGray)),
               ],

@@ -6,6 +6,7 @@ import 'package:customerapp/domain/repositories/service/service_repository.dart'
 class ServiceSlotsUseCase
     extends ParamUseCase<TimeSlotResponds?, TimeSlotRequest> {
   final ServiceRepository _repo;
+
   ServiceSlotsUseCase(this._repo);
 
   @override
