@@ -82,7 +82,9 @@ class AccountScreen extends GetView<AccountController> {
                                   height: 3,
                                 ),
                                 ResponsiveText(
-                                    text: 'Hi, ${controller.name}',
+                                    text: controller.name.isEmpty
+                                        ? 'Welcome'
+                                        : 'Hi, ${controller.name}',
                                     textAlign: TextAlign.left,
                                     style: AppTextStyle.txtBold12.copyWith(
                                         letterSpacing: getHorizontalSize(
@@ -112,7 +114,9 @@ class AccountScreen extends GetView<AccountController> {
                                           height: 5,
                                         ),
                                         ResponsiveText(
-                                            text: controller.email,
+                                            text: controller.email.isEmpty
+                                                ? 'xxx@xxx.xx'
+                                                : controller.email,
                                             textAlign: TextAlign.left,
                                             style: AppTextStyle.txtBold10
                                                 .copyWith(
@@ -137,7 +141,9 @@ class AccountScreen extends GetView<AccountController> {
                                           height: 5,
                                         ),
                                         ResponsiveText(
-                                            text: '+91 ${controller.mobile}',
+                                            text: controller.name.isEmpty
+                                                ? '+91 xxxxxxxxxx'
+                                                : '+91 ${controller.mobile}',
                                             textAlign: TextAlign.left,
                                             style: AppTextStyle.txtBold10
                                                 .copyWith(
@@ -161,7 +167,7 @@ class AccountScreen extends GetView<AccountController> {
                         iconData: Icons.edit_location,
                         label: "Edit Profile",
                         onTap: () {
-                          //  Get.toNamed(AppRoutes.resultPage);
+                          Get.toNamed(AppRoutes.editAccountScreen);
                         },
                       ),
                       const Divider(

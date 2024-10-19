@@ -30,13 +30,14 @@ class NetworkKeys {
   static const String serviceDetails = '/customer-service/cat';
   static const String serviceTag = '/category-tag/category';
   static const String serviceTagItems = '/service/tags';
-  static const String getAddress = '/service/tags';
-  static const String saveAddress = '/service/tags';
+  static const String getAddress = '/';
+  static const String saveAddress = '/';
 
-  static const String applyCoupon = '/service/tags';
-  static const String summeryDetails = '/service/tags';
-  static const String createOrder = '/service/tags';
-  static const String addOnActivity = '/service/tags';
+  static const String applyCoupon = '/promotion/validate';
+  static const String metaData = '/meta-values';
+  static const String createJobLogin = '/job/V1/login';
+  static const String createJob = '/job/V1';
+  static const String addOns = '/addons';
 }
 
 /// Constants for Session storage
@@ -48,6 +49,7 @@ class StorageKeys {
   static const String loggedIn = 'loggedIn';
   static const String firstLogin = 'firstLogin';
   static const String username = 'username';
+  static const String userId = 'userId';
   static const String email = 'email';
   static const String mobile = 'mobile';
   static const String address = 'address';

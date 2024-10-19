@@ -1,18 +1,19 @@
-import 'package:customerapp/core/extensions/string_extensions.dart';
 import 'package:customerapp/core/routes/app_routes.dart';
 import 'package:customerapp/core/theme/color_constant.dart';
+import 'package:customerapp/generated/assets.gen.dart';
 import 'package:customerapp/presentation/address_screen/controller/address_controller.dart';
 import 'package:customerapp/presentation/common_widgets/nookcorner_button.dart';
 import 'package:customerapp/presentation/common_widgets/title_bar_widget.dart';
 import 'package:customerapp/presentation/summery_screen/summery_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 
 import '../../core/theme/app_text_style.dart';
 import '../../core/utils/size_utils.dart';
 
-class ConfirmAddressScreen extends GetView<AddressController> {
-  const ConfirmAddressScreen({super.key});
+class PaymentStatusScreen extends GetView<AddressController> {
+  const PaymentStatusScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,10 +25,10 @@ class ConfirmAddressScreen extends GetView<AddressController> {
         bottomNavigationBar: Padding(
           padding: const EdgeInsets.all(16.0),
           child: NookCornerButton(
+            backGroundColor: AppColors.success,
             text: 'Confirm Address',
             onPressed: () {
-              Get.offAndToNamed(AppRoutes.mainScreen);
-              'Service added successfully'.showToast();
+              Get.toNamed(AppRoutes.confirmAddressScreen);
             },
           ),
         ),
@@ -42,21 +43,45 @@ class ConfirmAddressScreen extends GetView<AddressController> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const TitleBarWidget(title: "Confirm Address"),
-              SizedBox(height: 15),
-              Expanded(
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: 4,
-                  itemBuilder: (context, index) {
-                    return AddressCardWidget(label: '$index', onTap: () {});
-                  },
-                ),
+              TitleBarWidget(
+                title: "Payment",
+                onBack: () {
+                  Get.offAndToNamed(AppRoutes.mainScreen);
+                },
               ),
+              Flexible(
+                  child: Column(
+                children: [
+                  SizedBox(height: getVerticalSize(10)),
+                  Lottie.asset(
+                    Assets.lottie.paymentSuccess,
+                    alignment: Alignment.center,
+                    fit: BoxFit.contain,
+                    height: 200,
+                    width: 200,
+                    repeat: true,
+                  ),
+                  SizedBox(height: getVerticalSize(10)),
+                  Text(
+                    'Payment Success',
+                    style: AppTextStyle.txtBold24.copyWith(
+                      color: AppColors.success,
+                    ),
+                  ),
+                  SizedBox(height: getVerticalSize(10)),
+                  Text(
+                    textAlign: TextAlign.center,
+                    'A confirmation email has been sent to your email address',
+                    style: AppTextStyle.txt14.copyWith(
+                      color: AppColors.black,
+                    ),
+                  ),
+                ],
+              )),
               // Payment Summary Section
-              const SizedBox(height: 20),
+              SizedBox(height: getVerticalSize(10)),
               Text(
-                'Service name Here',
+                'Order Details',
                 style: AppTextStyle.txtBold16.copyWith(
                   letterSpacing: getHorizontalSize(
                     3,
@@ -64,33 +89,27 @@ class ConfirmAddressScreen extends GetView<AddressController> {
                 ),
               ),
               const SizedBox(height: 15),
-              const PaymentSummaryRow(title: 'Service total', value: '6000/-'),
+              const PaymentSummaryRow(title: 'Name', value: 'User name'),
               const PaymentSummaryRow(
-                title: 'Convenience Fee',
-                value: '0/-',
-                hasInfoIcon: true,
+                title: 'Service Booked',
+                value: 'Service Name',
+                hasInfoIcon: false,
               ),
               const PaymentSummaryRow(
-                  title: 'Coupon Discount', value: 'NOT APPLIED'),
-              const SizedBox(height: 8),
+                  title: 'Service Date', value: '12th June 2021'),
 
-              const Divider(
-                height: 0.2,
-                color: Colors.black26,
-              ),
-              const SizedBox(height: 8),
-              const PaymentSummaryRow(
-                title: 'Grand Total',
-                value: '6000/-',
-                isBold: false,
-              ),
-              const SizedBox(height: 2),
               const PaymentSummaryRow(
                 title: 'Advance Amount',
                 value: '600/-',
                 isBold: false,
-                valueColor: AppColors.secondaryColor,
+                valueColor: AppColors.black,
               ),
+              const PaymentSummaryRow(
+                title: 'Status',
+                value: 'Completed',
+                isBold: false,
+              ),
+              const SizedBox(height: 5),
             ]));
   }
 }
@@ -138,7 +157,7 @@ class AddressCardWidget extends StatelessWidget {
                     SizedBox(
                       height: 30,
                       child: Checkbox(
-                        value: label == "1" ? true : false,
+                        value: true,
                         onChanged: (selected) {},
                         activeColor: AppColors.primaryColor,
                       ),

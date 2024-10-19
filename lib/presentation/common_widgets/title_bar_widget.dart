@@ -2,6 +2,7 @@ import 'package:customerapp/core/theme/app_text_style.dart';
 import 'package:customerapp/core/theme/color_constant.dart';
 import 'package:customerapp/core/utils/size_utils.dart';
 import 'package:customerapp/presentation/common_widgets/custom_icon_button.dart';
+import 'package:customerapp/presentation/common_widgets/responsive_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -38,8 +39,8 @@ class TitleBarWidget extends StatelessWidget {
               ),
             )),
         Expanded(
-          child: Text(title,
-              overflow: TextOverflow.ellipsis,
+          child: ResponsiveText(
+              text: title,
               textAlign: TextAlign.center,
               style: AppTextStyle.txtBold18.copyWith(
                   letterSpacing: getHorizontalSize(

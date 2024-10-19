@@ -38,8 +38,25 @@ class ServiceScreen extends GetView<ServiceController> {
                 Text(controller.categoryName.value.toString(),
                     style: AppTextStyle.txtBold16),
                 const SizedBox(height: 10),
-                Text(controller.categoryDescription.value.toString(),
-                    style: AppTextStyle.txt12),
+                SizedBox(
+                  height: controller.serviceInfo.value.isNotEmpty
+                      ? (controller.categoryDescription.value
+                                  .toString()
+                                  .length >
+                              100
+                          ? Get.height * 0.15
+                          : Get.height * 0.05)
+                      : (controller.categoryDescription.value
+                                  .toString()
+                                  .length >
+                              100
+                          ? Get.height * 0.25
+                          : Get.height * 0.05),
+                  child: SingleChildScrollView(
+                    child: Text(controller.categoryDescription.value.toString(),
+                        style: AppTextStyle.txt12),
+                  ),
+                ),
                 const SizedBox(height: 20),
                 ConditionalWidget(
                   condition: controller.tagData.value.isNotEmpty,
@@ -47,6 +64,8 @@ class ServiceScreen extends GetView<ServiceController> {
                   child: SizedBox(
                     height: 50,
                     child: ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
                       itemCount: controller.tagData.value.length,
                       scrollDirection: Axis.horizontal,
                       itemBuilder: (context, index) {

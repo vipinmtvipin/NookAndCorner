@@ -29,14 +29,14 @@ class DioExceptionData implements Exception {
         errorMessage = 'Unexpected error occurred.';
         break;
       default:
-        errorMessage = 'Something went wrong';
+        _handleStatusCode(dioError.response);
         break;
     }
   }
 
   String _handleStatusCode(Response<dynamic>? response) {
     if (response == null) {
-      return 'No response from server';
+      return 'Something went wrong';
     }
     final LoginResponds data = loginRespondsFromJson(response.toString());
 
@@ -51,6 +51,8 @@ class DioExceptionData implements Exception {
         return 'The requested resource does not exist.';
       case 405:
         return 'Method not allowed. Please check the Allow header for the allowed HTTP methods.';
+      case 409:
+        return data.message ?? 'Conflict';
       case 415:
         return 'Unsupported media type. The requested content type or version number is invalid.';
       case 422:
@@ -60,7 +62,7 @@ class DioExceptionData implements Exception {
       case 500:
         return 'Internal server error.';
       default:
-        return 'Oops something went wrong!';
+        return data.message ?? 'Oops something went wrong!';
     }
   }
 

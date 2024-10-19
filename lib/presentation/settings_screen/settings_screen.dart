@@ -45,22 +45,6 @@ class SettingsScreen extends GetView<SettingsController> {
                         height: 30,
                       ),
                       ProfileItemsWidget(
-                        iconData: Icons.info,
-                        label: "About us",
-                        onTap: () {
-                          Get.toNamed(AppRoutes.webScreen, arguments: {
-                            "title": "About us",
-                            "url": "https://www.nookandcorner.org/aboutus"
-                          });
-                        },
-                      ),
-                      const Divider(
-                        color: AppColors.lightGray,
-                        thickness: 0.3,
-                        indent: 15,
-                        endIndent: 25,
-                      ),
-                      ProfileItemsWidget(
                         iconData: Icons.privacy_tip_sharp,
                         label: "Privacy Policy",
                         onTap: () {

@@ -1,20 +1,14 @@
-import 'package:customerapp/core/localization/localization_keys.dart';
 import 'package:customerapp/core/theme/app_text_style.dart';
 import 'package:customerapp/core/theme/color_constant.dart';
 import 'package:customerapp/presentation/common_widgets/network_image_view.dart';
 import 'package:customerapp/presentation/common_widgets/nookcorner_button.dart';
 import 'package:customerapp/presentation/common_widgets/nookcorner_text_field.dart';
-import 'package:customerapp/presentation/common_widgets/responsive_text.dart';
-import 'package:customerapp/presentation/services_screen/controller/service_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class ForceLoginBottomSheet extends GetView<ServiceController> {
-  final Function(bool) onLoggedIn;
-
-  const ForceLoginBottomSheet({
+class ReviewBottomSheet extends StatelessWidget {
+  const ReviewBottomSheet({
     super.key,
-    required this.onLoggedIn,
   });
 
   @override
@@ -26,31 +20,20 @@ class ForceLoginBottomSheet extends GetView<ServiceController> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          ResponsiveText(
-            text: 'Hi, Let us know who you are',
+          Text(
+            'Add your review',
             textAlign: TextAlign.center,
             style: AppTextStyle.txtBold18,
           ),
-          const SizedBox(height: 30),
-          NookCornerTextField(
-            textInputAction: TextInputAction.next,
-            controller: controller.phoneController,
-            textStyle: AppTextStyle.txt16,
-            title: LocalizationKeys.phoneNumber.tr,
-            type: NookCornerTextFieldType.mobile,
-            isFormField: true,
-            validator: (value) {
-              return null;
-            },
-            autoValidate: true,
-          ),
-          const SizedBox(height: 5),
+          const SizedBox(height: 20),
           NookCornerTextField(
             textInputAction: TextInputAction.done,
-            controller: controller.emailController,
-            title: LocalizationKeys.email.tr,
-            textStyle: AppTextStyle.txt16,
-            type: NookCornerTextFieldType.email,
+            maxLines: 6,
+            minLines: 3,
+            // controller: controller.emailController,
+            hint: 'Write your review here',
+            textStyle: AppTextStyle.txt14,
+            type: NookCornerTextFieldType.text,
             isFormField: true,
             validator: (value) {
               return null;
@@ -59,16 +42,14 @@ class ForceLoginBottomSheet extends GetView<ServiceController> {
           ),
           const SizedBox(height: 10),
           NookCornerButton(
-            height: 55,
             outlinedColor: AppColors.primaryColor,
             textStyle: AppTextStyle.txtBoldWhite14,
-            text: 'Continue',
+            text: 'Save',
             backGroundColor: AppColors.primaryColor,
             onPressed: () {
-              onLoggedIn(true);
+              Get.back();
             },
           ),
-          const SizedBox(height: 5),
         ],
       ),
     );

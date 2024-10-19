@@ -93,4 +93,19 @@ class CityData {
         "delete": delete,
         "status": status,
       };
+
+  static empty() {
+    return CityData(
+      cityId: 0,
+      cityName: '',
+      location: '',
+      image: '',
+      east: '',
+      west: '',
+      south: '',
+      north: '',
+      delete: '',
+      status: '',
+    );
+  }
 }

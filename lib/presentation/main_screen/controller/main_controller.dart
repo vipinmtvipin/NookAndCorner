@@ -77,7 +77,7 @@ class MainScreenController extends BaseController {
             ),
             CityBottomSheet(
               city: cityInfo.value,
-              height: cityInfo.value.length > 3 ? 500 : 280,
+              height: cityInfo.value.length > 3 ? 600 : 280,
               padding: const EdgeInsets.only(
                   top: 40, left: 12, right: 12, bottom: 5),
               onCitySelected: (city) {

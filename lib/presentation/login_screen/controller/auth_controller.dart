@@ -164,12 +164,10 @@ class AuthController extends BaseController {
   }
 
   void _onOnTapLogInSuccess(LoginData? responds) {
-    sessionStorage.write(
-        StorageKeys.username, responds?.user?.username ?? "User");
-    sessionStorage.write(
-        StorageKeys.email, responds?.user?.email ?? "xxx@xxx.xx");
-    sessionStorage.write(
-        StorageKeys.mobile, responds?.user?.phone ?? "xxxxxxxxxx");
+    sessionStorage.write(StorageKeys.username, responds?.user?.username ?? "");
+    sessionStorage.write(StorageKeys.userId, responds?.user?.userId ?? "");
+    sessionStorage.write(StorageKeys.email, responds?.user?.email ?? "");
+    sessionStorage.write(StorageKeys.mobile, responds?.user?.phone ?? "");
     sessionStorage.write(
         StorageKeys.address, responds?.user?.primaryAddressId ?? "");
     Get.offAndToNamed(AppRoutes.mainScreen);

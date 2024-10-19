@@ -38,7 +38,11 @@ class MyBookingScreen extends GetView<MyBookingController> {
                   iconData: Icons.schedule_sharp,
                   label: "Scheduled Booking",
                   subTile: "Check your scheduled booking",
-                  onTap: () {}),
+                  onTap: () {
+                    Get.toNamed(AppRoutes.bookingListingScreen, arguments: {
+                      "title": "Scheduled Booking",
+                    });
+                  }),
               const Divider(
                 color: AppColors.lightGray,
                 thickness: 0.3,

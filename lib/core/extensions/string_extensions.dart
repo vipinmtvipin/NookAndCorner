@@ -30,7 +30,7 @@ extension StringUtil on String? {
     return result;
   }
 
-  showToast(ToastGravity? gravity) {
+  showToast({ToastGravity? gravity}) {
     Fluttertoast.showToast(
         msg: this!,
         gravity: gravity ?? ToastGravity.BOTTOM,

@@ -1,4 +1,5 @@
 import 'package:customerapp/core/theme/color_constant.dart';
+import 'package:customerapp/generated/assets.gen.dart';
 import 'package:customerapp/presentation/common_widgets/nookcorner_button.dart';
 import 'package:customerapp/presentation/common_widgets/nookcorner_text_field.dart';
 import 'package:customerapp/presentation/common_widgets/title_bar_widget.dart';
@@ -53,6 +54,9 @@ class ContactScreen extends GetView<SettingsController> {
                           padding: const EdgeInsets.all(20.0),
                           child: Column(
                             children: [
+                              Assets.images.nookCornerRound
+                                  .image(width: 60, height: 60),
+                              const SizedBox(height: 10),
                               NookCornerTextField(
                                 textInputAction: TextInputAction.next,
                                 //  controller: controller.phoneController,

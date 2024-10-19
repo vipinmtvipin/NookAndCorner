@@ -223,11 +223,12 @@ class ServiceBookingDateBottomSheet extends GetView<ServiceController> {
                           } else {
                             if (controller.selectedTime.value.isEmpty) {
                               'Please select a time slot'
-                                  .showToast(ToastGravity.CENTER);
+                                  .showToast(gravity: ToastGravity.CENTER);
                               return;
                             }
                             Get.back();
                             Get.toNamed(AppRoutes.summeryScreen);
+                            controller.getSummeryInfo();
                           }
                         },
                       ),
@@ -249,7 +250,7 @@ class ServiceBookingDateBottomSheet extends GetView<ServiceController> {
       firstDate: DateTime.now(),
       lastDate: DateTime(2101),
     );
-    if (picked != null && picked != controller.selectedDate.value) {
+    if (picked != null) {
       controller.dateSelected(service, picked);
     }
   }

@@ -25,7 +25,9 @@ class AddAddressScreen extends GetView<AddressController> {
           padding: const EdgeInsets.all(16.0),
           child: NookCornerButton(
             text: 'Save Address',
-            onPressed: () {},
+            onPressed: () {
+              Get.back();
+            },
           ),
         ),
       ),

@@ -1,5 +1,6 @@
 import 'package:customerapp/presentation/account_screen/account_screen.dart';
 import 'package:customerapp/presentation/account_screen/binding/account_binding.dart';
+import 'package:customerapp/presentation/account_screen/edit_account_screen.dart';
 import 'package:customerapp/presentation/address_screen/add_address_screen.dart';
 import 'package:customerapp/presentation/address_screen/address_screen.dart';
 import 'package:customerapp/presentation/address_screen/binding/address_binding.dart';
@@ -7,8 +8,11 @@ import 'package:customerapp/presentation/forget_password_screen/forget_password_
 import 'package:customerapp/presentation/main_screen/binding/main_binding.dart';
 import 'package:customerapp/presentation/main_screen/main_screen.dart';
 import 'package:customerapp/presentation/my_booking_screen/binding/mybooking_binding.dart';
+import 'package:customerapp/presentation/my_booking_screen/booking_details_screen.dart';
+import 'package:customerapp/presentation/my_booking_screen/booking_list_screen.dart';
 import 'package:customerapp/presentation/my_booking_screen/mybooking_screen.dart';
 import 'package:customerapp/presentation/payment_section_screens/confirm_address_screen.dart';
+import 'package:customerapp/presentation/payment_section_screens/payment_status_screen.dart';
 import 'package:customerapp/presentation/services_screen/binding/service_binding.dart';
 import 'package:customerapp/presentation/services_screen/service_screen.dart';
 import 'package:customerapp/presentation/settings_screen/binding/settings_binding.dart';
@@ -42,6 +46,10 @@ class AppRoutes {
   static const String myBookingScreen = '/my-booking-screen';
   static const String reviewScreen = '/review-screen';
   static const String contactScreen = '/contact-screen';
+  static const String editAccountScreen = '/edit-account-screen';
+  static const String bookingListingScreen = '/booking-listing-screen';
+  static const String bookingDetailsScreen = '/booking-details-screen';
+  static const String paymentStatusScreen = '/payment-status-screen';
   static List<GetPage> pages = [
     GetPage(
       name: initialRoute,
@@ -86,6 +94,10 @@ class AppRoutes {
       ],
     ),
     GetPage(
+      name: editAccountScreen,
+      page: () => const EditAccountScreen(),
+    ),
+    GetPage(
       name: settingsScreen,
       page: () => const SettingsScreen(),
       bindings: [
@@ -102,6 +114,10 @@ class AppRoutes {
     GetPage(
       name: summeryScreen,
       page: () => const SummeryScreen(),
+    ),
+    GetPage(
+      name: paymentStatusScreen,
+      page: () => const PaymentStatusScreen(),
     ),
     GetPage(
       name: addressScreen,
@@ -123,6 +139,14 @@ class AppRoutes {
       bindings: [
         MyBookingBinding(),
       ],
+    ),
+    GetPage(
+      name: bookingListingScreen,
+      page: () => const BookingListingScreen(),
+    ),
+    GetPage(
+      name: bookingDetailsScreen,
+      page: () => const BookingDetailsScreen(),
     ),
     GetPage(
       name: confirmAddressScreen,

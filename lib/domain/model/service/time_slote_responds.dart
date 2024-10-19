@@ -69,4 +69,12 @@ class TimeSlotData {
         "slot_start": slotStart?.toIso8601String(),
         "supervisors": supervisors?.map((x) => x).toList(),
       };
+
+  static empty() {
+    return TimeSlotData(
+      slotStart: DateTime.now(),
+      supervisors: [],
+      isSelected: false,
+    );
+  }
 }
