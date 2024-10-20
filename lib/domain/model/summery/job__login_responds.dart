@@ -148,12 +148,12 @@ class JobCreated {
   final int? assignedUserId;
   final int? promotionId;
   final String? txnId;
-  final double? price;
+  final int? price;
   final int? convenienceFee;
   final String? conveniencePercent;
-  final double? advanceAmount;
+  final int? advanceAmount;
   final String? advancePercent;
-  final double? promotionAmount;
+  final int? promotionAmount;
   final String? advStatus;
   final int? goldenHoursCharge;
   final int? overNightHikePercentage;

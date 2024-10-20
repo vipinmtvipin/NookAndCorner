@@ -14,6 +14,7 @@ import 'package:customerapp/domain/usecases/signup/mobile_signup_use_case.dart';
 import 'package:customerapp/domain/usecases/signup/signup_use_case.dart';
 import 'package:customerapp/presentation/base_controller.dart';
 import 'package:customerapp/presentation/main_screen/controller/main_controller.dart';
+import 'package:customerapp/presentation/services_screen/controller/service_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -59,6 +60,16 @@ class AuthController extends BaseController {
   var isValidEmail = false.obs;
   var isValidPhone = false.obs;
   var isPhoneLogin = true.obs;
+
+  var navigateFrom = "";
+  @override
+  void onInit() {
+    super.onInit();
+
+    final arguments = Get.arguments as Map<String, dynamic>;
+
+    navigateFrom = arguments['from'] ?? '';
+  }
 
   @override
   void onClose() {
@@ -170,7 +181,12 @@ class AuthController extends BaseController {
     sessionStorage.write(StorageKeys.mobile, responds?.user?.phone ?? "");
     sessionStorage.write(
         StorageKeys.address, responds?.user?.primaryAddressId ?? "");
-    Get.offAndToNamed(AppRoutes.mainScreen);
+
+    if (navigateFrom == AppRoutes.summeryScreen) {
+      Get.offAndToNamed(AppRoutes.summeryScreen);
+    } else {
+      Get.offAndToNamed(AppRoutes.mainScreen);
+    }
   }
 
   bool onPhoneChanged() {
@@ -188,6 +204,7 @@ class AuthController extends BaseController {
 
     try {
       Get.find<MainScreenController>().loggedIn.value = true;
+      Get.find<ServiceController>().isLogin = true;
     } catch (e) {
       Logger.e("Error in controller", e);
     }

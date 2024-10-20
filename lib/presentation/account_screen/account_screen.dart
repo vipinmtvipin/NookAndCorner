@@ -30,7 +30,10 @@ class AccountScreen extends GetView<AccountController> {
               textStyle: AppTextStyle.txtBoldWhite14,
               text: 'Logout',
               backGroundColor: AppColors.primaryColor,
-              onPressed: onTapLoginNavigation),
+              onPressed: () {
+                controller.sessionStorage.erase();
+                onTapLoginNavigation();
+              }),
         ),
       ),
     );
@@ -141,7 +144,7 @@ class AccountScreen extends GetView<AccountController> {
                                           height: 5,
                                         ),
                                         ResponsiveText(
-                                            text: controller.name.isEmpty
+                                            text: controller.mobile.isEmpty
                                                 ? '+91 xxxxxxxxxx'
                                                 : '+91 ${controller.mobile}',
                                             textAlign: TextAlign.left,
@@ -209,9 +212,9 @@ onTapArrowLeft() {
 }
 
 onTapLoginNavigation() {
-  Get.offAndToNamed(
-    AppRoutes.loginScreen,
-  );
+  Get.offAndToNamed(AppRoutes.loginScreen, arguments: {
+    'from': AppRoutes.accountScreen,
+  });
 }
 
 class MoveClickItemsWidget extends StatelessWidget {

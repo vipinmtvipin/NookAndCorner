@@ -368,13 +368,19 @@ class SummeryScreen extends GetView<ServiceController> {
                           title: 'Service total',
                           value: controller.selectedService.value.price ?? '',
                         ),
+
                         Obx(
-                          () => PaymentSummaryRow(
-                            title: 'Convenience Fee',
-                            value: controller.convenienceFee.value.toString(),
-                            hasInfoIcon: true,
-                          ),
+                          () => ConditionalWidget(
+                              condition: controller.convenienceFee.value > 0,
+                              onFalse: SizedBox(
+                                height: 2,
+                              ),
+                              child: PaymentSummaryRow(
+                                  title: 'Convenience Fee',
+                                  value: controller.convenienceFee.value
+                                      .toString())),
                         ),
+
                         Obx(
                           () => PaymentSummaryRow(
                               title: 'Coupon Discount',

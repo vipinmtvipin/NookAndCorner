@@ -84,14 +84,3 @@ class MyBookingScreen extends GetView<MyBookingController> {
     );
   }
 }
-
-/// Navigates to the previous screen.
-onTapArrowLeft() {
-  Get.back();
-}
-
-onTapLoginNavigation() {
-  Get.toNamed(
-    AppRoutes.loginScreen,
-  );
-}

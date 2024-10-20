@@ -12,13 +12,13 @@ class JobResponds {
 
   final bool? success;
   final String? message;
-  final JobInfoData? data;
+  final Data? data;
 
   factory JobResponds.fromJson(Map<String, dynamic> json) {
     return JobResponds(
       success: json["success"],
       message: json["message"],
-      data: json["data"] == null ? null : JobInfoData.fromJson(json["data"]),
+      data: json["data"] == null ? null : Data.fromJson(json["data"]),
     );
   }
 
@@ -29,23 +29,30 @@ class JobResponds {
       };
 
   static JobResponds empty() {
-    return JobResponds(success: false, message: '', data: null);
+    return JobResponds(
+      success: false,
+      message: "",
+      data: null,
+    );
   }
 }
 
-class JobInfoData {
-  JobInfoData({
+class Data {
+  Data({
+    required this.accessToken,
     required this.jobData,
     required this.userData,
     required this.jobCreated,
   });
 
+  final String? accessToken;
   final JobData? jobData;
   final UserData? userData;
   final JobCreated? jobCreated;
 
-  factory JobInfoData.fromJson(Map<String, dynamic> json) {
-    return JobInfoData(
+  factory Data.fromJson(Map<String, dynamic> json) {
+    return Data(
+      accessToken: json["accessToken"],
       jobData:
           json["jobData"] == null ? null : JobData.fromJson(json["jobData"]),
       userData:
@@ -57,6 +64,7 @@ class JobInfoData {
   }
 
   Map<String, dynamic> toJson() => {
+        "accessToken": accessToken,
         "jobData": jobData?.toJson(),
         "userData": userData?.toJson(),
         "jobCreated": jobCreated?.toJson(),
@@ -116,14 +124,14 @@ class JobCreated {
   final int? userId;
   final int? servicePriceId;
   final int? assignedUserId;
-  final int? promotionId;
-  final double? price;
+  final dynamic promotionId;
+  final int? price;
   final String? txnId;
   final int? convenienceFee;
   final String? conveniencePercent;
-  final double? advanceAmount;
+  final int? advanceAmount;
   final String? advancePercent;
-  final double? promotionAmount;
+  final dynamic promotionAmount;
   final String? advStatus;
   final bool? isGolderHour;
   final int? goldenHoursCharge;
@@ -276,18 +284,18 @@ class JobData {
   final int? userId;
   final int? servicePriceId;
   final int? assignedUserId;
-  final int? promotionId;
-  final double? price;
+  final dynamic promotionId;
+  final int? price;
   final String? txnId;
   final int? convenienceFee;
-  final String? conveniencePercent;
-  final double? advanceAmount;
-  final String? advancePercent;
-  final double? promotionAmount;
+  final int? conveniencePercent;
+  final int? advanceAmount;
+  final int? advancePercent;
+  final dynamic promotionAmount;
   final String? advStatus;
   final bool? isGolderHour;
   final int? goldenHoursCharge;
-  final String? overNightHikePercentage;
+  final int? overNightHikePercentage;
   final int? serviceId;
   final DateTime? dateString;
   final int? workerCount;
@@ -353,12 +361,14 @@ class UserData {
     required this.email,
     required this.phone,
     required this.userGroupId,
+    required this.userId,
   });
 
   final String? username;
   final String? email;
   final String? phone;
   final int? userGroupId;
+  final int? userId;
 
   factory UserData.fromJson(Map<String, dynamic> json) {
     return UserData(
@@ -366,6 +376,7 @@ class UserData {
       email: json["email"],
       phone: json["phone"],
       userGroupId: json["userGroupId"],
+      userId: json["userId"],
     );
   }
 
@@ -374,5 +385,6 @@ class UserData {
         "email": email,
         "phone": phone,
         "userGroupId": userGroupId,
+        "userId": userId,
       };
 }

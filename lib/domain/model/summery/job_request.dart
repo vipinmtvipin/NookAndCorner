@@ -24,22 +24,22 @@ class JobRequest {
   });
 
   final List<AddOnAdd> addOns;
-  final String? advanceAmount;
-  final String? advancePercent;
+  final double? advanceAmount;
+  final double? advancePercent;
   final int? cityId;
-  final String? convenienceFee;
-  final String? conveniencePercent;
+  final double? convenienceFee;
+  final double? conveniencePercent;
   final String? email;
-  final String? goldenHoursCharge;
+  final double? goldenHoursCharge;
   final bool? isGolderHour;
   final DateTime? jobDate;
   final DateTime? jobDateOnly;
   final String? name;
-  final String? overNightHikePercentage;
+  final double? overNightHikePercentage;
   final String? phoneNumber;
-  final String? price;
-  final String? promotionAmount;
-  final String? promotionId;
+  final double? price;
+  final double? promotionAmount;
+  final int? promotionId;
   final String? promotionStatus;
   final String? serviceId;
   final List<int> supervisors;
@@ -47,22 +47,22 @@ class JobRequest {
 
   JobRequest copyWith({
     List<AddOnAdd>? addOns,
-    String? advanceAmount,
-    String? advancePercent,
+    double? advanceAmount,
+    double? advancePercent,
     int? cityId,
-    String? convenienceFee,
-    String? conveniencePercent,
+    double? convenienceFee,
+    double? conveniencePercent,
     String? email,
-    String? goldenHoursCharge,
+    double? goldenHoursCharge,
     bool? isGolderHour,
     DateTime? jobDate,
     DateTime? jobDateOnly,
     String? name,
-    String? overNightHikePercentage,
+    double? overNightHikePercentage,
     String? phoneNumber,
-    String? price,
-    String? promotionAmount,
-    String? promotionId,
+    double? price,
+    double? promotionAmount,
+    int? promotionId,
     String? promotionStatus,
     String? serviceId,
     List<int>? supervisors,
@@ -164,13 +164,13 @@ class AddOnAdd {
   });
 
   final int? addonId;
-  final String? addonPrice;
+  final double? addonPrice;
   final int? quantity;
   final int? serviceId;
 
   AddOnAdd copyWith({
     int? addonId,
-    String? addonPrice,
+    double? addonPrice,
     int? quantity = 1,
     int? serviceId,
   }) {

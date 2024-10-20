@@ -118,7 +118,9 @@ class MainScreen extends GetView<MainScreenController> {
                         const EdgeInsets.only(right: 10, top: 18, bottom: 18),
                     child: GestureDetector(
                       onTap: () {
-                        Get.toNamed(AppRoutes.loginScreen);
+                        Get.toNamed(AppRoutes.loginScreen, arguments: {
+                          'from': AppRoutes.mainScreen,
+                        });
                       },
                       child: Container(
                         width: getSize(60),

@@ -1,6 +1,9 @@
 import 'package:customerapp/core/constants/constants.dart';
 import 'package:customerapp/core/localization/localization_keys.dart';
 import 'package:customerapp/core/network/connectivity_service.dart';
+import 'package:customerapp/core/routes/app_routes.dart';
+import 'package:customerapp/core/theme/color_constant.dart';
+import 'package:customerapp/core/utils/logger.dart';
 import 'package:customerapp/domain/model/home/city_responds.dart';
 import 'package:customerapp/domain/model/service/service_details_responds.dart';
 import 'package:customerapp/domain/model/service/tag_responds.dart';
@@ -25,6 +28,7 @@ import 'package:customerapp/domain/usecases/summery/create_login_job_use_case.da
 import 'package:customerapp/domain/usecases/summery/meta_use_case.dart';
 import 'package:customerapp/domain/usecases/summery/summery_use_case.dart';
 import 'package:customerapp/presentation/base_controller.dart';
+import 'package:customerapp/presentation/main_screen/controller/main_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -256,7 +260,7 @@ class ServiceController extends BaseController {
         advanceAmount.value = servicePercentage * advancePercentage;
 
         double conveniencePercent =
-            double.tryParse(metaData.value.advancePercentage ?? '0') ?? 0;
+            double.tryParse(metaData.value.conveniencePercentage ?? '0') ?? 0;
         convenienceFee.value = servicePercentage * conveniencePercent;
 
         double nightHikePercent =
@@ -304,6 +308,8 @@ class ServiceController extends BaseController {
                     couponData.value.first.discountOfferPrice ?? '0') ??
                 0;
             calculateGrandTotal();
+
+            showToast(coupon?.message ?? 'Promo code applied successfully');
           } else {
             couponApplied.value = false;
           }
@@ -342,7 +348,7 @@ class ServiceController extends BaseController {
           addOnList.add(
             AddOnAdd(
                 addonId: e.addonId,
-                addonPrice: e.price,
+                addonPrice: double.tryParse(e.price ?? '0'),
                 quantity: e.quantity,
                 serviceId: selectedService.value.servId),
           );
@@ -351,24 +357,35 @@ class ServiceController extends BaseController {
         if (isLogin) {
           request = JobRequest(
             addOns: addOnList,
-            advanceAmount: metaData.value.advancePercentage,
-            advancePercent: advanceAmount.toString(),
+            advanceAmount: advanceAmount.value,
+            advancePercent:
+                double.tryParse(metaData.value.advancePercentage ?? '0'),
             cityId: selectedCity.cityId,
-            convenienceFee: convenienceFee.toString(),
-            conveniencePercent: metaData.value.conveniencePercentage,
-            email: sessionStorage.read(StorageKeys.email),
-            goldenHoursCharge:
-                isGoldenHour ? goldenHourAmount.value.toString() : "0",
+            convenienceFee: convenienceFee.value,
+            conveniencePercent:
+                double.tryParse(metaData.value.conveniencePercentage ?? '0'),
+            email: sessionStorage.read(StorageKeys.email).toString(),
+            goldenHoursCharge: isGoldenHour ? goldenHourAmount.value : 0,
             isGolderHour: isGoldenHour,
             jobDate: selectedDate.value,
             jobDateOnly: selectedDate.value,
-            name: sessionStorage.read(StorageKeys.username),
-            overNightHikePercentage: metaData.value.overNightHikePercentage,
-            phoneNumber: sessionStorage.read(StorageKeys.mobile),
-            price: selectedService.value.price,
+            name: sessionStorage.read(StorageKeys.username).toString(),
+            overNightHikePercentage:
+                double.tryParse(metaData.value.overNightHikePercentage ?? '0'),
+            phoneNumber: sessionStorage.read(StorageKeys.mobile).toString(),
+            price: double.tryParse(selectedService.value.price ?? '0'),
+            promotionAmount: couponData.value.isEmpty
+                ? null
+                : double.tryParse(
+                    couponData.value.first.discountOfferPrice ?? '0'),
+            promotionId: couponData.value.isEmpty
+                ? null
+                : couponData.value.first.promotionId,
+            promotionStatus:
+                couponData.value.isEmpty ? null : couponData.value.first.status,
             serviceId: selectedService.value.servId.toString(),
             supervisors: selectedTimeSlot.supervisors ?? [],
-            userId: sessionStorage.read(StorageKeys.userId),
+            userId: sessionStorage.read(StorageKeys.userId).toString(),
           );
 
           var job = await _createLoginJobUseCase.execute(request);
@@ -377,29 +394,32 @@ class ServiceController extends BaseController {
         } else {
           request = JobRequest(
             addOns: addOnList,
-            advanceAmount: metaData.value.advancePercentage,
-            advancePercent: advanceAmount.toString(),
+            advanceAmount: advanceAmount.value,
+            advancePercent:
+                double.tryParse(metaData.value.advancePercentage ?? '0'),
             cityId: selectedCity.cityId,
-            convenienceFee: convenienceFee.toString(),
-            conveniencePercent: metaData.value.conveniencePercentage,
-            email: emailController.text,
-            goldenHoursCharge:
-                isGoldenHour ? goldenHourAmount.value.toString() : "0",
+            convenienceFee: convenienceFee.value,
+            conveniencePercent:
+                double.tryParse(metaData.value.conveniencePercentage ?? '0'),
+            email: emailController.text.toString(),
+            goldenHoursCharge: isGoldenHour ? goldenHourAmount.value : 0,
             isGolderHour: isGoldenHour,
             jobDate: selectedDate.value,
             jobDateOnly: selectedDate.value,
-            name: sessionStorage.read(StorageKeys.username),
-            overNightHikePercentage: metaData.value.overNightHikePercentage,
-            phoneNumber: phoneController.text,
-            price: selectedService.value.price,
+            name: sessionStorage.read(StorageKeys.username) ?? '',
+            overNightHikePercentage:
+                double.tryParse(metaData.value.overNightHikePercentage ?? '0'),
+            phoneNumber: phoneController.text.toString(),
+            price: double.tryParse(selectedService.value.price ?? '0'),
             promotionAmount: couponData.value.isEmpty
-                ? ''
-                : couponData.value.first.discountOfferPrice,
+                ? null
+                : double.tryParse(
+                    couponData.value.first.discountOfferPrice ?? '0'),
             promotionId: couponData.value.isEmpty
-                ? ''
-                : couponData.value.first.promotionId.toString(),
+                ? null
+                : couponData.value.first.promotionId,
             promotionStatus:
-                couponData.value.isEmpty ? '' : couponData.value.first.status,
+                couponData.value.isEmpty ? null : couponData.value.first.status,
             serviceId: selectedService.value.servId.toString(),
             supervisors: selectedTimeSlot.supervisors ?? [],
           );
@@ -407,16 +427,23 @@ class ServiceController extends BaseController {
 
           jobData.value = job!;
 
-          sessionStorage.write(StorageKeys.loggedIn, true);
-          // sessionStorage.write(StorageKeys.token, jobData.value.data.token);
-          sessionStorage.write(StorageKeys.email, emailController.text);
-          sessionStorage.write(StorageKeys.mobile, phoneController.text);
+          saveJobUserData();
+          Get.back();
         }
 
         hideLoadingDialog();
+        showSnackBar("Success", "Job created successfully", AppColors.darkGray);
+
+        Get.toNamed(AppRoutes.paymentStatusScreen);
       } catch (e) {
         hideLoadingDialog();
-        showSnackBar("Error", e.toString(), Colors.black54);
+        Get.back();
+        showSnackBar("Error", "${e.toString()}, Please login.", Colors.black54);
+        if (e.toString().contains('User already exists')) {
+          Get.toNamed(AppRoutes.loginScreen, arguments: {
+            'from': AppRoutes.summeryScreen,
+          });
+        }
       }
     } else {
       showToast(LocalizationKeys.noNetwork.tr);
@@ -551,5 +578,21 @@ class ServiceController extends BaseController {
         addOnsTotal.value +
         goldenHourAmount.value -
         couponAmount);
+  }
+
+  void saveJobUserData() {
+    sessionStorage.write(StorageKeys.loggedIn, true);
+    sessionStorage.write(
+        StorageKeys.token, jobData.value.data?.accessToken ?? "");
+    sessionStorage.write(
+        StorageKeys.userId, jobData.value.data?.jobData?.userId ?? "");
+    sessionStorage.write(StorageKeys.email, emailController.text);
+    sessionStorage.write(StorageKeys.mobile, phoneController.text);
+
+    try {
+      Get.find<MainScreenController>().loggedIn.value = true;
+    } catch (e) {
+      Logger.e("Error in controller", e);
+    }
   }
 }

@@ -193,17 +193,6 @@ class EditAccountScreen extends GetView<AccountController> {
   }
 }
 
-/// Navigates to the previous screen.
-onTapArrowLeft() {
-  Get.back();
-}
-
-onTapLoginNavigation() {
-  Get.toNamed(
-    AppRoutes.loginScreen,
-  );
-}
-
 class ProfileItemsWidget extends StatelessWidget {
   final IconData iconData;
   final String label;

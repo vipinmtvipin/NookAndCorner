@@ -7,7 +7,6 @@ import 'package:customerapp/presentation/settings_screen/controller/settings_con
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../core/routes/app_routes.dart';
 import '../../core/theme/app_text_style.dart';
 import '../../core/utils/common_util.dart';
 import '../../core/utils/size_utils.dart';
@@ -130,17 +129,6 @@ class ContactScreen extends GetView<SettingsController> {
       },
     ));
   }
-}
-
-/// Navigates to the previous screen.
-onTapArrowLeft() {
-  Get.back();
-}
-
-onTapLoginNavigation() {
-  Get.toNamed(
-    AppRoutes.loginScreen,
-  );
 }
 
 class ProfileItemsWidget extends StatelessWidget {
