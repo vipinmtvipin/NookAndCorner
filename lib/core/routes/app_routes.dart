@@ -7,11 +7,12 @@ import 'package:customerapp/presentation/address_screen/binding/address_binding.
 import 'package:customerapp/presentation/forget_password_screen/forget_password_screen.dart';
 import 'package:customerapp/presentation/main_screen/binding/main_binding.dart';
 import 'package:customerapp/presentation/main_screen/main_screen.dart';
-import 'package:customerapp/presentation/my_booking_screen/binding/mybooking_binding.dart';
-import 'package:customerapp/presentation/my_booking_screen/booking_details_screen.dart';
-import 'package:customerapp/presentation/my_booking_screen/booking_list_screen.dart';
-import 'package:customerapp/presentation/my_booking_screen/mybooking_screen.dart';
+import 'package:customerapp/presentation/my_job_screen/binding/mybooking_binding.dart';
+import 'package:customerapp/presentation/my_job_screen/booking_details_screen.dart';
+import 'package:customerapp/presentation/my_job_screen/booking_list_screen.dart';
+import 'package:customerapp/presentation/my_job_screen/mybooking_screen.dart';
 import 'package:customerapp/presentation/payment_section_screens/confirm_address_screen.dart';
+import 'package:customerapp/presentation/payment_section_screens/payment_screen.dart';
 import 'package:customerapp/presentation/payment_section_screens/payment_status_screen.dart';
 import 'package:customerapp/presentation/services_screen/binding/service_binding.dart';
 import 'package:customerapp/presentation/services_screen/service_screen.dart';
@@ -50,6 +51,7 @@ class AppRoutes {
   static const String bookingListingScreen = '/booking-listing-screen';
   static const String bookingDetailsScreen = '/booking-details-screen';
   static const String paymentStatusScreen = '/payment-status-screen';
+  static const String paymentScreen = '/payment-screen';
   static List<GetPage> pages = [
     GetPage(
       name: initialRoute,
@@ -118,6 +120,14 @@ class AppRoutes {
     GetPage(
       name: paymentStatusScreen,
       page: () => const PaymentStatusScreen(),
+      bindings: [
+        AddressBinding(),
+      ],
+    ),
+    GetPage(
+      name: paymentScreen,
+      page: () => const PaymentScreen(),
+      bindings: [],
     ),
     GetPage(
       name: addressScreen,
@@ -136,13 +146,13 @@ class AppRoutes {
     GetPage(
       name: myBookingScreen,
       page: () => const MyBookingScreen(),
-      bindings: [
-        MyBookingBinding(),
-      ],
     ),
     GetPage(
       name: bookingListingScreen,
       page: () => const BookingListingScreen(),
+      bindings: [
+        MyBookingBinding(),
+      ],
     ),
     GetPage(
       name: bookingDetailsScreen,

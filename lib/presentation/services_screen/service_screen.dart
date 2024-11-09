@@ -1,20 +1,20 @@
 import 'package:customerapp/core/extensions/sheet_extension.dart';
+import 'package:customerapp/core/routes/app_routes.dart';
 import 'package:customerapp/core/theme/app_text_style.dart';
 import 'package:customerapp/core/theme/color_constant.dart';
+import 'package:customerapp/core/utils/size_utils.dart';
 import 'package:customerapp/domain/model/service/service_details_responds.dart';
 import 'package:customerapp/domain/model/service/tag_responds.dart';
 import 'package:customerapp/presentation/common_widgets/conditional_widget.dart';
+import 'package:customerapp/presentation/common_widgets/custom_icon_button.dart';
 import 'package:customerapp/presentation/common_widgets/network_image_view.dart';
 import 'package:customerapp/presentation/common_widgets/nookcorner_button.dart';
 import 'package:customerapp/presentation/common_widgets/responsive_text.dart';
-import 'package:customerapp/presentation/common_widgets/title_bar_widget.dart';
 import 'package:customerapp/presentation/main_screen/main_screen.dart';
 import 'package:customerapp/presentation/services_screen/controller/service_controller.dart';
 import 'package:customerapp/presentation/services_screen/widgets/service_booking_date_bottomsheet.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-import '../../core/routes/app_routes.dart';
 
 class ServiceScreen extends GetView<ServiceController> {
   const ServiceScreen({super.key});
@@ -25,83 +25,141 @@ class ServiceScreen extends GetView<ServiceController> {
       top: false,
       bottom: false,
       child: Scaffold(
-        body: Obx(
-          () => Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 40),
-                const TitleBarWidget(title: "Services"),
-                const SizedBox(height: 30),
-                Text(controller.categoryName.value.toString(),
-                    style: AppTextStyle.txtBold16),
-                const SizedBox(height: 10),
-                SizedBox(
-                  height: controller.serviceInfo.value.isNotEmpty
-                      ? (controller.categoryDescription.value
-                                  .toString()
-                                  .length >
-                              100
-                          ? Get.height * 0.15
-                          : Get.height * 0.05)
-                      : (controller.categoryDescription.value
-                                  .toString()
-                                  .length >
-                              100
-                          ? Get.height * 0.25
-                          : Get.height * 0.05),
-                  child: SingleChildScrollView(
-                    child: Text(controller.categoryDescription.value.toString(),
+        backgroundColor: AppColors.white,
+        appBar: AppBar(
+          toolbarHeight: 70,
+          backgroundColor: AppColors.white,
+          title: Padding(
+            padding: const EdgeInsets.only(
+              top: 5.0,
+            ),
+            child: Text(
+              "Services",
+              style: AppTextStyle.txtBold18.copyWith(
+                letterSpacing: getHorizontalSize(
+                  5,
+                ),
+              ),
+            ),
+          ),
+          centerTitle: true,
+          leading: Padding(
+            padding: const EdgeInsets.only(top: 20.0, left: 16),
+            child: CustomIconButton(
+              height: 30,
+              width: 30,
+              onTap: () {
+                Get.back();
+              },
+              alignment: Alignment.topLeft,
+              shape: IconButtonShape.CircleBorder35,
+              child: const Padding(
+                padding: EdgeInsets.only(left: 5.0),
+                child: Icon(
+                  Icons.arrow_back_ios,
+                  size: 18,
+                  color: AppColors.white,
+                ),
+              ),
+            ),
+          ),
+        ),
+        body: RefreshIndicator(
+          color: Colors.black,
+          backgroundColor: Colors.white,
+          strokeWidth: 2,
+          onRefresh: () {
+            controller.initialApisCall();
+            return Future<void>.value();
+          },
+          child: Obx(
+            () => Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 5),
+                    Text(controller.categoryName.value.toString(),
+                        style: AppTextStyle.txtBold16),
+                    const SizedBox(height: 10),
+                    Text(controller.categoryDescription.value.toString(),
                         style: AppTextStyle.txt12),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                ConditionalWidget(
-                  condition: controller.tagData.value.isNotEmpty,
-                  onFalse: const SizedBox.shrink(),
-                  child: SizedBox(
-                    height: 50,
-                    child: ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: controller.tagData.value.length,
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, index) {
-                        var tag = controller.tagData.value[index];
-                        return BuildCategoryChip(
-                            tag: tag,
-                            onTap: (tagId) {
-                              controller.getServiceByTagClick(tagId);
-                            });
-                      },
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      height: 250,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Image.network(
+                          controller.categoryImage.value.toString(),
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const SizedBox.shrink();
+                          },
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) {
+                              return child;
+                            } else {
+                              return Center(
+                                  child: Padding(
+                                padding:
+                                    EdgeInsets.only(left: context.width * 0.4),
+                                child: CircularProgressIndicator(),
+                              ));
+                            }
+                          },
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                const SizedBox(height: 5),
-                const Divider(
-                  color: Colors.grey,
-                  thickness: 0.3,
-                  indent: 15,
-                  endIndent: 25,
-                ),
-                ConditionalWidget(
-                  condition: controller.serviceInfo.value.isNotEmpty,
-                  onFalse: const Expanded(
-                      child:
-                          NotDataFound(message: 'No services available now')),
-                  child: Expanded(
-                    child: ListView.builder(
-                      itemCount: controller.serviceInfo.value.length,
-                      itemBuilder: (context, index) {
-                        return ServiceCardWidget(
-                            serviceData: controller.serviceInfo.value[index]);
-                      },
+                    const SizedBox(height: 20),
+                    ConditionalWidget(
+                      condition: controller.tagData.value.isNotEmpty,
+                      onFalse: const SizedBox.shrink(),
+                      child: SizedBox(
+                        height: 50,
+                        child: ListView.builder(
+                          itemCount: controller.tagData.value.length,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (context, index) {
+                            var tag = controller.tagData.value[index];
+                            return BuildCategoryChip(
+                                tag: tag,
+                                onTap: (tagId) {
+                                  controller.getServiceByTagClick(tagId);
+                                });
+                          },
+                        ),
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 5),
+                    const Divider(
+                      color: Colors.grey,
+                      thickness: 0.3,
+                      indent: 15,
+                      endIndent: 25,
+                    ),
+                    ConditionalWidget(
+                      condition: controller.serviceInfo.value.isNotEmpty,
+                      onFalse: const SizedBox(
+                          height: 200,
+                          child: NotDataFound(
+                              message: 'No services available now')),
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        controller: controller.scrollController,
+                        itemCount: controller.serviceInfo.value.length,
+                        itemBuilder: (context, index) {
+                          return ServiceCardWidget(
+                              serviceData: controller.serviceInfo.value[index]);
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),
@@ -192,33 +250,36 @@ class ServiceCardWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 5),
-                      ResponsiveText(
-                          text: serviceData.name ?? '',
-                          style: AppTextStyle.txtBold16),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          ResponsiveText(
-                              text: '${serviceData.price ?? ''} Rs',
-                              style: AppTextStyle.txtBold12),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          ResponsiveText(
-                            text: '•  ${serviceData.maxWorkHours ?? ''} Hours',
-                            style: AppTextStyle.txt12.copyWith(
-                              color: AppColors.darkGray,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 5),
+                        ResponsiveText(
+                            text: serviceData.name ?? '',
+                            style: AppTextStyle.txtBold16),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            ResponsiveText(
+                                text: '${serviceData.price ?? ''} Rs',
+                                style: AppTextStyle.txtBold12),
+                            const SizedBox(
+                              width: 10,
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 5),
-                    ],
+                            ResponsiveText(
+                              text:
+                                  '•  ${serviceData.maxWorkHours ?? ''} Hours',
+                              style: AppTextStyle.txt12.copyWith(
+                                color: AppColors.darkGray,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                      ],
+                    ),
                   ),
                   const SizedBox(width: 10),
                   ClipRRect(

@@ -2,7 +2,6 @@ import 'package:customerapp/core/constants/constants.dart';
 import 'package:customerapp/core/localization/localization_keys.dart';
 import 'package:customerapp/core/network/connectivity_service.dart';
 import 'package:customerapp/core/routes/app_routes.dart';
-import 'package:customerapp/core/theme/color_constant.dart';
 import 'package:customerapp/core/utils/logger.dart';
 import 'package:customerapp/domain/model/home/city_responds.dart';
 import 'package:customerapp/domain/model/service/service_details_responds.dart';
@@ -13,7 +12,7 @@ import 'package:customerapp/domain/model/summery/addon_request.dart';
 import 'package:customerapp/domain/model/summery/addon_service_responds.dart';
 import 'package:customerapp/domain/model/summery/apply_cupon_responds.dart';
 import 'package:customerapp/domain/model/summery/coupon_request.dart';
-import 'package:customerapp/domain/model/summery/job__login_responds.dart';
+import 'package:customerapp/domain/model/summery/job_login_responds.dart';
 import 'package:customerapp/domain/model/summery/job_request.dart';
 import 'package:customerapp/domain/model/summery/job_responds.dart';
 import 'package:customerapp/domain/model/summery/meta_responds.dart';
@@ -40,6 +39,13 @@ enum ServiceStatus {
   initiated,
   dateDataLoaded,
   couponApplied,
+}
+
+enum PaymentStatus {
+  unknown,
+  success,
+  failed,
+  processing,
 }
 
 class ServiceController extends BaseController {
@@ -80,23 +86,33 @@ class ServiceController extends BaseController {
   Rx<JobLoginResponds> jobLoginData = Rx(JobLoginResponds.empty());
   Rx<ServiceData> selectedService = Rx(ServiceData.empty());
 
-  Rx<DateTime> selectedDate = Rx(DateTime.now());
+  Rx<DateTime> selectedDate = Rx(
+    DateTime.now().add(Duration(days: 1)),
+  );
   // Rx<String> selectedDateValue = Rx('Select Date');
   var selectedDateValue = 'Select Date'.obs;
   var selectedTime = ''.obs;
 
   var serviceStatus = ServiceStatus.unknown.obs;
+  final ScrollController scrollController = ScrollController();
+  final RxBool isWidgetVisible = true.obs;
 
   var couponApplied = false.obs;
   var termsAndConditionApply = false.obs;
   var categoryId = "".obs;
   var categoryName = "".obs;
   var categoryDescription = "".obs;
+  var categoryImage = "".obs;
   var convenienceFee = 0.0.obs;
   var advanceAmount = 0.0.obs;
   var goldenHourAmount = 0.0.obs;
   var grandTotal = 0.0.obs;
   var addOnsTotal = 0.0.obs;
+
+  var orderID = "".obs;
+  var paymentType = "".obs;
+
+  var paymentStatus = PaymentStatus.unknown.obs;
 
   final sessionStorage = GetStorage();
   TextEditingController promoCodeController = TextEditingController();
@@ -111,6 +127,7 @@ class ServiceController extends BaseController {
     promoCodeController.clear();
     phoneController.clear();
     emailController.clear();
+    scrollController.dispose();
   }
 
   @override
@@ -124,9 +141,22 @@ class ServiceController extends BaseController {
     categoryId.value = arguments['categoryId'] ?? '';
     categoryName.value = arguments['categoryName'] ?? '';
     categoryDescription.value = arguments['categoryDescription'] ?? '';
+    categoryImage.value = arguments['categoryImage'] ?? '';
 
-    getServiceDetails(categoryId.toString());
-    getServiceTags(categoryId.toString());
+    initialApisCall();
+
+    scrollController.addListener(() {
+      if (scrollController.position.pixels == 0) {
+        isWidgetVisible.value = true;
+      } else {
+        isWidgetVisible.value = false;
+      }
+    });
+  }
+
+  void initialApisCall() {
+    getServiceDetails(categoryId.value.toString());
+    getServiceTags(categoryId.value.toString());
   }
 
   Future<void> getServiceDetails(String categoryId,
@@ -258,16 +288,22 @@ class ServiceController extends BaseController {
         double advancePercentage =
             double.tryParse(metaData.value.advancePercentage ?? '0') ?? 0;
         advanceAmount.value = servicePercentage * advancePercentage;
+        advanceAmount.value =
+            double.parse(advanceAmount.value.toStringAsFixed(2));
 
         double conveniencePercent =
             double.tryParse(metaData.value.conveniencePercentage ?? '0') ?? 0;
         convenienceFee.value = servicePercentage * conveniencePercent;
+        convenienceFee.value =
+            double.parse(convenienceFee.value.toStringAsFixed(2));
 
         double nightHikePercent =
             double.tryParse(metaData.value.overNightHikePercentage ?? '0') ?? 0;
         var isGoldenHour = isAfter6PM(selectedDate.value);
         if (isGoldenHour) {
           goldenHourAmount.value = servicePercentage * nightHikePercent;
+          goldenHourAmount.value =
+              double.parse(goldenHourAmount.value.toStringAsFixed(2));
         }
 
         calculateGrandTotal();
@@ -390,6 +426,7 @@ class ServiceController extends BaseController {
 
           var job = await _createLoginJobUseCase.execute(request);
 
+          orderID.value = job?.data?.jobCreated?.txnId ?? "";
           jobLoginData.value = job!;
         } else {
           request = JobRequest(
@@ -425,6 +462,7 @@ class ServiceController extends BaseController {
           );
           var job = await _createJobUseCase.execute(request);
 
+          orderID.value = job?.data?.jobCreated?.txnId ?? "";
           jobData.value = job!;
 
           saveJobUserData();
@@ -432,9 +470,13 @@ class ServiceController extends BaseController {
         }
 
         hideLoadingDialog();
-        showSnackBar("Success", "Job created successfully", AppColors.darkGray);
 
-        Get.toNamed(AppRoutes.paymentStatusScreen);
+        paymentType.value == "Advance";
+        Get.toNamed(AppRoutes.paymentScreen, arguments: {
+          'orderID': orderID.value,
+          'paymentAmount': advanceAmount.value,
+          'paymentType': "Advance",
+        });
       } catch (e) {
         hideLoadingDialog();
         Get.back();

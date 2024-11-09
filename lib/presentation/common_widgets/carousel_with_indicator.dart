@@ -45,7 +45,8 @@ class _CarouselWithIndicatorState extends State<CarouselWithIndicator> {
           options: CarouselOptions(
             height: widget.height,
             autoPlay: true,
-            viewportFraction: 1.0,
+            enlargeCenterPage: true,
+            viewportFraction: 0.99,
             onPageChanged: (index, reason) {
               setState(() {
                 _currentIndex = index;

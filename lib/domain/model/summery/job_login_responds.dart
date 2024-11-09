@@ -58,7 +58,7 @@ class JobLoginData {
   }
 
   Map<String, dynamic> toJson() => {
-        "addOns": addOns.map((x) => x?.toJson()).toList(),
+        "addOns": addOns.map((x) => x.toJson()).toList(),
         "jobCreated": jobCreated?.toJson(),
       };
 }
@@ -139,7 +139,7 @@ class JobCreated {
     required this.endTime,
   });
 
-  final String? refundRetryCount;
+  final int? refundRetryCount;
   final int? jobId;
   final DateTime? jobDate;
   final String? status;
@@ -149,9 +149,9 @@ class JobCreated {
   final int? promotionId;
   final String? txnId;
   final int? price;
-  final int? convenienceFee;
+  final double? convenienceFee;
   final String? conveniencePercent;
-  final int? advanceAmount;
+  final double? advanceAmount;
   final String? advancePercent;
   final int? promotionAmount;
   final String? advStatus;

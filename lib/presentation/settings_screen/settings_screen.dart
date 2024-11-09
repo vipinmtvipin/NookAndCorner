@@ -50,7 +50,8 @@ class SettingsScreen extends GetView<SettingsController> {
                         onTap: () {
                           Get.toNamed(AppRoutes.webScreen, arguments: {
                             "title": "Privacy Policy",
-                            "url": "https://www.nookandcorner.org/privacy"
+                            "url":
+                                "https://www.nookandcorner.org/privacy-policy"
                           });
                         },
                       ),
@@ -62,6 +63,23 @@ class SettingsScreen extends GetView<SettingsController> {
                       ),
                       ProfileItemsWidget(
                         iconData: Icons.contact_support,
+                        label: "Terms & Conditions",
+                        onTap: () {
+                          Get.toNamed(AppRoutes.webScreen, arguments: {
+                            "title": "Terms & Conditions",
+                            "url":
+                                "https://www.nookandcorner.org/terms-conditions"
+                          });
+                        },
+                      ),
+                      const Divider(
+                        color: AppColors.lightGray,
+                        thickness: 0.3,
+                        indent: 15,
+                        endIndent: 25,
+                      ),
+                      ProfileItemsWidget(
+                        iconData: Icons.perm_contact_cal_sharp,
                         label: "Contact us",
                         onTap: () {
                           Get.toNamed(AppRoutes.contactScreen);

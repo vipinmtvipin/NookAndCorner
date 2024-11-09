@@ -95,7 +95,8 @@ class MainScreen extends GetView<MainScreenController> {
               size: getSize(23),
             ),
             onPressed: () {
-              Get.toNamed(AppRoutes.settingsScreen);
+              //  Get.toNamed(AppRoutes.settingsScreen);
+              Get.toNamed(AppRoutes.confirmAddressScreen);
             },
           ),
           Obx(() {
@@ -150,108 +151,112 @@ class MainScreen extends GetView<MainScreenController> {
 Widget _buildMainScreen() {
   var controller = Get.find<MainScreenController>();
 
-  return SingleChildScrollView(
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ConditionalWidget(
-                condition: controller.activeBanners.value.isNotNullOrEmpty,
-                onFalse: const SizedBox.shrink(),
-                child: CarouselWithIndicator(
-                  height: 150,
-                  carouselSliderItems: controller.activeBanners.value
-                      .map((e) => CarouselItem(
-                            navigationPath: e.routePath,
-                            image: NetworkImageView(
-                              borderRadius: 15,
-                              url: e.image,
-                              width: double.infinity,
-                              fit: BoxFit.fill,
-                            ),
-                          ))
-                      .toList(),
+  return RefreshIndicator(
+    color: Colors.black,
+    backgroundColor: Colors.white,
+    strokeWidth: 2,
+    onRefresh: () {
+      controller.getCity();
+      return Future<void>.value();
+    },
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            ConditionalWidget(
+              condition: controller.activeBanners.value.isNotNullOrEmpty,
+              onFalse: const SizedBox.shrink(),
+              child: CarouselWithIndicator(
+                height: 150,
+                carouselSliderItems: controller.activeBanners.value
+                    .map((e) => CarouselItem(
+                          navigationPath: e.routePath,
+                          image: NetworkImageView(
+                            borderRadius: 15,
+                            url: e.image,
+                            width: double.infinity,
+                            fit: BoxFit.fill,
+                          ),
+                        ))
+                    .toList(),
+              ),
+            ),
+            SizedBox(
+              height: getSize(15),
+            ),
+            Text(
+              'Home services at your door',
+              style: AppTextStyle.txtBold18,
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Pick your Service',
+              style: TextStyle(color: AppColors.secondaryColor),
+            ),
+            const SizedBox(height: 20),
+            Obx(() {
+              if (controller.cityServices.value.isEmpty) {
+                return const NotDataFound(message: 'No Service Available Now');
+              }
+              return GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  childAspectRatio: 0.8,
                 ),
+                itemCount: controller.cityServices.value.length,
+                itemBuilder: (context, index) {
+                  final item = controller.cityServices.value[index];
+                  return GestureDetector(
+                    onTap: () {
+                      Get.toNamed(
+                        AppRoutes.serviceScreen,
+                        arguments: {
+                          'categoryId': item.catid.toString(),
+                          'categoryName': item.name,
+                          'categoryDescription': item.description,
+                          'categoryImage': item.descriptionImageHorizontal,
+                        },
+                      );
+                    },
+                    child: ServiceCard(
+                      image: item.logo,
+                      label: item.name,
+                    ),
+                  );
+                },
+              );
+            }),
+            const SizedBox(height: 20),
+            ConditionalWidget(
+              condition: controller.activeBanners.value.isNotNullOrEmpty,
+              onFalse: const SizedBox.shrink(),
+              child: CarouselWithIndicator(
+                height: 120,
+                isIndicatorVisible: false,
+                carouselSliderItems: controller.midBanners.value
+                    .map((e) => CarouselItem(
+                          navigationPath: e.routePath,
+                          image: NetworkImageView(
+                            borderRadius: 12,
+                            url: e.image,
+                            width: double.infinity,
+                            fit: BoxFit.fill,
+                          ),
+                        ))
+                    .toList(),
               ),
-              SizedBox(
-                height: getSize(15),
-              ),
-              Text(
-                'Home services at your door',
-                style: AppTextStyle.txtBold18,
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Pick your Service',
-                style: TextStyle(color: AppColors.secondaryColor),
-              ),
-              const SizedBox(height: 20),
-              Obx(() {
-                if (controller.cityServices.value.isEmpty) {
-                  return const NotDataFound(
-                      message: 'No Service Available Now');
-                }
-                return GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    childAspectRatio: 0.8,
-                  ),
-                  itemCount: controller.cityServices.value.length,
-                  itemBuilder: (context, index) {
-                    final item = controller.cityServices.value[index];
-                    return GestureDetector(
-                      onTap: () {
-                        Get.toNamed(
-                          AppRoutes.serviceScreen,
-                          arguments: {
-                            'categoryId': item.catid.toString(),
-                            'categoryName': item.name,
-                            'categoryDescription': item.description,
-                          },
-                        );
-                      },
-                      child: ServiceCard(
-                        image: item.logo,
-                        label: item.name,
-                      ),
-                    );
-                  },
-                );
-              }),
-              const SizedBox(height: 20),
-              ConditionalWidget(
-                condition: controller.activeBanners.value.isNotNullOrEmpty,
-                onFalse: const SizedBox.shrink(),
-                child: CarouselWithIndicator(
-                  height: 100,
-                  isIndicatorVisible: false,
-                  carouselSliderItems: controller.midBanners.value
-                      .map((e) => CarouselItem(
-                            navigationPath: e.routePath,
-                            image: NetworkImageView(
-                              borderRadius: 12,
-                              url: e.image,
-                              width: double.infinity,
-                              fit: BoxFit.fill,
-                            ),
-                          ))
-                      .toList(),
-                ),
-              ),
-              const SizedBox(height: 20),
-            ],
-          ),
+            ),
+            const SizedBox(height: 20),
+          ],
         ),
-      ],
+      ),
     ),
   );
 }

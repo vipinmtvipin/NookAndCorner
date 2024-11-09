@@ -1,9 +1,10 @@
 import 'package:customerapp/core/routes/app_routes.dart';
 import 'package:customerapp/core/theme/color_constant.dart';
 import 'package:customerapp/generated/assets.gen.dart';
-import 'package:customerapp/presentation/address_screen/controller/address_controller.dart';
+import 'package:customerapp/presentation/common_widgets/conditional_widget.dart';
 import 'package:customerapp/presentation/common_widgets/nookcorner_button.dart';
 import 'package:customerapp/presentation/common_widgets/title_bar_widget.dart';
+import 'package:customerapp/presentation/services_screen/controller/service_controller.dart';
 import 'package:customerapp/presentation/summery_screen/summery_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -12,7 +13,7 @@ import 'package:lottie/lottie.dart';
 import '../../core/theme/app_text_style.dart';
 import '../../core/utils/size_utils.dart';
 
-class PaymentStatusScreen extends GetView<AddressController> {
+class PaymentStatusScreen extends GetView<ServiceController> {
   const PaymentStatusScreen({super.key});
 
   @override
@@ -21,22 +22,25 @@ class PaymentStatusScreen extends GetView<AddressController> {
       top: false,
       bottom: false,
       child: Scaffold(
-        body: mobileView(),
-        bottomNavigationBar: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: NookCornerButton(
-            backGroundColor: AppColors.success,
-            text: 'Confirm Address',
-            onPressed: () {
-              Get.toNamed(AppRoutes.confirmAddressScreen);
-            },
-          ),
-        ),
+        body: paymentView(),
+        bottomNavigationBar:
+            controller.paymentStatus.value == PaymentStatus.success
+                ? Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: NookCornerButton(
+                      backGroundColor: AppColors.success,
+                      text: 'Confirm Address',
+                      onPressed: () {
+                        Get.toNamed(AppRoutes.confirmAddressScreen);
+                      },
+                    ),
+                  )
+                : SizedBox.shrink(),
       ),
     );
   }
 
-  Widget mobileView() {
+  Widget paymentView() {
     return Container(
         padding: getPadding(left: 16, top: 50, right: 16),
         child: Column(
@@ -54,7 +58,9 @@ class PaymentStatusScreen extends GetView<AddressController> {
                 children: [
                   SizedBox(height: getVerticalSize(10)),
                   Lottie.asset(
-                    Assets.lottie.paymentSuccess,
+                    controller.paymentStatus.value == PaymentStatus.success
+                        ? Assets.lottie.paymentSuccess
+                        : Assets.lottie.paymentFailed,
                     alignment: Alignment.center,
                     fit: BoxFit.contain,
                     height: 200,
@@ -63,7 +69,9 @@ class PaymentStatusScreen extends GetView<AddressController> {
                   ),
                   SizedBox(height: getVerticalSize(10)),
                   Text(
-                    'Payment Success',
+                    controller.paymentStatus.value == PaymentStatus.success
+                        ? 'Payment Success'
+                        : 'Payment Failed',
                     style: AppTextStyle.txtBold24.copyWith(
                       color: AppColors.success,
                     ),
@@ -71,7 +79,9 @@ class PaymentStatusScreen extends GetView<AddressController> {
                   SizedBox(height: getVerticalSize(10)),
                   Text(
                     textAlign: TextAlign.center,
-                    'A confirmation email has been sent to your email address',
+                    controller.paymentStatus.value == PaymentStatus.success
+                        ? 'A confirmation email has been sent to your email address'
+                        : 'Payment failed, please try again',
                     style: AppTextStyle.txt14.copyWith(
                       color: AppColors.black,
                     ),
@@ -80,99 +90,61 @@ class PaymentStatusScreen extends GetView<AddressController> {
               )),
               // Payment Summary Section
               SizedBox(height: getVerticalSize(10)),
-              Text(
-                'Order Details',
-                style: AppTextStyle.txtBold16.copyWith(
-                  letterSpacing: getHorizontalSize(
-                    3,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 15),
-              const PaymentSummaryRow(title: 'Name', value: 'User name'),
-              const PaymentSummaryRow(
-                title: 'Service Booked',
-                value: 'Service Name',
-                hasInfoIcon: false,
-              ),
-              const PaymentSummaryRow(
-                  title: 'Service Date', value: '12th June 2021'),
 
-              const PaymentSummaryRow(
-                title: 'Advance Amount',
-                value: '600/-',
-                isBold: false,
-                valueColor: AppColors.black,
-              ),
-              const PaymentSummaryRow(
-                title: 'Status',
-                value: 'Completed',
-                isBold: false,
-              ),
-              const SizedBox(height: 5),
-            ]));
-  }
-}
-
-class AddressCardWidget extends StatelessWidget {
-  final String label;
-  final Function() onTap;
-
-  const AddressCardWidget({
-    super.key,
-    required this.label,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-        elevation: 2,
-        color: AppColors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            border: const Border(
-              left: BorderSide(
-                color: Colors.green, // Set the color of the border
-                width: 2.0, // Set the width of the border
-              ),
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              ConditionalWidget(
+                condition:
+                    controller.paymentStatus.value == PaymentStatus.success,
+                onFalse: SizedBox.shrink(),
+                child: Column(
                   children: [
-                    Text("Home",
-                        style: AppTextStyle.txtBold16
-                            .copyWith(color: AppColors.secondaryColor)),
-                    SizedBox(
-                      height: 30,
-                      child: Checkbox(
-                        value: true,
-                        onChanged: (selected) {},
-                        activeColor: AppColors.primaryColor,
+                    Text(
+                      'Order Details',
+                      style: AppTextStyle.txtBold16.copyWith(
+                        letterSpacing: getHorizontalSize(
+                          3,
+                        ),
                       ),
-                    )
+                    ),
+                    const SizedBox(height: 15),
+                    PaymentSummaryRow(
+                      title: 'Service Booked',
+                      value: controller.selectedService.value.name ?? '',
+                      hasInfoIcon: false,
+                    ),
+                    PaymentSummaryRow(
+                        title: 'Service Date',
+                        value: controller.selectedDateValue.value),
+                    PaymentSummaryRow(
+                        title: 'Service Time',
+                        value: controller.selectedTime.value),
+                    PaymentSummaryRow(
+                      title: 'Advance Amount',
+                      value: controller.advanceAmount.value.toString(),
+                      isBold: false,
+                      valueColor: AppColors.black,
+                    ),
+                    PaymentSummaryRow(
+                      title: 'Total Amount',
+                      value: controller.grandTotal.value.toString(),
+                      isBold: false,
+                      valueColor: AppColors.black,
+                    ),
+                    PaymentSummaryRow(
+                      title: 'Status',
+                      value: controller.paymentStatus.value ==
+                              PaymentStatus.success
+                          ? 'Success'
+                          : 'Failed',
+                      isBold: false,
+                      valueColor: controller.paymentStatus.value ==
+                              PaymentStatus.success
+                          ? AppColors.green
+                          : AppColors.red,
+                    ),
+                    const SizedBox(height: 5),
                   ],
                 ),
-                const SizedBox(height: 2),
-                Text("Flat Infos...", style: AppTextStyle.txt14),
-                const SizedBox(height: 2),
-                Text("Details",
-                    style: AppTextStyle.txt14
-                        .copyWith(color: AppColors.lightGray)),
-              ],
-            ),
-          ),
-        ));
+              ),
+            ]));
   }
 }

@@ -1,30 +1,25 @@
-import 'package:customerapp/core/extensions/string_extensions.dart';
-import 'package:customerapp/core/routes/app_routes.dart';
 import 'package:customerapp/core/theme/app_text_style.dart';
 import 'package:customerapp/core/theme/color_constant.dart';
-import 'package:customerapp/domain/model/service/service_details_responds.dart';
+import 'package:customerapp/domain/model/my_jobs/my_job_responds.dart';
 import 'package:customerapp/presentation/common_widgets/conditional_widget.dart';
 import 'package:customerapp/presentation/common_widgets/custom_icon_button.dart';
 import 'package:customerapp/presentation/common_widgets/network_image_view.dart';
 import 'package:customerapp/presentation/common_widgets/nookcorner_button.dart';
 import 'package:customerapp/presentation/common_widgets/responsive_text.dart';
+import 'package:customerapp/presentation/my_job_screen/controller/mybooking_controller.dart';
 import 'package:customerapp/presentation/services_screen/controller/service_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-class ServiceBookingDateBottomSheet extends GetView<ServiceController> {
+class RescheduleBookingDateBottomSheet extends GetView<MyBookingController> {
   final Function(String) onDateSelected;
-  final ServiceData service;
+  final MyJobData service;
 
-  final bool isFromSummery;
-
-  const ServiceBookingDateBottomSheet({
+  const RescheduleBookingDateBottomSheet({
     super.key,
     required this.service,
     required this.onDateSelected,
-    this.isFromSummery = false,
   });
 
   @override
@@ -218,21 +213,10 @@ class ServiceBookingDateBottomSheet extends GetView<ServiceController> {
                       NookCornerButton(
                         outlinedColor: AppColors.primaryColor,
                         textStyle: AppTextStyle.txtBoldWhite14,
-                        text: isFromSummery ? 'Update' : 'Confirm and Proceed',
+                        text: 'Update',
                         backGroundColor: AppColors.primaryColor,
                         onPressed: () {
-                          if (isFromSummery) {
-                            Get.back();
-                          } else {
-                            if (controller.selectedTime.value.isEmpty) {
-                              'Please select a time slot'
-                                  .showToast(gravity: ToastGravity.CENTER);
-                              return;
-                            }
-                            Get.back();
-                            Get.toNamed(AppRoutes.summeryScreen);
-                            controller.getSummeryInfo();
-                          }
+                          Get.back();
                         },
                       ),
                     ],

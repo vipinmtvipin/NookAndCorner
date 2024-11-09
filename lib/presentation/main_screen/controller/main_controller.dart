@@ -58,7 +58,7 @@ class MainScreenController extends BaseController {
       try {
         final responds = await _homeUseCase.execute();
 
-        cityInfo.value = responds.item1.data ?? [];
+        cityInfo.value = responds.item1.data?.rows ?? [];
         activeBanners.value = responds.item2.data ?? [];
         midBanners.value = responds.item3.data ?? [];
 

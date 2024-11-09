@@ -18,7 +18,7 @@ class CityResponds {
   final String? message;
   final int? statusCode;
   final String? error;
-  final List<CityData>? data;
+  final Data? data;
 
   factory CityResponds.fromJson(Map<String, dynamic> json) {
     return CityResponds(
@@ -26,9 +26,7 @@ class CityResponds {
       message: json["message"],
       statusCode: json["statusCode"],
       error: json["error"],
-      data: json["data"] == null
-          ? []
-          : List<CityData>.from(json["data"]!.map((x) => CityData.fromJson(x))),
+      data: json["data"] == null ? null : Data.fromJson(json["data"]),
     );
   }
 
@@ -37,7 +35,31 @@ class CityResponds {
         "message": message,
         "statusCode": statusCode,
         "error": error,
-        "data": data?.map((x) => x?.toJson()).toList(),
+        "data": data?.toJson(),
+      };
+}
+
+class Data {
+  Data({
+    required this.count,
+    required this.rows,
+  });
+
+  final int? count;
+  final List<CityData> rows;
+
+  factory Data.fromJson(Map<String, dynamic> json) {
+    return Data(
+      count: json["count"],
+      rows: json["rows"] == null
+          ? []
+          : List<CityData>.from(json["rows"]!.map((x) => CityData.fromJson(x))),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        "count": count,
+        "rows": rows.map((x) => x?.toJson()).toList(),
       };
 }
 

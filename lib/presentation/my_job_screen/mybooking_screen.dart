@@ -1,7 +1,7 @@
 import 'package:customerapp/core/theme/color_constant.dart';
 import 'package:customerapp/presentation/account_screen/account_screen.dart';
 import 'package:customerapp/presentation/common_widgets/title_bar_widget.dart';
-import 'package:customerapp/presentation/my_booking_screen/controller/mybooking_controller.dart';
+import 'package:customerapp/presentation/my_job_screen/controller/mybooking_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -39,9 +39,8 @@ class MyBookingScreen extends GetView<MyBookingController> {
                   label: "Scheduled Booking",
                   subTile: "Check your scheduled booking",
                   onTap: () {
-                    Get.toNamed(AppRoutes.bookingListingScreen, arguments: {
-                      "title": "Scheduled Booking",
-                    });
+                    Get.toNamed(AppRoutes.bookingListingScreen,
+                        arguments: {"title": MyBookingStatus.scheduled.name});
                   }),
               const Divider(
                 color: AppColors.lightGray,
@@ -53,7 +52,10 @@ class MyBookingScreen extends GetView<MyBookingController> {
                 iconData: Icons.done_outline_sharp,
                 label: "Completed Booking",
                 subTile: "Check your completed booking",
-                onTap: () {},
+                onTap: () {
+                  Get.toNamed(AppRoutes.bookingListingScreen,
+                      arguments: {"title": MyBookingStatus.completed.name});
+                },
               ),
               const Divider(
                 color: AppColors.lightGray,
@@ -65,7 +67,10 @@ class MyBookingScreen extends GetView<MyBookingController> {
                 iconData: Icons.pending_actions_outlined,
                 label: "Pending Booking",
                 subTile: "Check your pending booking",
-                onTap: () {},
+                onTap: () {
+                  Get.toNamed(AppRoutes.bookingListingScreen,
+                      arguments: {"title": MyBookingStatus.pending.name});
+                },
               ),
               const Divider(
                 color: AppColors.lightGray,
@@ -77,7 +82,10 @@ class MyBookingScreen extends GetView<MyBookingController> {
                 iconData: Icons.cancel_outlined,
                 label: "Cancelled Booking",
                 subTile: "Check your cancelled booking",
-                onTap: () {},
+                onTap: () {
+                  Get.toNamed(AppRoutes.bookingListingScreen,
+                      arguments: {"title": MyBookingStatus.cancelled.name});
+                },
               ),
             ]),
       ),

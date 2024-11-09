@@ -1,6 +1,17 @@
 import 'package:intl/intl.dart';
 
 extension DateTimeUtil on DateTime? {
+  String convertUtcToIst() {
+    // Convert UTC to IST by adding 5 hours and 30 minutes
+    DateTime istDateTime = this!.add(Duration(hours: 5, minutes: 30));
+
+    // Format the IST DateTime to a string
+    DateFormat dateFormat = DateFormat("dd, MMM yyyy HH:mm aa");
+    String istDateString = dateFormat.format(istDateTime);
+
+    return istDateString;
+  }
+
   String format({
     String format = 'yyyy-MM-dd',
   }) {

@@ -49,6 +49,8 @@ class CityServiceData {
     required this.name,
     required this.description,
     required this.logo,
+    required this.descriptionImageVertical,
+    required this.descriptionImageHorizontal,
     required this.cityId,
     required this.delete,
     required this.status,
@@ -61,6 +63,8 @@ class CityServiceData {
   final String? name;
   final String? description;
   final String? logo;
+  final String? descriptionImageVertical;
+  final String? descriptionImageHorizontal;
   final int? cityId;
   final dynamic delete;
   final String? status;
@@ -74,6 +78,8 @@ class CityServiceData {
       name: json["name"],
       description: json["description"],
       logo: json["logo"],
+      descriptionImageVertical: json["descriptionImageVertical"],
+      descriptionImageHorizontal: json["descriptionImageHorizontal"],
       cityId: json["cityId"],
       delete: json["delete"],
       status: json["status"],
@@ -88,6 +94,8 @@ class CityServiceData {
         "name": name,
         "description": description,
         "logo": logo,
+        "descriptionImageVertical": descriptionImageVertical,
+        "descriptionImageHorizontal": descriptionImageHorizontal,
         "cityId": cityId,
         "delete": delete,
         "status": status,
@@ -95,10 +103,6 @@ class CityServiceData {
         "updatedAt": updatedAt?.toIso8601String(),
         "city": city?.toJson(),
       };
-
-  static List<CityServiceResponds> fromJsonList(List<dynamic> jsonList) {
-    return jsonList.map((json) => CityServiceResponds.fromJson(json)).toList();
-  }
 }
 
 class City {

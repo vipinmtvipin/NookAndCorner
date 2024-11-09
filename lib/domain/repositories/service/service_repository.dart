@@ -6,7 +6,7 @@ import 'package:customerapp/domain/model/summery/addon_request.dart';
 import 'package:customerapp/domain/model/summery/addon_service_responds.dart';
 import 'package:customerapp/domain/model/summery/apply_cupon_responds.dart';
 import 'package:customerapp/domain/model/summery/coupon_request.dart';
-import 'package:customerapp/domain/model/summery/job__login_responds.dart';
+import 'package:customerapp/domain/model/summery/job_login_responds.dart';
 import 'package:customerapp/domain/model/summery/job_request.dart';
 import 'package:customerapp/domain/model/summery/job_responds.dart';
 import 'package:customerapp/domain/model/summery/meta_responds.dart';

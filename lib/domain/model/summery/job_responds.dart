@@ -97,6 +97,7 @@ class JobCreated {
     required this.workerCount,
     required this.workHours,
     required this.slotInterval,
+    required this.aggCommissionPercent,
     required this.updatedAt,
     required this.createdAt,
     required this.bookingDate,
@@ -106,6 +107,8 @@ class JobCreated {
     required this.paymentStatus,
     required this.otp,
     required this.workDone,
+    required this.addlPromotionId,
+    required this.addlPromotionAmount,
     required this.promotionStatus,
     required this.addonId,
     required this.refundStatus,
@@ -117,7 +120,7 @@ class JobCreated {
     required this.endTime,
   });
 
-  final String? refundRetryCount;
+  final int? refundRetryCount;
   final int? jobId;
   final DateTime? jobDate;
   final String? status;
@@ -127,9 +130,9 @@ class JobCreated {
   final dynamic promotionId;
   final int? price;
   final String? txnId;
-  final int? convenienceFee;
+  final double? convenienceFee;
   final String? conveniencePercent;
-  final int? advanceAmount;
+  final double? advanceAmount;
   final String? advancePercent;
   final dynamic promotionAmount;
   final String? advStatus;
@@ -141,6 +144,7 @@ class JobCreated {
   final String? workerCount;
   final String? workHours;
   final String? slotInterval;
+  final int? aggCommissionPercent;
   final DateTime? updatedAt;
   final DateTime? createdAt;
   final dynamic bookingDate;
@@ -150,6 +154,8 @@ class JobCreated {
   final dynamic paymentStatus;
   final dynamic otp;
   final dynamic workDone;
+  final dynamic addlPromotionId;
+  final dynamic addlPromotionAmount;
   final dynamic promotionStatus;
   final dynamic addonId;
   final dynamic refundStatus;
@@ -186,6 +192,7 @@ class JobCreated {
       workerCount: json["workerCount"],
       workHours: json["workHours"],
       slotInterval: json["slotInterval"],
+      aggCommissionPercent: json["aggCommissionPercent"],
       updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
       createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
       bookingDate: json["bookingDate"],
@@ -195,6 +202,8 @@ class JobCreated {
       paymentStatus: json["paymentStatus"],
       otp: json["otp"],
       workDone: json["workDone"],
+      addlPromotionId: json["addlPromotionId"],
+      addlPromotionAmount: json["addlPromotionAmount"],
       promotionStatus: json["promotionStatus"],
       addonId: json["addonId"],
       refundStatus: json["refundStatus"],
@@ -232,6 +241,7 @@ class JobCreated {
         "workerCount": workerCount,
         "workHours": workHours,
         "slotInterval": slotInterval,
+        "aggCommissionPercent": aggCommissionPercent,
         "updatedAt": updatedAt?.toIso8601String(),
         "createdAt": createdAt?.toIso8601String(),
         "bookingDate": bookingDate,
@@ -241,6 +251,8 @@ class JobCreated {
         "paymentStatus": paymentStatus,
         "otp": otp,
         "workDone": workDone,
+        "addlPromotionId": addlPromotionId,
+        "addlPromotionAmount": addlPromotionAmount,
         "promotionStatus": promotionStatus,
         "addonId": addonId,
         "refundStatus": refundStatus,
@@ -260,14 +272,12 @@ class JobData {
     required this.userId,
     required this.servicePriceId,
     required this.assignedUserId,
-    required this.promotionId,
     required this.price,
     required this.txnId,
     required this.convenienceFee,
     required this.conveniencePercent,
     required this.advanceAmount,
     required this.advancePercent,
-    required this.promotionAmount,
     required this.advStatus,
     required this.isGolderHour,
     required this.goldenHoursCharge,
@@ -277,6 +287,7 @@ class JobData {
     required this.workerCount,
     required this.workHours,
     required this.slotInterval,
+    required this.aggCommissionPercent,
   });
 
   final DateTime? jobDate;
@@ -284,14 +295,12 @@ class JobData {
   final int? userId;
   final int? servicePriceId;
   final int? assignedUserId;
-  final dynamic promotionId;
   final int? price;
   final String? txnId;
-  final int? convenienceFee;
+  final double? convenienceFee;
   final int? conveniencePercent;
-  final int? advanceAmount;
+  final double? advanceAmount;
   final int? advancePercent;
-  final dynamic promotionAmount;
   final String? advStatus;
   final bool? isGolderHour;
   final int? goldenHoursCharge;
@@ -301,6 +310,7 @@ class JobData {
   final int? workerCount;
   final int? workHours;
   final String? slotInterval;
+  final int? aggCommissionPercent;
 
   factory JobData.fromJson(Map<String, dynamic> json) {
     return JobData(
@@ -309,14 +319,12 @@ class JobData {
       userId: json["userId"],
       servicePriceId: json["servicePriceId"],
       assignedUserId: json["assignedUserId"],
-      promotionId: json["promotionId"],
       price: json["price"],
       txnId: json["txnId"],
       convenienceFee: json["convenienceFee"],
       conveniencePercent: json["conveniencePercent"],
       advanceAmount: json["advanceAmount"],
       advancePercent: json["advancePercent"],
-      promotionAmount: json["promotionAmount"],
       advStatus: json["advStatus"],
       isGolderHour: json["isGolderHour"],
       goldenHoursCharge: json["goldenHoursCharge"],
@@ -326,6 +334,7 @@ class JobData {
       workerCount: json["workerCount"],
       workHours: json["workHours"],
       slotInterval: json["slotInterval"],
+      aggCommissionPercent: json["aggCommissionPercent"],
     );
   }
 
@@ -335,14 +344,12 @@ class JobData {
         "userId": userId,
         "servicePriceId": servicePriceId,
         "assignedUserId": assignedUserId,
-        "promotionId": promotionId,
         "price": price,
         "txnId": txnId,
         "convenienceFee": convenienceFee,
         "conveniencePercent": conveniencePercent,
         "advanceAmount": advanceAmount,
         "advancePercent": advancePercent,
-        "promotionAmount": promotionAmount,
         "advStatus": advStatus,
         "isGolderHour": isGolderHour,
         "goldenHoursCharge": goldenHoursCharge,
@@ -352,6 +359,7 @@ class JobData {
         "workerCount": workerCount,
         "workHours": workHours,
         "slotInterval": slotInterval,
+        "aggCommissionPercent": aggCommissionPercent,
       };
 }
 

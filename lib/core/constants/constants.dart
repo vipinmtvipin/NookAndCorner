@@ -38,6 +38,11 @@ class NetworkKeys {
   static const String createJobLogin = '/job/V1/login';
   static const String createJob = '/job/V1';
   static const String addOns = '/addons';
+
+  static const String cancelledJob = '/job/cancelled';
+  static const String completedJob = '/job/completed';
+  static const String pendingJob = '/job/pending';
+  static const String scheduledJob = '/job/scheduled';
 }
 
 /// Constants for Session storage
