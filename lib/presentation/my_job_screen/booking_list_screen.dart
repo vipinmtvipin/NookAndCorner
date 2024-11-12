@@ -1,4 +1,5 @@
 import 'package:customerapp/core/extensions/list_extensions.dart';
+import 'package:customerapp/core/routes/app_routes.dart';
 import 'package:customerapp/core/theme/app_text_style.dart';
 import 'package:customerapp/presentation/common_widgets/conditional_widget.dart';
 import 'package:customerapp/presentation/common_widgets/title_bar_widget.dart';
@@ -56,7 +57,15 @@ class BookingListingScreen extends GetView<MyBookingController> {
                           return MyBookingCard(
                             item: job,
                             orderType: controller.screenType,
-                            onTap: () {},
+                            onTap: () {
+                              controller.selectedJob.value = job;
+                              if ((controller.screenType !=
+                                      MyBookingStatus.completed ||
+                                  job.paymentStatus != 'completed')) {
+                                controller.getBasicInfo();
+                              }
+                              navigateAndFetchJobs();
+                            },
                           );
                         },
                       ),
@@ -65,5 +74,10 @@ class BookingListingScreen extends GetView<MyBookingController> {
                 ]),
           ),
         ));
+  }
+
+  void navigateAndFetchJobs() async {
+    var result = await Get.toNamed(AppRoutes.bookingDetailsScreen);
+    controller.getJobs();
   }
 }

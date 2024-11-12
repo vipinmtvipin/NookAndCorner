@@ -8,12 +8,15 @@ import 'package:customerapp/domain/model/service/time_slote_responds.dart';
 import 'package:customerapp/domain/model/summery/addon_request.dart';
 import 'package:customerapp/domain/model/summery/addon_service_responds.dart';
 import 'package:customerapp/domain/model/summery/meta_responds.dart';
+import 'package:customerapp/domain/usecases/my_job/cancel_job_use_case.dart';
 import 'package:customerapp/domain/usecases/my_job/my_job_use_case.dart';
+import 'package:customerapp/domain/usecases/my_job/rating_job_use_case.dart';
+import 'package:customerapp/domain/usecases/my_job/reschedule_job_use_case.dart';
+import 'package:customerapp/domain/usecases/my_job/review_job_use_case.dart';
 import 'package:customerapp/domain/usecases/service/service_slots_use_case.dart';
 import 'package:customerapp/domain/usecases/summery/summery_use_case.dart';
 import 'package:customerapp/presentation/base_controller.dart';
 import 'package:customerapp/presentation/services_screen/controller/service_controller.dart';
-import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
@@ -26,10 +29,20 @@ class MyBookingController extends BaseController {
   final MyJobUseCase _myJobUseCase;
   final SummeryUseCase _summeryUseCase;
   final ServiceSlotsUseCase _serviceSlotsUseCase;
+
+  final CancelJobUseCase _cancelJobUseCase;
+  final RatingJobUseCase _ratingJobUseCase;
+  final RescheduleJobUseCase _rescheduleJobUseCase;
+  final ReviewJobUseCase _reviewJobUseCase;
+
   MyBookingController(
     this._myJobUseCase,
     this._summeryUseCase,
     this._serviceSlotsUseCase,
+    this._cancelJobUseCase,
+    this._ratingJobUseCase,
+    this._rescheduleJobUseCase,
+    this._reviewJobUseCase,
   );
 
   var screenTitle = 'My Bookings'.obs;
@@ -50,7 +63,6 @@ class MyBookingController extends BaseController {
   Rx<DateTime> selectedDate = Rx(
     DateTime.now().add(Duration(days: 1)),
   );
-  // Rx<String> selectedDateValue = Rx('Select Date');
   var selectedDateValue = 'Select Date'.obs;
   var selectedTime = ''.obs;
   Rx<List<TimeSlotData>> timeSlots = Rx([]);
@@ -89,7 +101,6 @@ class MyBookingController extends BaseController {
         var jobData = await _myJobUseCase.execute(request);
         jobList.value = jobData?.data ?? [];
 
-        debugPrint('jobList: ################ ${jobList.value.length}');
         hideLoadingDialog();
       } catch (e) {
         hideLoadingDialog();
@@ -118,8 +129,6 @@ class MyBookingController extends BaseController {
 
         double servicePrice = selectedJob.value.servicePrice?.price ?? 0.0;
 
-        grandTotal.value = servicePrice;
-
         double servicePercentage = servicePrice / 100;
 
         double advancePercentage =
@@ -127,14 +136,6 @@ class MyBookingController extends BaseController {
         advanceAmount.value = servicePercentage * advancePercentage;
         advanceAmount.value =
             double.parse(advanceAmount.value.toStringAsFixed(2));
-
-        double conveniencePercent =
-            double.tryParse(metaData.value.conveniencePercentage ?? '0') ?? 0;
-        convenienceFee.value = servicePercentage * conveniencePercent;
-        convenienceFee.value =
-            double.parse(convenienceFee.value.toStringAsFixed(2));
-
-        calculateGrandTotal();
 
         hideLoadingDialog();
       } catch (e) {
@@ -176,6 +177,111 @@ class MyBookingController extends BaseController {
     }
   }
 
+  Future<void> cancelJob() async {
+    if (await _connectivityService.isConnected()) {
+      try {
+        showLoadingDialog();
+        var services =
+            await _cancelJobUseCase.execute(selectedJob.value.jobId.toString());
+
+        if (services?.success == true) {
+          showToast('Job Cancelled Successfully');
+          Get.back();
+        }
+        hideLoadingDialog();
+      } catch (e) {
+        hideLoadingDialog();
+        e.printInfo();
+      }
+    } else {
+      showToast(LocalizationKeys.noNetwork.tr);
+    }
+  }
+
+  Future<void> reviewJob(String comment) async {
+    if (await _connectivityService.isConnected()) {
+      try {
+        JobCommentRequest request = JobCommentRequest(
+          jobId: selectedJob.value.jobId.toString(),
+          comment: comment,
+          userId: sessionStorage.read(StorageKeys.userId),
+        );
+
+        showLoadingDialog();
+        var services = await _reviewJobUseCase.execute(request);
+
+        if (services?.success == true) {
+          showToast('Your review recorded!');
+        }
+        hideLoadingDialog();
+      } catch (e) {
+        hideLoadingDialog();
+        e.printInfo();
+      }
+    } else {
+      showToast(LocalizationKeys.noNetwork.tr);
+    }
+  }
+
+  Future<void> ratingJob(String rating) async {
+    if (await _connectivityService.isConnected()) {
+      try {
+        JobCommentRequest request = JobCommentRequest(
+          jobId: selectedJob.value.jobId.toString(),
+          comment: rating,
+          userId: sessionStorage.read(StorageKeys.userId),
+        );
+
+        showLoadingDialog();
+        var services = await _ratingJobUseCase.execute(request);
+
+        if (services?.success == true) {
+          showToast('Your rating recorded!');
+        }
+        hideLoadingDialog();
+      } catch (e) {
+        hideLoadingDialog();
+        e.printInfo();
+      }
+    } else {
+      showToast(LocalizationKeys.noNetwork.tr);
+    }
+  }
+
+  Future<void> reScheduleJob() async {
+    if (await _connectivityService.isConnected()) {
+      try {
+        var selectedTimeSlot = timeSlots.value.firstWhere((element) {
+          return DateFormat('hh:mm aa').format(element.slotStart!) ==
+              selectedTime.value;
+        }, orElse: () => TimeSlotData.empty());
+
+        ReScheduleJobRequest request = ReScheduleJobRequest(
+          goldenHourAdded: null,
+          supervisors: selectedTimeSlot.supervisors ?? [],
+          jobId: selectedJob.value.jobId.toString(),
+          jobDate: DateFormat('yyyy-MM-dd').format(selectedDate.value),
+        );
+
+        showLoadingDialog();
+
+        var services = await _rescheduleJobUseCase.execute(request);
+
+        if (services?.success == true) {
+          showToast('Job Rescheduled Successfully');
+          var data = 'vipin';
+          Get.back(result: data);
+        }
+        hideLoadingDialog();
+      } catch (e) {
+        hideLoadingDialog();
+        e.printInfo();
+      }
+    } else {
+      showToast(LocalizationKeys.noNetwork.tr);
+    }
+  }
+
   bool isAfter6PM(DateTime? date) {
     int hour = date?.hour ?? 0;
     int minute = date?.minute ?? 0;
@@ -187,14 +293,7 @@ class MyBookingController extends BaseController {
   }
 
   void calculateGrandTotal() {
-    var serviceTotal = selectedJob.value.servicePrice?.price ?? 0.0;
-    var couponAmount = 0.0;
-
-    grandTotal.value = (serviceTotal +
-        convenienceFee.value +
-        addOnsTotal.value +
-        goldenHourAmount.value -
-        couponAmount);
+    grandTotal.value = (convenienceFee.value + addOnsTotal.value);
   }
 
   void addAddOn(AddOnData addonData) {
@@ -219,15 +318,27 @@ class MyBookingController extends BaseController {
       addOns.value = currentAddOn;
 
       var price = 0.0;
+      var convenienceFees = 0.0;
+      double conveniencePercent =
+          double.tryParse(metaData.value.conveniencePercentage ?? '0') ?? 0;
       for (var e in currentAddOn) {
         var addon = addOnList.value.firstWhere((element) {
           return element.addonId == e.addonId;
         });
-        price = price + double.tryParse(addon.price ?? '0')! * e.quantity!;
+        double addonPrice = double.tryParse(addon.price ?? '0') ?? 0.0;
+
+        price = price + (addonPrice * e.quantity!);
+
+        double addOnPercentage = addonPrice / 100;
+        var convenienceValue =
+            (addOnPercentage * conveniencePercent) * e.quantity!;
+        convenienceFees = double.parse(convenienceValue.toStringAsFixed(2));
       }
       addOnsTotal.value = 0;
       addOnsTotal.value = price;
-      grandTotal.value = grandTotal.value + addOnsTotal.value;
+      convenienceFee.value = 0;
+      convenienceFee.value = convenienceFees;
+      calculateGrandTotal();
     }
   }
 
@@ -271,15 +382,28 @@ class MyBookingController extends BaseController {
     }
 
     var price = 0.0;
+    var convenienceFees = 0.0;
+    double conveniencePercent =
+        double.tryParse(metaData.value.conveniencePercentage ?? '0') ?? 0;
+
     for (var e in currentAddOn) {
       var addon = addOnList.value.firstWhere((element) {
         return element.addonId == e.addonId;
       });
-      price = price + double.tryParse(addon.price ?? '0')! * e.quantity!;
+
+      double addonPrice = double.tryParse(addon.price ?? '0') ?? 0.0;
+
+      price = price + (addonPrice * e.quantity!);
+
+      double addOnPercentage = addonPrice / 100;
+      var convenienceValue =
+          (addOnPercentage * conveniencePercent) * e.quantity!;
+      convenienceFees = double.parse(convenienceValue.toStringAsFixed(2));
     }
     addOnsTotal.value = 0;
     addOnsTotal.value = price;
-
+    convenienceFee.value = 0;
+    convenienceFee.value = convenienceFees;
     calculateGrandTotal();
   }
 }

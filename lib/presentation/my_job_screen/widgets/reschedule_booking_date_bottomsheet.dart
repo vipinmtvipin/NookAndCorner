@@ -217,6 +217,7 @@ class RescheduleBookingDateBottomSheet extends GetView<MyBookingController> {
                         backGroundColor: AppColors.primaryColor,
                         onPressed: () {
                           Get.back();
+                          controller.reScheduleJob();
                         },
                       ),
                     ],
@@ -231,10 +232,15 @@ class RescheduleBookingDateBottomSheet extends GetView<MyBookingController> {
   }
 
   Future<void> _selectDate(BuildContext context) async {
+    DateTime firstDate = DateTime.now().add(Duration(days: 1));
+    DateTime initialDate = controller.selectedDate.value.isBefore(firstDate)
+        ? firstDate
+        : controller.selectedDate.value;
+
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: controller.selectedDate.value,
-      firstDate: DateTime.now().add(Duration(days: 1)),
+      initialDate: initialDate,
+      firstDate: firstDate,
       lastDate: DateTime(2101),
     );
     if (picked != null) {

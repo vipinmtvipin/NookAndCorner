@@ -1,6 +1,7 @@
 import 'package:customerapp/core/constants/constants.dart';
 import 'package:customerapp/core/network/api_service.dart';
 import 'package:customerapp/core/network/dio_exception.dart';
+import 'package:customerapp/domain/model/common_responds.dart';
 import 'package:customerapp/domain/model/my_jobs/my_job_responds.dart';
 import 'package:customerapp/domain/model/my_jobs/myjob_request.dart';
 import 'package:customerapp/domain/repositories/my_job/myjob_repository.dart';
@@ -29,6 +30,86 @@ class MyJobRepositoryIml extends MyJobRepository {
           ));
 
       final MyJobResponds data = myJobRespondsFromJson(response.toString());
+
+      return data;
+    } on DioException catch (e) {
+      var error = DioExceptionData.fromDioError(e);
+      throw error.errorMessage;
+    }
+  }
+
+  @override
+  Future<CommonResponds?> cancelJob(String jobId) async {
+    try {
+      Response response =
+          await GetIt.I.get<ApiService>().post(NetworkKeys.cancelJob,
+              options: Options(
+                contentType: 'application/json',
+              ),
+              data: {"id": jobId});
+
+      final CommonResponds data = commonRespondsFromJson(response.toString());
+
+      return data;
+    } on DioException catch (e) {
+      var error = DioExceptionData.fromDioError(e);
+      throw error.errorMessage;
+    }
+  }
+
+  @override
+  Future<CommonResponds?> ratingJob(JobCommentRequest request) async {
+    try {
+      Response response = await GetIt.I.get<ApiService>().post(
+          NetworkKeys.rating,
+          options: Options(
+            contentType: 'application/json',
+          ),
+          data: {
+            "jobId": request.jobId,
+            "rating": request.comment,
+            "userId": request.userId
+          });
+
+      final CommonResponds data = commonRespondsFromJson(response.toString());
+
+      return data;
+    } on DioException catch (e) {
+      var error = DioExceptionData.fromDioError(e);
+      throw error.errorMessage;
+    }
+  }
+
+  @override
+  Future<CommonResponds?> reScheduleJob(ReScheduleJobRequest request) async {
+    try {
+      Response response =
+          await GetIt.I.get<ApiService>().put(NetworkKeys.reSchedule,
+              options: Options(
+                contentType: 'application/json',
+              ),
+              data: request.toJson());
+
+      final CommonResponds data = commonRespondsFromJson(response.toString());
+
+      return data;
+    } on DioException catch (e) {
+      var error = DioExceptionData.fromDioError(e);
+      throw error.errorMessage;
+    }
+  }
+
+  @override
+  Future<CommonResponds?> reviewJob(JobCommentRequest request) async {
+    try {
+      Response response =
+          await GetIt.I.get<ApiService>().post(NetworkKeys.comment,
+              options: Options(
+                contentType: 'application/json',
+              ),
+              data: request.toJson());
+
+      final CommonResponds data = commonRespondsFromJson(response.toString());
 
       return data;
     } on DioException catch (e) {

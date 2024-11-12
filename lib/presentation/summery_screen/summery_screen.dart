@@ -51,6 +51,7 @@ class SummeryScreen extends GetView<ServiceController> {
               width: 30,
               onTap: () {
                 Get.back();
+                clearAllControllerData();
               },
               alignment: Alignment.topLeft,
               shape: IconButtonShape.CircleBorder35,

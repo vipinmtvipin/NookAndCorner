@@ -43,6 +43,13 @@ class NetworkKeys {
   static const String completedJob = '/job/completed';
   static const String pendingJob = '/job/pending';
   static const String scheduledJob = '/job/scheduled';
+
+  static const String reSchedule = '/job/update/re-schedule';
+  static const String cancelJob = '/job/cancel';
+
+  static const String contact = '/contact';
+  static const String rating = ' /rating';
+  static const String comment = ' /rating/comment';
 }
 
 /// Constants for Session storage

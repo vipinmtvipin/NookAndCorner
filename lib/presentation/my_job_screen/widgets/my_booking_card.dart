@@ -1,7 +1,6 @@
 import 'package:customerapp/core/extensions/date_time_extensions.dart';
 import 'package:customerapp/core/extensions/sheet_extension.dart';
 import 'package:customerapp/core/extensions/string_extensions.dart';
-import 'package:customerapp/core/routes/app_routes.dart';
 import 'package:customerapp/core/theme/app_text_style.dart';
 import 'package:customerapp/core/theme/color_constant.dart';
 import 'package:customerapp/domain/model/my_jobs/my_job_responds.dart';
@@ -147,7 +146,8 @@ class MyBookingCard extends GetView<MyBookingController> {
                               ],
                             ),
                             subtitle: ResponsiveText(
-                                text: "0 Rs",
+                                text:
+                                    "${double.parse((item.price! - item.advanceAmount!).toStringAsFixed(2))} Rs",
                                 maxLines: 1,
                                 style: AppTextStyle.txt14.copyWith(
                                   color: AppColors.green,
@@ -215,7 +215,6 @@ class MyBookingCard extends GetView<MyBookingController> {
                                         .copyWith(color: AppColors.black)),
                               ),
                               Card(
-                                elevation: 8,
                                 color: AppColors.white,
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(
@@ -244,10 +243,25 @@ class MyBookingCard extends GetView<MyBookingController> {
                     ),
                   ),
                   Visibility(
+                    visible:
+                        (controller.screenType == MyBookingStatus.completed &&
+                            item.paymentStatus != 'completed'),
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 10.0),
+                      child: BookingButton(
+                        text: 'Pay Now',
+                        onTap: () {},
+                        color: AppColors.skyBlue,
+                        icon: Icons.add_business,
+                      ),
+                    ),
+                  ),
+                  Visibility(
                     visible: controller.screenType == MyBookingStatus.cancelled,
                     child: Padding(
                       padding: const EdgeInsets.only(top: 10.0, bottom: 10),
-                      child: Text("Refund Status: ",
+                      child: Text(
+                          "Refund Status: ${item.refundStatus.toCapitalized}",
                           style: AppTextStyle.txt14.copyWith(
                               color: AppColors.black,
                               fontWeight: FontWeight.w500)),
@@ -275,14 +289,14 @@ class MyBookingCard extends GetView<MyBookingController> {
                         child: Padding(
                           padding: const EdgeInsets.only(left: 3.0),
                           child: BookingButton(
-                            text: controller.screenType ==
-                                    MyBookingStatus.cancelled
+                            text: (controller.screenType ==
+                                        MyBookingStatus.cancelled ||
+                                    controller.screenType ==
+                                        MyBookingStatus.completed)
                                 ? 'View Details'
                                 : 'Manage Booking',
                             onTap: () {
-                              controller.selectedJob.value = item;
-                              controller.getBasicInfo();
-                              Get.toNamed(AppRoutes.bookingDetailsScreen);
+                              onTap.call();
                             },
                             color: AppColors.black,
                             icon: Icons.bookmark,

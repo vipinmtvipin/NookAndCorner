@@ -119,9 +119,9 @@ class MyJobData {
   final double? advanceAmount;
   final String? advancePercent;
   final String? advStatus;
-  final dynamic refundStatus;
-  final dynamic cancelledAt;
-  final dynamic completedAt;
+  final String? refundStatus;
+  final DateTime? cancelledAt;
+  final DateTime? completedAt;
   final double? refundAmount;
   final bool? isGolderHour;
   final double? goldenHoursCharge;
@@ -149,7 +149,8 @@ class MyJobData {
   factory MyJobData.fromJson(Map<String, dynamic> json) {
     return MyJobData(
       jobId: json["jobId"],
-      jobDate: DateTime.tryParse(json["jobDate"] ?? ""),
+      jobDate: DateTime.tryParse(
+          json["jobDate"] ?? DateTime.now().toIso8601String()),
       status: json["status"],
       userId: json["userId"],
       servicePriceId: json["servicePriceId"],
@@ -175,8 +176,10 @@ class MyJobData {
       advancePercent: json["advancePercent"],
       advStatus: json["advStatus"],
       refundStatus: json["refundStatus"],
-      cancelledAt: json["cancelledAt"],
-      completedAt: json["completedAt"],
+      cancelledAt: DateTime.tryParse(
+          json["cancelledAt"] ?? DateTime.now().toIso8601String()),
+      completedAt: DateTime.tryParse(
+          json["completedAt"] ?? DateTime.now().toIso8601String()),
       refundAmount: GetIt.I<CommonUtil>().toDouble(json["refundAmount"]),
       isGolderHour: json["isGolderHour"],
       goldenHoursCharge:
@@ -192,8 +195,10 @@ class MyJobData {
       workHours: json["workHours"],
       aggCommissionPercent: json["aggCommissionPercent"],
       refundRetryCount: json["refundRetryCount"],
-      createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
-      updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
+      createdAt: DateTime.tryParse(
+          json["createdAt"] ?? DateTime.now().toIso8601String()),
+      updatedAt: DateTime.tryParse(
+          json["updatedAt"] ?? DateTime.now().toIso8601String()),
       address: json["address"],
       promotion: json["promotion"],
       servicePrice: json["servicePrice"] == null
@@ -238,8 +243,8 @@ class MyJobData {
         "advancePercent": advancePercent,
         "advStatus": advStatus,
         "refundStatus": refundStatus,
-        "cancelledAt": cancelledAt,
-        "completedAt": completedAt,
+        "cancelledAt": cancelledAt?.toIso8601String(),
+        "completedAt": completedAt?.toIso8601String(),
         "refundAmount": refundAmount,
         "isGolderHour": isGolderHour,
         "goldenHoursCharge": goldenHoursCharge,
@@ -294,8 +299,8 @@ class MyJobData {
       advancePercent: "",
       advStatus: "",
       refundStatus: "",
-      cancelledAt: "",
-      completedAt: "",
+      cancelledAt: DateTime.now(),
+      completedAt: DateTime.now(),
       refundAmount: 0.0,
       isGolderHour: false,
       goldenHoursCharge: 0.0,
@@ -427,8 +432,12 @@ class Order {
       addonId: json["addonId"],
       addonPrice: GetIt.I<CommonUtil>().toDouble(json["addonPrice"]),
       quantity: json["quantity"],
-      createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
-      updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
+      createdAt: DateTime.tryParse(
+        json["createdAt"] ?? DateTime.now().toIso8601String(),
+      ),
+      updatedAt: DateTime.tryParse(
+        json["updatedAt"] ?? DateTime.now().toIso8601String(),
+      ),
       jobId: json["jobId"],
       addon: json["addon"] == null ? null : Addon.fromJson(json["addon"]),
     );
@@ -479,8 +488,12 @@ class Addon {
       logo: json["logo"],
       delete: json["delete"],
       status: json["status"],
-      createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
-      updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
+      createdAt: DateTime.tryParse(
+        json["createdAt"] ?? DateTime.now().toIso8601String(),
+      ),
+      updatedAt: DateTime.tryParse(
+        json["updatedAt"] ?? DateTime.now().toIso8601String(),
+      ),
     );
   }
 
@@ -528,8 +541,12 @@ class ServicePrice {
       cityId: json["cityId"],
       serviceId: json["serviceId"],
       status: json["status"],
-      createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
-      updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
+      createdAt: DateTime.tryParse(
+        json["createdAt"] ?? DateTime.now().toIso8601String(),
+      ),
+      updatedAt: DateTime.tryParse(
+        json["updatedAt"] ?? DateTime.now().toIso8601String(),
+      ),
       service:
           json["service"] == null ? null : Service.fromJson(json["service"]),
     );
@@ -600,8 +617,12 @@ class Service {
       categoryId: json["categoryId"],
       defaultAssignedUserId: json["defaultAssignedUserId"],
       status: json["status"],
-      createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
-      updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
+      createdAt: DateTime.tryParse(
+        json["createdAt"] ?? DateTime.now().toIso8601String(),
+      ),
+      updatedAt: DateTime.tryParse(
+        json["updatedAt"] ?? DateTime.now().toIso8601String(),
+      ),
       category:
           json["category"] == null ? null : Category.fromJson(json["category"]),
     );
@@ -665,8 +686,12 @@ class Category {
       cityId: json["cityId"],
       delete: json["delete"],
       status: json["status"],
-      createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
-      updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
+      createdAt: DateTime.tryParse(
+        json["createdAt"] ?? DateTime.now().toIso8601String(),
+      ),
+      updatedAt: DateTime.tryParse(
+        json["updatedAt"] ?? DateTime.now().toIso8601String(),
+      ),
     );
   }
 
