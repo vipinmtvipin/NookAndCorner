@@ -1,6 +1,9 @@
 import 'package:customerapp/core/constants/constants.dart';
+import 'package:customerapp/core/extensions/date_time_extensions.dart';
 import 'package:customerapp/core/localization/localization_keys.dart';
 import 'package:customerapp/core/network/connectivity_service.dart';
+import 'package:customerapp/core/routes/app_routes.dart';
+import 'package:customerapp/core/utils/common_util.dart';
 import 'package:customerapp/domain/model/my_jobs/my_job_responds.dart';
 import 'package:customerapp/domain/model/my_jobs/myjob_request.dart';
 import 'package:customerapp/domain/model/service/time_slote_request.dart';
@@ -18,6 +21,7 @@ import 'package:customerapp/domain/usecases/summery/summery_use_case.dart';
 import 'package:customerapp/presentation/base_controller.dart';
 import 'package:customerapp/presentation/services_screen/controller/service_controller.dart';
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
 
@@ -177,6 +181,23 @@ class MyBookingController extends BaseController {
     }
   }
 
+  Future<void> completeJob(String from) async {
+    var result = await Get.toNamed(AppRoutes.paymentScreen, arguments: {
+      'orderID': selectedJob.value.txnId,
+      'paymentAmount': double.parse(
+          (selectedJob.value.price! - selectedJob.value.advanceAmount!)
+              .toStringAsFixed(2)),
+      'paymentType': "Complete",
+    });
+
+    if (from == 'list') {
+      getJobs();
+    } else {
+      Get.back();
+      getJobs();
+    }
+  }
+
   Future<void> cancelJob() async {
     if (await _connectivityService.isConnected()) {
       try {
@@ -186,7 +207,7 @@ class MyBookingController extends BaseController {
 
         if (services?.success == true) {
           showToast('Job Cancelled Successfully');
-          Get.back();
+          Get.back(result: true);
         }
         hideLoadingDialog();
       } catch (e) {
@@ -204,7 +225,7 @@ class MyBookingController extends BaseController {
         JobCommentRequest request = JobCommentRequest(
           jobId: selectedJob.value.jobId.toString(),
           comment: comment,
-          userId: sessionStorage.read(StorageKeys.userId),
+          userId: sessionStorage.read(StorageKeys.userId).toString(),
         );
 
         showLoadingDialog();
@@ -212,6 +233,7 @@ class MyBookingController extends BaseController {
 
         if (services?.success == true) {
           showToast('Your review recorded!');
+          getJobs();
         }
         hideLoadingDialog();
       } catch (e) {
@@ -229,7 +251,7 @@ class MyBookingController extends BaseController {
         JobCommentRequest request = JobCommentRequest(
           jobId: selectedJob.value.jobId.toString(),
           comment: rating,
-          userId: sessionStorage.read(StorageKeys.userId),
+          userId: sessionStorage.read(StorageKeys.userId).toString(),
         );
 
         showLoadingDialog();
@@ -237,6 +259,7 @@ class MyBookingController extends BaseController {
 
         if (services?.success == true) {
           showToast('Your rating recorded!');
+          getJobs();
         }
         hideLoadingDialog();
       } catch (e) {
@@ -260,7 +283,12 @@ class MyBookingController extends BaseController {
           goldenHourAdded: null,
           supervisors: selectedTimeSlot.supervisors ?? [],
           jobId: selectedJob.value.jobId.toString(),
-          jobDate: DateFormat('yyyy-MM-dd').format(selectedDate.value),
+          jobDate: GetIt.I<CommonUtil>()
+              .parseJobDate(
+                DateFormat('yyyy-MM-dd').format(selectedDate.value),
+                selectedTime.value,
+              )
+              .formatDateTimeToISO(),
         );
 
         showLoadingDialog();
@@ -269,8 +297,7 @@ class MyBookingController extends BaseController {
 
         if (services?.success == true) {
           showToast('Job Rescheduled Successfully');
-          var data = 'vipin';
-          Get.back(result: data);
+          Get.back(result: true);
         }
         hideLoadingDialog();
       } catch (e) {

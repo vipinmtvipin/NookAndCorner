@@ -1,8 +1,14 @@
+import 'package:customerapp/core/extensions/list_extensions.dart';
+import 'package:customerapp/core/extensions/string_extensions.dart';
 import 'package:customerapp/core/routes/app_routes.dart';
 import 'package:customerapp/core/theme/color_constant.dart';
+import 'package:customerapp/domain/model/address/address_responds.dart';
 import 'package:customerapp/presentation/address_screen/controller/address_controller.dart';
+import 'package:customerapp/presentation/common_widgets/conditional_widget.dart';
 import 'package:customerapp/presentation/common_widgets/nookcorner_button.dart';
+import 'package:customerapp/presentation/common_widgets/responsive_text.dart';
 import 'package:customerapp/presentation/common_widgets/title_bar_widget.dart';
+import 'package:customerapp/presentation/main_screen/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -24,7 +30,7 @@ class AddressScreen extends GetView<AddressController> {
           child: NookCornerButton(
             text: 'Add Address',
             onPressed: () {
-              Get.toNamed(AppRoutes.addAddressScreen);
+              navigateAndFetchAddress();
             },
           ),
         ),
@@ -40,27 +46,49 @@ class AddressScreen extends GetView<AddressController> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const TitleBarWidget(title: "Address"),
-              Flexible(
-                child: ListView.builder(
-                  itemCount: 5,
-                  itemBuilder: (context, index) {
-                    return AddressCardWidget(
-                        label: 'Address $index', onTap: () {});
-                  },
+              Obx(
+                () => Flexible(
+                  child: ConditionalWidget(
+                    condition: controller.addressList.value.isNotNullOrEmpty,
+                    onFalse: NotDataFound(
+                      message: "No address yet, please add one.",
+                      size: 150,
+                      style: AppTextStyle.txtBold16,
+                    ),
+                    child: ListView.builder(
+                      itemCount: controller.addressList.value.length,
+                      itemBuilder: (context, index) {
+                        var address = controller.addressList.value[index];
+                        return AddressCardWidget(
+                            index: index,
+                            data: address,
+                            onTap: () {
+                              navigateAndFetchAddress();
+                            });
+                      },
+                    ),
+                  ),
                 ),
               ),
             ]));
   }
+
+  void navigateAndFetchAddress() async {
+    var result = await Get.toNamed(AppRoutes.addAddressScreen);
+    controller.getAddress();
+  }
 }
 
 class AddressCardWidget extends StatelessWidget {
-  final String label;
+  final AddressData data;
   final Function() onTap;
+  final int index;
 
   const AddressCardWidget({
     super.key,
-    required this.label,
+    required this.data,
     required this.onTap,
+    required this.index,
   });
 
   @override
@@ -90,25 +118,72 @@ class AddressCardWidget extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Home",
+                    Text(data.addressType.toCapitalized ?? "",
                         style: AppTextStyle.txtBold16
                             .copyWith(color: AppColors.secondaryColor)),
-                    SizedBox(
-                      height: 30,
-                      child: Checkbox(
-                        value: true,
-                        onChanged: (selected) {},
-                        activeColor: AppColors.primaryColor,
-                      ),
-                    )
+                    Visibility(
+                        visible: index == 0,
+                        child: SizedBox(
+                          height: 30,
+                          child: Checkbox(
+                            checkColor: AppColors.white,
+                            fillColor: WidgetStateProperty.resolveWith(
+                                (states) => AppColors.success),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              side: BorderSide(
+                                  color: AppColors.success, width: 1),
+                            ),
+                            value: true,
+                            onChanged: (selected) {},
+                            activeColor: AppColors.primaryColor,
+                          ),
+                        )),
                   ],
                 ),
                 const SizedBox(height: 2),
-                Text("Flat Infos...", style: AppTextStyle.txt14),
-                const SizedBox(height: 2),
-                Text("Details",
-                    style: AppTextStyle.txt14
-                        .copyWith(color: AppColors.lightGray)),
+                ResponsiveText(
+                    text:
+                        "${data.addresslineOne.toCapitalized}, ${data.addresslineTwo.toCapitalized}",
+                    style: AppTextStyle.txt14),
+                const SizedBox(height: 3),
+                Text(data.location.toCapitalized,
+                    style:
+                        AppTextStyle.txt14.copyWith(color: AppColors.darkGray)),
+                const SizedBox(height: 5),
+                Divider(
+                  color: AppColors.tinyGray,
+                  thickness: 0.3,
+                ),
+                const SizedBox(height: 5),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        onTap();
+                      },
+                      child: Text(
+                        "Edit",
+                        style: AppTextStyle.txtBold14.copyWith(
+                            color: AppColors.primaryColor,
+                            decoration: TextDecoration.underline),
+                      ),
+                    ),
+                    const SizedBox(width: 20),
+                    GestureDetector(
+                      onTap: () {
+                        onTap();
+                      },
+                      child: Text(
+                        "Delete",
+                        style: AppTextStyle.txtBold14.copyWith(
+                            color: AppColors.primaryColor,
+                            decoration: TextDecoration.underline),
+                      ),
+                    ),
+                  ],
+                )
               ],
             ),
           ),

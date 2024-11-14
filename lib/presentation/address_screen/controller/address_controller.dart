@@ -1,7 +1,9 @@
+import 'package:customerapp/core/constants/constants.dart';
 import 'package:customerapp/core/localization/localization_keys.dart';
 import 'package:customerapp/core/network/connectivity_service.dart';
 import 'package:customerapp/domain/model/address/address_request.dart';
-import 'package:customerapp/domain/model/service/service_details_responds.dart';
+import 'package:customerapp/domain/model/address/address_responds.dart';
+import 'package:customerapp/domain/model/home/city_responds.dart';
 import 'package:customerapp/domain/usecases/address/get_address_use_case.dart';
 import 'package:customerapp/domain/usecases/address/save_addrress_use_case.dart';
 import 'package:customerapp/presentation/base_controller.dart';
@@ -24,13 +26,14 @@ class AddressController extends BaseController {
   AddressController(this._getAddressUseCase, this._saveAddressUseCase);
 
   late final _connectivityService = getIt<ConnectivityService>();
-  Rx<List<ServiceData>> serviceInfo = Rx([]);
+  Rx<List<AddressData>> addressList = Rx([]);
 
   var addressStatus = AddressStatus.unknown.obs;
 
   final sessionStorage = GetStorage();
   GoogleMapController? mapController;
   Rx<LatLng> currentLocation = Rx(const LatLng(19.0760, 72.8777));
+  Rx<LatLng> selectedLocation = Rx(const LatLng(19.0760, 72.8777));
   Rx<String> addressType = Rx('Home');
   Rx<bool> hideToolTip = Rx(false);
   TextEditingController streetController = TextEditingController();
@@ -43,6 +46,7 @@ class AddressController extends BaseController {
   void onInit() {
     super.onInit();
     _loadCustomMarkerIcon();
+    getAddress();
   }
 
   @override
@@ -53,15 +57,25 @@ class AddressController extends BaseController {
     houseFlatController.dispose();
   }
 
-  Future<void> getAddress(
-    String categoryId,
-  ) async {
+  Future<void> getAddress() async {
     if (await _connectivityService.isConnected()) {
       try {
         showLoadingDialog();
 
-        var services = await _getAddressUseCase.execute(categoryId);
-        //  serviceInfo.value = services?.data ?? [];
+        CityData selectedCity = CityData();
+        final value = sessionStorage.read(StorageKeys.selectedCity);
+        if (value != null) {
+          selectedCity = CityData.fromJson(value);
+        }
+
+        GetAddressRequest request = GetAddressRequest(
+          userId: sessionStorage.read(StorageKeys.userId).toString(),
+          cityId: selectedCity.cityId.toString(),
+        );
+
+        var addresses = await _getAddressUseCase.execute(request);
+
+        addressList.value = addresses?.data ?? [];
 
         addressStatus.value = AddressStatus.loaded;
 
@@ -75,25 +89,36 @@ class AddressController extends BaseController {
     }
   }
 
-  Future<void> saveAddress(
-    String categoryId,
-  ) async {
+  Future<void> saveAddress() async {
     if (await _connectivityService.isConnected()) {
       try {
         showLoadingDialog();
 
+        CityData selectedCity = CityData();
+        final value = sessionStorage.read(StorageKeys.selectedCity);
+        if (value != null) {
+          selectedCity = CityData.fromJson(value);
+        }
+
         AddressRequest request = AddressRequest(
-            hoseFlat: houseFlatController.text,
-            street: streetController.text,
-            city: cityController.text,
-            addressType: addressType.value,
-            latitude: currentLocation.value.longitude.toString(),
-            longitude: currentLocation.value.latitude.toString());
+          addresslineOne: streetController.text,
+          addresslineTwo: houseFlatController.text,
+          location: cityController.text,
+          addressType: addressType.value,
+          lat: selectedLocation.value.longitude.toString(),
+          lng: selectedLocation.value.latitude.toString(),
+          cityId: selectedCity.cityId.toString(),
+          userId: sessionStorage.read(StorageKeys.userId).toString(),
+        );
 
         var services = await _saveAddressUseCase.execute(request);
-        //  serviceInfo.value = services?.data ?? [];
 
-        addressStatus.value = AddressStatus.saved;
+        if (services != null && services.success == true) {
+          clearAddressInfo();
+          showToast('Address added successfully');
+          addressStatus.value = AddressStatus.saved;
+          Get.back(result: true);
+        }
 
         hideLoadingDialog();
       } catch (e) {
@@ -103,6 +128,12 @@ class AddressController extends BaseController {
     } else {
       showToast(LocalizationKeys.noNetwork.tr);
     }
+  }
+
+  void clearAddressInfo() {
+    streetController.clear();
+    cityController.clear();
+    houseFlatController.clear();
   }
 
   void _loadCustomMarkerIcon() async {}

@@ -30,8 +30,8 @@ class NetworkKeys {
   static const String serviceDetails = '/customer-service/cat';
   static const String serviceTag = '/category-tag/category';
   static const String serviceTagItems = '/service/tags';
-  static const String getAddress = '/';
-  static const String saveAddress = '/';
+  static const String getAddress = '/address/address';
+  static const String saveAddress = '/address';
 
   static const String applyCoupon = '/promotion/validate';
   static const String metaData = '/meta-values';
@@ -48,8 +48,8 @@ class NetworkKeys {
   static const String cancelJob = '/job/cancel';
 
   static const String contact = '/contact';
-  static const String rating = ' /rating';
-  static const String comment = ' /rating/comment';
+  static const String rating = '/rating';
+  static const String comment = '/rating/comment';
 }
 
 /// Constants for Session storage

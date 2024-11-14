@@ -1,8 +1,10 @@
+import 'package:customerapp/core/extensions/string_extensions.dart';
 import 'package:customerapp/core/theme/app_text_style.dart';
 import 'package:customerapp/core/theme/color_constant.dart';
 import 'package:customerapp/presentation/common_widgets/network_image_view.dart';
 import 'package:customerapp/presentation/common_widgets/nookcorner_button.dart';
 import 'package:customerapp/presentation/common_widgets/nookcorner_text_field.dart';
+import 'package:customerapp/presentation/my_job_screen/controller/mybooking_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -13,6 +15,8 @@ class ReviewBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var comment = '';
+    final controller = Get.find<MyBookingController>();
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(5.0),
@@ -30,13 +34,15 @@ class ReviewBottomSheet extends StatelessWidget {
             textInputAction: TextInputAction.done,
             maxLines: 6,
             minLines: 3,
-            // controller: controller.emailController,
             hint: 'Write your review here',
             textStyle: AppTextStyle.txt14,
             type: NookCornerTextFieldType.text,
             isFormField: true,
             validator: (value) {
               return null;
+            },
+            onChanged: (value) {
+              comment = value;
             },
             autoValidate: true,
           ),
@@ -47,6 +53,11 @@ class ReviewBottomSheet extends StatelessWidget {
             text: 'Save',
             backGroundColor: AppColors.primaryColor,
             onPressed: () {
+              if (comment.isEmpty) {
+                "Please add your comments".showToast();
+                return;
+              }
+              controller.reviewJob(comment);
               Get.back();
             },
           ),

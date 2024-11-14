@@ -51,7 +51,9 @@ class PaymentScreenState extends State<PaymentScreen> {
     oderId = arguments['orderID'] ?? '';
     paymentType = arguments['paymentType'] ?? '';
 
-    serviceController = Get.find<ServiceController>();
+    if (paymentType == "Advance") {
+      serviceController = Get.find<ServiceController>();
+    }
 
     _initializePaymentUrl();
 
@@ -85,22 +87,58 @@ class PaymentScreenState extends State<PaymentScreen> {
                 ': WebResourceError error--: ${error..toString()}');
           },
           onNavigationRequest: (NavigationRequest request) {
-            Logger.e('WebScreen-----',
-                ': Loading NavigationRequest--: ${request.url}');
             if (request.url.contains('status=Success')) {
-              serviceController.paymentStatus.value = PaymentStatus.success;
-              Get.offAndToNamed(AppRoutes.paymentStatusScreen);
+              if (paymentType == "Advance") {
+                serviceController.paymentStatus.value = PaymentStatus.success;
+                Get.offAndToNamed(AppRoutes.paymentStatusScreen);
+              } else {
+                Get.back(result: true);
+                Get.snackbar(
+                  "Success",
+                  "Payment Successful",
+                  snackPosition: SnackPosition.BOTTOM,
+                  colorText: Colors.white,
+                  margin: EdgeInsets.all(2),
+                  padding: EdgeInsets.all(2),
+                  borderRadius: 10,
+                  shouldIconPulse: true,
+                  icon: Icon(
+                    Icons.check_circle,
+                    color: AppColors.white,
+                  ),
+                  duration: Duration(seconds: 4),
+                  backgroundColor: Colors.green,
+                );
+              }
             } else {
               //status=invalidOrderOrPayment
               //status=failed
-              serviceController.paymentStatus.value = PaymentStatus.failed;
-              Get.offAndToNamed(AppRoutes.paymentStatusScreen);
+              if (paymentType == "Advance") {
+                serviceController.paymentStatus.value = PaymentStatus.failed;
+                Get.offAndToNamed(AppRoutes.paymentStatusScreen);
+              } else {
+                Get.back(result: true);
+                Get.snackbar(
+                  "Failed",
+                  "Payment Failed, please try again!",
+                  snackPosition: SnackPosition.BOTTOM,
+                  colorText: Colors.white,
+                  margin: EdgeInsets.all(2),
+                  padding: EdgeInsets.all(2),
+                  borderRadius: 10,
+                  shouldIconPulse: true,
+                  icon: Icon(
+                    Icons.error,
+                    color: AppColors.white,
+                  ),
+                  duration: Duration(seconds: 4),
+                  backgroundColor: Colors.red,
+                );
+              }
             }
             return NavigationDecision.navigate;
           },
-          onUrlChange: (UrlChange? url) {
-            Logger.e('WebScreen-----', ': Loading url--: ${url.toString()}');
-          },
+          onUrlChange: (UrlChange? url) {},
         ),
       )
       ..loadRequest(Uri.parse(paymentUrl));

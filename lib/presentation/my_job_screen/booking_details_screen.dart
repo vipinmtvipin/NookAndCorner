@@ -137,7 +137,10 @@ class BookingDetailsScreen extends GetView<MyBookingController> {
                                               text: controller.screenType ==
                                                       MyBookingStatus.pending
                                                   ? "Confirm your address"
-                                                  : "OTP to start the service",
+                                                  : selectedJob.status ==
+                                                          'started'
+                                                      ? "OTP to complete the service"
+                                                      : "OTP to start the service",
                                               style: AppTextStyle.txt16
                                                   .copyWith(
                                                       color: controller
@@ -164,8 +167,13 @@ class BookingDetailsScreen extends GetView<MyBookingController> {
                                                           MyBookingStatus
                                                               .pending
                                                       ? 'Confirm'
-                                                      : selectedJob.startOtp ??
-                                                          '',
+                                                      : selectedJob.status ==
+                                                              'started'
+                                                          ? selectedJob.otp ??
+                                                              ''
+                                                          : selectedJob
+                                                                  .startOtp ??
+                                                              '',
                                                   style: AppTextStyle.txt14
                                                       .copyWith(
                                                           color: AppColors
@@ -555,8 +563,26 @@ class BookingDetailsScreen extends GetView<MyBookingController> {
                                     ),
                                   ],
                                 )),
+                            Visibility(
+                              visible: (controller.screenType ==
+                                      MyBookingStatus.completed &&
+                                  selectedJob.paymentStatus == 'completed' &&
+                                  (selectedJob.rating?.comment != null &&
+                                      selectedJob.rating?.comment != '')),
+                              child: ListTile(
+                                contentPadding: EdgeInsets.zero,
+                                title: Text(
+                                  'Your comment',
+                                  style: AppTextStyle.txtBold14.copyWith(),
+                                ),
+                                subtitle: Text(
+                                  selectedJob.rating?.comment ?? '',
+                                  style: AppTextStyle.txt14.copyWith(),
+                                ),
+                              ),
+                            ),
                             Padding(
-                              padding: const EdgeInsets.only(top: 5.0),
+                              padding: const EdgeInsets.only(top: 8.0),
                               child: Card(
                                 elevation: 6,
                                 color: AppColors.white,
@@ -638,7 +664,22 @@ class BookingDetailsScreen extends GetView<MyBookingController> {
                                                     MyBookingStatus.pending)
                                             ? 'Cancel Booking'
                                             : 'Pay Now',
-                                        onPressed: () {}),
+                                        onPressed: () {
+                                          if (controller.screenType ==
+                                                  MyBookingStatus.scheduled ||
+                                              controller.screenType ==
+                                                  MyBookingStatus.pending) {
+                                            controller.cancelJob();
+                                          } else if (controller.screenType ==
+                                                  MyBookingStatus.completed &&
+                                              controller.selectedJob.value
+                                                      .paymentStatus !=
+                                                  'completed') {
+                                            controller.completeJob('details');
+                                          } else {
+                                            Get.back();
+                                          }
+                                        }),
                                   ],
                                 )),
                             SizedBox(height: 30),

@@ -12,9 +12,9 @@ class AddressBinding extends Bindings {
     Get.put<GetAddressUseCase>(GetAddressUseCase(Get.find()));
     Get.put<SaveAddressUseCase>(SaveAddressUseCase(Get.find()));
 
-    Get.lazyPut(() => AddressController(
-          Get.find(),
-          Get.find(),
-        ));
+    Get.put<AddressController>(AddressController(
+      Get.find(),
+      Get.find(),
+    ));
   }
 }

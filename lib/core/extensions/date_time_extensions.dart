@@ -12,6 +12,12 @@ extension DateTimeUtil on DateTime? {
     return istDateString;
   }
 
+  String formatDateTimeToISO() {
+    DateFormat dateFormat = DateFormat("yyyy-MM-ddTHH:mm:ss.SSS'Z'");
+    String formattedDate = dateFormat.format(this!.toUtc());
+    return formattedDate;
+  }
+
   String format({
     String format = 'yyyy-MM-dd',
   }) {

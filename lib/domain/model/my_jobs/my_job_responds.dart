@@ -144,7 +144,7 @@ class MyJobData {
   final User? user;
   final User? assignedUser;
   final List<Order> orders;
-  final dynamic rating;
+  final Rating? rating;
 
   factory MyJobData.fromJson(Map<String, dynamic> json) {
     return MyJobData(
@@ -211,7 +211,7 @@ class MyJobData {
       orders: json["orders"] == null
           ? []
           : List<Order>.from(json["orders"]!.map((x) => Order.fromJson(x))),
-      rating: json["rating"],
+      rating: json["rating"] == null ? null : Rating.fromJson(json["rating"]),
     );
   }
 
@@ -267,7 +267,7 @@ class MyJobData {
         "user": user?.toJson(),
         "assignedUser": assignedUser?.toJson(),
         "orders": orders.map((x) => x.toJson()).toList(),
-        "rating": rating,
+        "rating": rating?.toJson(),
       };
 
   static MyJobData empty() {
@@ -323,7 +323,7 @@ class MyJobData {
       user: null,
       assignedUser: null,
       orders: [],
-      rating: "",
+      rating: null,
     );
   }
 }
@@ -705,6 +705,56 @@ class Category {
         "cityId": cityId,
         "delete": delete,
         "status": status,
+        "createdAt": createdAt?.toIso8601String(),
+        "updatedAt": updatedAt?.toIso8601String(),
+      };
+}
+
+class Rating {
+  Rating({
+    required this.ratingId,
+    required this.comment,
+    required this.rating,
+    required this.status,
+    required this.userId,
+    required this.jobId,
+    required this.delete,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  final int? ratingId;
+  final String? comment;
+  final String? rating;
+  final String? status;
+  final int? userId;
+  final int? jobId;
+  final dynamic delete;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+
+  factory Rating.fromJson(Map<String, dynamic> json) {
+    return Rating(
+      ratingId: json["ratingId"],
+      comment: json["comment"],
+      rating: json["rating"],
+      status: json["status"],
+      userId: json["userId"],
+      jobId: json["jobId"],
+      delete: json["delete"],
+      createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
+      updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        "ratingId": ratingId,
+        "comment": comment,
+        "rating": rating,
+        "status": status,
+        "userId": userId,
+        "jobId": jobId,
+        "delete": delete,
         "createdAt": createdAt?.toIso8601String(),
         "updatedAt": updatedAt?.toIso8601String(),
       };

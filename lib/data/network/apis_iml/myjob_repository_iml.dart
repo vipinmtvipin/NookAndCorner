@@ -103,7 +103,7 @@ class MyJobRepositoryIml extends MyJobRepository {
   Future<CommonResponds?> reviewJob(JobCommentRequest request) async {
     try {
       Response response =
-          await GetIt.I.get<ApiService>().post(NetworkKeys.comment,
+          await GetIt.I.get<ApiService>().put(NetworkKeys.comment,
               options: Options(
                 contentType: 'application/json',
               ),

@@ -37,6 +37,13 @@ class CommonUtil {
     return time.toString();
   }
 
+  DateTime parseJobDate(String date, String time) {
+    String jobDateString = "$date $time";
+    DateFormat dateFormat = DateFormat("yyyy-MM-dd hh:mm aa");
+    DateTime jobDateTime = dateFormat.parse(jobDateString);
+    return jobDateTime;
+  }
+
   String currentDateTimeMilli() {
     var now = DateTime.now();
     return now.millisecondsSinceEpoch.toString();

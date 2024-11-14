@@ -127,8 +127,9 @@ class MyBookingCard extends GetView<MyBookingController> {
                         ),
                       ),
                       Visibility(
-                        visible:
-                            controller.screenType != MyBookingStatus.cancelled,
+                        visible: (controller.screenType !=
+                                MyBookingStatus.cancelled &&
+                            item.paymentStatus != 'completed'),
                         child: Flexible(
                           flex: 1,
                           fit: FlexFit.tight,
@@ -158,7 +159,9 @@ class MyBookingCard extends GetView<MyBookingController> {
                     ],
                   ),
                   Visibility(
-                    visible: controller.screenType == MyBookingStatus.completed,
+                    visible:
+                        (controller.screenType == MyBookingStatus.completed &&
+                            item.paymentStatus == 'completed'),
                     child: ListTile(
                       title: Text("Rate the service now",
                           style: AppTextStyle.txt14
@@ -167,7 +170,12 @@ class MyBookingCard extends GetView<MyBookingController> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           RatingBar.builder(
-                            initialRating: 0,
+                            initialRating: item.rating?.rating
+                                        ?.trim()
+                                        .isNotNullOrEmpty ??
+                                    false
+                                ? double.tryParse(item.rating?.rating ?? '0')!
+                                : 0,
                             minRating: 0.5,
                             direction: Axis.horizontal,
                             allowHalfRating: true,
@@ -177,11 +185,13 @@ class MyBookingCard extends GetView<MyBookingController> {
                             itemBuilder: (context, _) => Icon(Icons.star,
                                 color: AppColors.secondaryColor),
                             onRatingUpdate: (rating) {
-                              // trigger rating api
+                              controller.selectedJob.value = item;
+                              controller.ratingJob(rating.toString());
                             },
                           ),
                           GestureDetector(
                             onTap: () {
+                              controller.selectedJob.value = item;
                               context.showBottomSheet(
                                   body: ReviewBottomSheet());
                             },
@@ -210,7 +220,9 @@ class MyBookingCard extends GetView<MyBookingController> {
                             children: [
                               Expanded(
                                 child: ResponsiveText(
-                                    text: "OTP to start the service",
+                                    text: item.status == 'started'
+                                        ? "OTP to complete the service"
+                                        : "OTP to start the service",
                                     style: AppTextStyle.txt14
                                         .copyWith(color: AppColors.black)),
                               ),
@@ -219,7 +231,10 @@ class MyBookingCard extends GetView<MyBookingController> {
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 10.0, vertical: 5),
-                                  child: Text(item.startOtp ?? '',
+                                  child: Text(
+                                      item.status == 'started'
+                                          ? item.otp ?? ''
+                                          : item.startOtp ?? '',
                                       style: AppTextStyle.txt14
                                           .copyWith(color: AppColors.success)),
                                 ),
@@ -236,7 +251,9 @@ class MyBookingCard extends GetView<MyBookingController> {
                       padding: const EdgeInsets.only(top: 10.0),
                       child: BookingButton(
                         text: 'Confirm Address',
-                        onTap: () {},
+                        onTap: () {
+                          controller.selectedJob.value = item;
+                        },
                         color: AppColors.red,
                         icon: Icons.add_business,
                       ),
@@ -250,7 +267,10 @@ class MyBookingCard extends GetView<MyBookingController> {
                       padding: const EdgeInsets.only(top: 10.0),
                       child: BookingButton(
                         text: 'Pay Now',
-                        onTap: () {},
+                        onTap: () {
+                          controller.selectedJob.value = item;
+                          controller.completeJob('list');
+                        },
                         color: AppColors.skyBlue,
                         icon: Icons.add_business,
                       ),
@@ -277,7 +297,9 @@ class MyBookingCard extends GetView<MyBookingController> {
                           padding: const EdgeInsets.only(right: 3.0),
                           child: BookingButton(
                             text: 'Chat with us',
-                            onTap: () {},
+                            onTap: () {
+                              controller.selectedJob.value = item;
+                            },
                             color: AppColors.black,
                             icon: Icons.chat,
                             textColor: AppColors.white,
