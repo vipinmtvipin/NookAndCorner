@@ -1,3 +1,5 @@
+import 'package:customerapp/core/extensions/string_extensions.dart';
+
 class AddressRequest {
   String? addresslineOne;
   String? addresslineTwo;
@@ -7,6 +9,7 @@ class AddressRequest {
   String? lng;
   String? userId;
   String? cityId;
+  String? addressId;
 
   AddressRequest({
     this.addressType,
@@ -17,10 +20,14 @@ class AddressRequest {
     this.lng,
     this.userId,
     this.cityId,
+    this.addressId,
   });
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
+    if (addressId.isNotNullOrEmpty) {
+      data['addressId'] = addressId;
+    }
     data['addresslineOne'] = addresslineOne;
     data['addresslineTwo'] = addresslineTwo;
     data['location'] = location;
@@ -35,6 +42,29 @@ class AddressRequest {
   @override
   String toString() {
     return 'AddressRequest{addresslineOne: $addresslineOne, addresslineTwo: $addresslineTwo, location: $location, addressType: $addressType, lat: $lat, lng: $lng}';
+  }
+}
+
+class ConfirmAddressRequest {
+  String? userId;
+  String? addressId;
+  String status;
+  String? jobId;
+
+  ConfirmAddressRequest({
+    this.userId,
+    this.addressId,
+    this.status = 'confirmed',
+    this.jobId,
+  });
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['userId'] = userId;
+    data['cityId'] = jobId;
+    data['status'] = status;
+    data['addressId'] = addressId;
+    return data;
   }
 }
 

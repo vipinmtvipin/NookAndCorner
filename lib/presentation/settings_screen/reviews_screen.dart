@@ -1,4 +1,7 @@
+import 'package:customerapp/core/extensions/list_extensions.dart';
+import 'package:customerapp/core/extensions/string_extensions.dart';
 import 'package:customerapp/core/theme/color_constant.dart';
+import 'package:customerapp/domain/model/settings/reviews_responds.dart';
 import 'package:customerapp/presentation/common_widgets/conditional_widget.dart';
 import 'package:customerapp/presentation/common_widgets/responsive_text.dart';
 import 'package:customerapp/presentation/common_widgets/title_bar_widget.dart';
@@ -16,6 +19,7 @@ class ReviewsScreen extends GetView<SettingsController> {
 
   @override
   Widget build(BuildContext context) {
+    controller.getReviews();
     return SafeArea(
       top: false,
       bottom: false,
@@ -35,17 +39,17 @@ class ReviewsScreen extends GetView<SettingsController> {
               const TitleBarWidget(title: "Reviews"),
               Flexible(
                 child: ConditionalWidget(
-                  condition: false,
+                  condition: controller.reviewList.value.isNotNullOrEmpty,
                   onFalse: NotDataFound(
                     message: "No Reviews yet, be the first to review.",
                     size: 150,
                     style: AppTextStyle.txtBold16,
                   ),
                   child: ListView.builder(
-                    itemCount: 5,
+                    itemCount: controller.reviewList.value.length,
                     itemBuilder: (context, index) {
-                      return ReviewCardWidget(
-                          label: 'Address $index', onTap: () {});
+                      var item = controller.reviewList.value[index];
+                      return ReviewCardWidget(item: item, onTap: () {});
                     },
                   ),
                 ),
@@ -55,12 +59,12 @@ class ReviewsScreen extends GetView<SettingsController> {
 }
 
 class ReviewCardWidget extends StatelessWidget {
-  final String label;
+  final ReviewData item;
   final Function() onTap;
 
   const ReviewCardWidget({
     super.key,
-    required this.label,
+    required this.item,
     required this.onTap,
   });
 
@@ -93,12 +97,12 @@ class ReviewCardWidget extends StatelessWidget {
                   children: [
                     Expanded(
                       child: ResponsiveText(
-                          text: "User Name",
+                          text: item.user?.username.toCapitalized ?? '',
                           style: AppTextStyle.txtBold14
                               .copyWith(color: AppColors.secondaryColor)),
                     ),
                     RatingBarIndicator(
-                      rating: 3.5,
+                      rating: double.tryParse(item.rating ?? '0.0') ?? 0.0,
                       itemBuilder: (context, index) => Icon(
                         Icons.star,
                         color: Colors.yellow,
@@ -111,8 +115,7 @@ class ReviewCardWidget extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 2),
-                Text(
-                    "User added review details we can show here, the top items.",
+                Text(item.comment.toCapitalized,
                     style: AppTextStyle.txt14
                         .copyWith(color: AppColors.lightGray)),
               ],

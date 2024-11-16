@@ -95,8 +95,7 @@ class MainScreen extends GetView<MainScreenController> {
               size: getSize(23),
             ),
             onPressed: () {
-              //  Get.toNamed(AppRoutes.settingsScreen);
-              Get.toNamed(AppRoutes.confirmAddressScreen);
+              Get.toNamed(AppRoutes.settingsScreen);
             },
           ),
           Obx(() {
@@ -144,6 +143,21 @@ class MainScreen extends GetView<MainScreenController> {
       body: Obx(() => controller.homeStatus.value == HomeStatus.loaded
           ? _buildMainScreen()
           : _buildShimmerMainScreen()),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Get.toNamed(AppRoutes.contactScreen);
+        },
+        elevation: 6,
+        heroTag: 'contact',
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        backgroundColor: AppColors.primaryColor,
+        child: const Icon(
+          Icons.mail_outline_sharp,
+          color: Colors.white,
+        ),
+      ),
     );
   }
 }

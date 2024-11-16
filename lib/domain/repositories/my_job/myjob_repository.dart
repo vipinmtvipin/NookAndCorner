@@ -1,3 +1,4 @@
+import 'package:customerapp/domain/model/address/address_request.dart';
 import 'package:customerapp/domain/model/common_responds.dart';
 import 'package:customerapp/domain/model/my_jobs/my_job_responds.dart';
 import 'package:customerapp/domain/model/my_jobs/myjob_request.dart';
@@ -8,4 +9,5 @@ abstract class MyJobRepository {
   Future<CommonResponds?> reScheduleJob(ReScheduleJobRequest request);
   Future<CommonResponds?> reviewJob(JobCommentRequest request);
   Future<CommonResponds?> ratingJob(JobCommentRequest request);
+  Future<CommonResponds?> confirmAddress(ConfirmAddressRequest request);
 }

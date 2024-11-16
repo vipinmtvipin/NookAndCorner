@@ -1,6 +1,7 @@
 import 'package:customerapp/core/extensions/date_time_extensions.dart';
 import 'package:customerapp/core/extensions/sheet_extension.dart';
 import 'package:customerapp/core/extensions/string_extensions.dart';
+import 'package:customerapp/core/routes/app_routes.dart';
 import 'package:customerapp/core/theme/app_text_style.dart';
 import 'package:customerapp/core/theme/color_constant.dart';
 import 'package:customerapp/domain/model/my_jobs/my_job_responds.dart';
@@ -253,6 +254,11 @@ class MyBookingCard extends GetView<MyBookingController> {
                         text: 'Confirm Address',
                         onTap: () {
                           controller.selectedJob.value = item;
+                          Get.toNamed(AppRoutes.confirmAddressScreen,
+                              arguments: {
+                                'jobId': item.jobId.toString(),
+                                'from': 'MyBooking'
+                              });
                         },
                         color: AppColors.red,
                         icon: Icons.add_business,

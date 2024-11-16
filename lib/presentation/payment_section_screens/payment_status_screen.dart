@@ -31,7 +31,10 @@ class PaymentStatusScreen extends GetView<ServiceController> {
                       backGroundColor: AppColors.success,
                       text: 'Confirm Address',
                       onPressed: () {
-                        Get.toNamed(AppRoutes.confirmAddressScreen);
+                        Get.toNamed(AppRoutes.confirmAddressScreen, arguments: {
+                          'jobId': controller.jobID,
+                          'from': 'payment'
+                        });
                       },
                     ),
                   )

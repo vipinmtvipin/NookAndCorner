@@ -112,6 +112,8 @@ class ServiceController extends BaseController {
   var orderID = "".obs;
   var paymentType = "".obs;
 
+  var jobID = "";
+
   var paymentStatus = PaymentStatus.unknown.obs;
 
   final sessionStorage = GetStorage();
@@ -427,6 +429,7 @@ class ServiceController extends BaseController {
           var job = await _createLoginJobUseCase.execute(request);
 
           orderID.value = job?.data?.jobCreated?.txnId ?? "";
+          jobID = job?.data?.jobCreated?.jobId.toString() ?? "";
           jobLoginData.value = job!;
         } else {
           request = JobRequest(
@@ -463,6 +466,7 @@ class ServiceController extends BaseController {
           var job = await _createJobUseCase.execute(request);
 
           orderID.value = job?.data?.jobCreated?.txnId ?? "";
+          jobID = job?.data?.jobCreated?.jobId.toString() ?? "";
           jobData.value = job!;
 
           saveJobUserData();

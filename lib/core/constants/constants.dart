@@ -33,6 +33,8 @@ class NetworkKeys {
   static const String getAddress = '/address/address';
   static const String saveAddress = '/address';
 
+  static const String confirmAddress = '/job/confirm';
+
   static const String applyCoupon = '/promotion/validate';
   static const String metaData = '/meta-values';
   static const String createJobLogin = '/job/V1/login';
@@ -48,6 +50,8 @@ class NetworkKeys {
   static const String cancelJob = '/job/cancel';
 
   static const String contact = '/contact';
+
+  static const String reviews = '/rating/approved';
   static const String rating = '/rating';
   static const String comment = '/rating/comment';
 }

@@ -2,6 +2,7 @@ import 'package:customerapp/core/extensions/date_time_extensions.dart';
 import 'package:customerapp/core/extensions/list_extensions.dart';
 import 'package:customerapp/core/extensions/sheet_extension.dart';
 import 'package:customerapp/core/extensions/string_extensions.dart';
+import 'package:customerapp/core/routes/app_routes.dart';
 import 'package:customerapp/core/theme/app_text_style.dart';
 import 'package:customerapp/core/theme/color_constant.dart';
 import 'package:customerapp/domain/model/my_jobs/my_job_responds.dart';
@@ -151,9 +152,20 @@ class BookingDetailsScreen extends GetView<MyBookingController> {
                                                           : AppColors.black)),
                                         ),
                                         GestureDetector(
-                                          onTap: () {
+                                          onTap: () async {
                                             if (controller.screenType ==
-                                                MyBookingStatus.pending) {}
+                                                MyBookingStatus.pending) {
+                                              await Get.toNamed(
+                                                  AppRoutes
+                                                      .confirmAddressScreen,
+                                                  arguments: {
+                                                    'jobId': controller
+                                                        .selectedJob.value.jobId
+                                                        .toString(),
+                                                    'from': 'MyBooking'
+                                                  });
+                                              Get.back(result: true);
+                                            }
                                           },
                                           child: Card(
                                             color: AppColors.white,

@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "245497221512",
+    "firebase_url": "https://nookandcorner-default-rtdb.firebaseio.com",
+    "project_id": "nookandcorner",
+    "storage_bucket": "nookandcorner.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:245497221512:android:5f38c92adef87a1f1daa3d",
+        "android_client_info": {
+          "package_name": "org.nookandcorner.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAXB73pdaIk5ocuwct8H_bNcIeDtshGe8Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:245497221512:android:4799d77b6ebca8961daa3d",
+        "android_client_info": {
+          "package_name": "org.nookandcorner.customerapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAXB73pdaIk5ocuwct8H_bNcIeDtshGe8Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:245497221512:android:081be647e14c968a1daa3d",
+        "android_client_info": {
+          "package_name": "org.nookandcorner.sup"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAXB73pdaIk5ocuwct8H_bNcIeDtshGe8Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

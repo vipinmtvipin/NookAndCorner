@@ -104,4 +104,24 @@ class AddressData {
         "createdAt": createdAt?.toIso8601String(),
         "updatedAt": updatedAt?.toIso8601String(),
       };
+
+  static AddressData empty() {
+    return AddressData(
+      addressId: 0,
+      name: "",
+      addresslineOne: "",
+      addresslineTwo: "",
+      addressType: "",
+      location: "",
+      lat: "",
+      lng: "",
+      userId: 0,
+      delete: "",
+      addressName: "",
+      address: "",
+      cityId: 0,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+  }
 }

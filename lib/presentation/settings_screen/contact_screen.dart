@@ -58,7 +58,7 @@ class ContactScreen extends GetView<SettingsController> {
                               const SizedBox(height: 10),
                               NookCornerTextField(
                                 textInputAction: TextInputAction.next,
-                                //  controller: controller.phoneController,
+                                controller: controller.nameController,
                                 textStyle: AppTextStyle.txt14,
                                 title: 'Name',
                                 type: NookCornerTextFieldType.text,
@@ -66,12 +66,11 @@ class ContactScreen extends GetView<SettingsController> {
                                 validator: (value) {
                                   return null;
                                 },
-                                autoValidate: true,
                               ),
                               const SizedBox(height: 5),
                               NookCornerTextField(
                                 textInputAction: TextInputAction.next,
-                                // controller: controller.emailController,
+                                controller: controller.phoneController,
                                 title: 'Mobile Number',
                                 textStyle: AppTextStyle.txt14,
                                 type: NookCornerTextFieldType.mobile,
@@ -79,12 +78,11 @@ class ContactScreen extends GetView<SettingsController> {
                                 validator: (value) {
                                   return null;
                                 },
-                                autoValidate: true,
                               ),
                               const SizedBox(height: 5),
                               NookCornerTextField(
                                 textInputAction: TextInputAction.next,
-                                // controller: controller.emailController,
+                                controller: controller.emailController,
                                 title: 'Email',
                                 textStyle: AppTextStyle.txt14,
                                 type: NookCornerTextFieldType.email,
@@ -92,14 +90,13 @@ class ContactScreen extends GetView<SettingsController> {
                                 validator: (value) {
                                   return null;
                                 },
-                                autoValidate: true,
                               ),
                               const SizedBox(height: 5),
                               NookCornerTextField(
                                 textInputAction: TextInputAction.done,
                                 maxLines: 6,
                                 minLines: 3,
-                                // controller: controller.emailController,
+                                controller: controller.messageController,
                                 title: 'Leave a message',
                                 textStyle: AppTextStyle.txt14,
                                 type: NookCornerTextFieldType.text,
@@ -116,7 +113,7 @@ class ContactScreen extends GetView<SettingsController> {
                                 text: 'Send Message',
                                 backGroundColor: AppColors.primaryColor,
                                 onPressed: () {
-                                  Get.back();
+                                  controller.postContactInfo();
                                 },
                               ),
                             ],

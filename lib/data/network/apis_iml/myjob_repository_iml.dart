@@ -1,6 +1,7 @@
 import 'package:customerapp/core/constants/constants.dart';
 import 'package:customerapp/core/network/api_service.dart';
 import 'package:customerapp/core/network/dio_exception.dart';
+import 'package:customerapp/domain/model/address/address_request.dart';
 import 'package:customerapp/domain/model/common_responds.dart';
 import 'package:customerapp/domain/model/my_jobs/my_job_responds.dart';
 import 'package:customerapp/domain/model/my_jobs/myjob_request.dart';
@@ -108,6 +109,26 @@ class MyJobRepositoryIml extends MyJobRepository {
                 contentType: 'application/json',
               ),
               data: request.toJson());
+
+      final CommonResponds data = commonRespondsFromJson(response.toString());
+
+      return data;
+    } on DioException catch (e) {
+      var error = DioExceptionData.fromDioError(e);
+      throw error.errorMessage;
+    }
+  }
+
+  @override
+  Future<CommonResponds?> confirmAddress(ConfirmAddressRequest request) async {
+    try {
+      Response response = await GetIt.I
+          .get<ApiService>()
+          .put('${NetworkKeys.confirmAddress}/${request.addressId}',
+              data: request.toJson(),
+              options: Options(
+                contentType: 'application/json',
+              ));
 
       final CommonResponds data = commonRespondsFromJson(response.toString());
 

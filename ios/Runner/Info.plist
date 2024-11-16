@@ -48,5 +48,12 @@
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
+	<key>UIBackgroundModes</key>
+    <array>
+        <string>fetch</string>
+        <string>remote-notification</string>
+    </array>
+    <key>NSLocalNotificationsUsageDescription</key>
+    <string>We use notifications to remind you periodically.</string>
 </dict>
 </plist>

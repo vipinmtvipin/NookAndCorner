@@ -11,6 +11,7 @@ import 'package:customerapp/presentation/common_widgets/title_bar_widget.dart';
 import 'package:customerapp/presentation/main_screen/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../core/theme/app_text_style.dart';
 import '../../core/utils/size_utils.dart';
@@ -62,8 +63,29 @@ class AddressScreen extends GetView<AddressController> {
                         return AddressCardWidget(
                             index: index,
                             data: address,
-                            onTap: () {
-                              navigateAndFetchAddress();
+                            onTap: (type) {
+                              controller.selectedAddress.value = address;
+                              if (type == 'Edit') {
+                                controller.cityController.text =
+                                    address.location.toCapitalized;
+                                controller.streetController.text =
+                                    address.addresslineOne.toCapitalized;
+                                controller.houseFlatController.text =
+                                    address.addresslineTwo.toCapitalized;
+                                controller.addressType.value =
+                                    address.addressType.toCapitalized;
+                                controller.selectedLocation.value = LatLng(
+                                  double.tryParse(address.lat ?? '0.0') ?? 0.0,
+                                  double.tryParse(address.lng ?? '0.0') ?? 0.0,
+                                );
+                                controller.currentLocation.value = LatLng(
+                                  double.tryParse(address.lat ?? '0.0') ?? 0.0,
+                                  double.tryParse(address.lng ?? '0.0') ?? 0.0,
+                                );
+                                navigateAndFetchAddress();
+                              } else {
+                                controller.deleteAddress();
+                              }
                             });
                       },
                     ),
@@ -75,13 +97,14 @@ class AddressScreen extends GetView<AddressController> {
 
   void navigateAndFetchAddress() async {
     var result = await Get.toNamed(AppRoutes.addAddressScreen);
+    controller.selectedAddress.value = AddressData.empty();
     controller.getAddress();
   }
 }
 
 class AddressCardWidget extends StatelessWidget {
   final AddressData data;
-  final Function() onTap;
+  final Function(String type) onTap;
   final int index;
 
   const AddressCardWidget({
@@ -161,7 +184,7 @@ class AddressCardWidget extends StatelessWidget {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        onTap();
+                        onTap('Edit');
                       },
                       child: Text(
                         "Edit",
@@ -173,7 +196,7 @@ class AddressCardWidget extends StatelessWidget {
                     const SizedBox(width: 20),
                     GestureDetector(
                       onTap: () {
-                        onTap();
+                        onTap('Delete');
                       },
                       child: Text(
                         "Delete",

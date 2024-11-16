@@ -169,10 +169,12 @@ class AppRoutes {
     GetPage(
       name: reviewScreen,
       page: () => const ReviewsScreen(),
+      binding: SettingsBinding(),
     ),
     GetPage(
       name: contactScreen,
       page: () => const ContactScreen(),
+      binding: SettingsBinding(),
     ),
   ];
 }
