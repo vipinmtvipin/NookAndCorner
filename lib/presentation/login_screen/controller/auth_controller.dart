@@ -65,10 +65,13 @@ class AuthController extends BaseController {
   @override
   void onInit() {
     super.onInit();
+    try {
+      final arguments = Get.arguments as Map<String, dynamic>;
 
-    final arguments = Get.arguments as Map<String, dynamic>;
-
-    navigateFrom = arguments['from'] ?? '';
+      navigateFrom = arguments['from'] ?? '';
+    } catch (e) {
+      e.printInfo();
+    }
   }
 
   @override

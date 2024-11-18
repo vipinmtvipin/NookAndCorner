@@ -263,8 +263,6 @@ class AddressController extends BaseController {
     }
   }
 
-  void updateAddress() {}
-
   void clearAddressInfo() {
     streetController.clear();
     cityController.clear();

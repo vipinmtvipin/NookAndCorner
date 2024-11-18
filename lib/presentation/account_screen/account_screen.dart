@@ -4,6 +4,7 @@ import 'package:customerapp/presentation/account_screen/controller/account_contr
 import 'package:customerapp/presentation/common_widgets/nookcorner_button.dart';
 import 'package:customerapp/presentation/common_widgets/responsive_text.dart';
 import 'package:customerapp/presentation/common_widgets/title_bar_widget.dart';
+import 'package:customerapp/presentation/main_screen/controller/main_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -31,8 +32,30 @@ class AccountScreen extends GetView<AccountController> {
               text: 'Logout',
               backGroundColor: AppColors.primaryColor,
               onPressed: () {
-                controller.sessionStorage.erase();
-                onTapLoginNavigation();
+                Get.dialog(AlertDialog(
+                  title: const Text('Logout'),
+                  content: const Text(
+                      'Are you sure you want to logout your account?'),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () {
+                        Get.back();
+                      },
+                      child: const Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Get.back();
+                        controller.sessionStorage.erase();
+                        MainScreenController mainController =
+                            Get.find<MainScreenController>();
+                        mainController.loggedIn.value = false;
+                        onTapLoginNavigation();
+                      },
+                      child: const Text('Logout'),
+                    ),
+                  ],
+                ));
               }),
         ),
       ),
@@ -84,80 +107,94 @@ class AccountScreen extends GetView<AccountController> {
                                 const SizedBox(
                                   height: 3,
                                 ),
-                                ResponsiveText(
-                                    text: controller.name.isEmpty
-                                        ? 'Welcome'
-                                        : 'Hi, ${controller.name}',
-                                    textAlign: TextAlign.left,
-                                    style: AppTextStyle.txtBold12.copyWith(
-                                        letterSpacing: getHorizontalSize(
-                                          3,
-                                        ),
-                                        color: AppColors.white)),
-                                const SizedBox(
-                                  height: 15,
-                                ),
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                Obx(() => Column(
                                       children: [
-                                        const Icon(
-                                          Icons.email_outlined,
-                                          size: 18,
-                                          color: AppColors.white,
-                                        ),
-                                        const SizedBox(
-                                          height: 5,
-                                        ),
                                         ResponsiveText(
-                                            text: controller.email.isEmpty
-                                                ? 'xxx@xxx.xx'
-                                                : controller.email,
+                                            text: controller.name.value.isEmpty
+                                                ? 'Welcome'
+                                                : 'Hi, ${controller.name.value}',
                                             textAlign: TextAlign.left,
-                                            style: AppTextStyle.txtBold10
+                                            style: AppTextStyle.txtBold12
                                                 .copyWith(
+                                                    letterSpacing:
+                                                        getHorizontalSize(
+                                                      3,
+                                                    ),
                                                     color: AppColors.white)),
                                         const SizedBox(
-                                          height: 5,
+                                          height: 15,
                                         ),
+                                        Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                const Icon(
+                                                  Icons.email_outlined,
+                                                  size: 18,
+                                                  color: AppColors.white,
+                                                ),
+                                                const SizedBox(
+                                                  height: 5,
+                                                ),
+                                                ResponsiveText(
+                                                    text: controller
+                                                            .email.value.isEmpty
+                                                        ? 'xxx@xxx.xx'
+                                                        : controller
+                                                            .email.value,
+                                                    textAlign: TextAlign.left,
+                                                    style: AppTextStyle
+                                                        .txtBold10
+                                                        .copyWith(
+                                                            color: AppColors
+                                                                .white)),
+                                                const SizedBox(
+                                                  height: 5,
+                                                ),
+                                              ],
+                                            ),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                const Icon(
+                                                  Icons.phone_android,
+                                                  size: 18,
+                                                  color: AppColors.white,
+                                                ),
+                                                const SizedBox(
+                                                  height: 5,
+                                                ),
+                                                ResponsiveText(
+                                                    text: controller.mobile
+                                                            .value.isEmpty
+                                                        ? '+91 xxxxxxxxxx'
+                                                        : '+91 ${controller.mobile.value}',
+                                                    textAlign: TextAlign.left,
+                                                    style: AppTextStyle
+                                                        .txtBold10
+                                                        .copyWith(
+                                                            color: AppColors
+                                                                .white)),
+                                                const SizedBox(
+                                                  height: 5,
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        )
                                       ],
-                                    ),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        const Icon(
-                                          Icons.phone_android,
-                                          size: 18,
-                                          color: AppColors.white,
-                                        ),
-                                        const SizedBox(
-                                          height: 5,
-                                        ),
-                                        ResponsiveText(
-                                            text: controller.mobile.isEmpty
-                                                ? '+91 xxxxxxxxxx'
-                                                : '+91 ${controller.mobile}',
-                                            textAlign: TextAlign.left,
-                                            style: AppTextStyle.txtBold10
-                                                .copyWith(
-                                                    color: AppColors.white)),
-                                        const SizedBox(
-                                          height: 5,
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                )
+                                    )),
                               ],
                             ),
                           )
@@ -199,16 +236,44 @@ class AccountScreen extends GetView<AccountController> {
                           Get.toNamed(AppRoutes.myBookingScreen);
                         },
                       ),
+                      const Divider(
+                        color: AppColors.lightGray,
+                        thickness: 0.3,
+                        indent: 15,
+                        endIndent: 25,
+                      ),
+                      MoveClickItemsWidget(
+                        iconData: Icons.delete,
+                        label: "Delete Account",
+                        onTap: () {
+                          Get.dialog(AlertDialog(
+                            title: const Text('Delete Account'),
+                            content: const Text(
+                                'Are you sure you want to delete your account?'),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () {
+                                  Get.back();
+                                },
+                                child: const Text('Cancel'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Get.back();
+                                  controller.deleteAccount();
+                                },
+                                child: const Text('Delete'),
+                              ),
+                            ],
+                          ));
+                        },
+                      ),
                     ])),
           ),
         );
       },
     ));
   }
-}
-
-onTapArrowLeft() {
-  Get.back();
 }
 
 onTapLoginNavigation() {

@@ -33,6 +33,8 @@ class NetworkKeys {
   static const String getAddress = '/address/address';
   static const String saveAddress = '/address';
 
+  static const String user = '/users';
+
   static const String confirmAddress = '/job/confirm';
 
   static const String applyCoupon = '/promotion/validate';

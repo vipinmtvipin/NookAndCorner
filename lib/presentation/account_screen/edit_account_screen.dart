@@ -1,3 +1,4 @@
+import 'package:customerapp/core/extensions/string_extensions.dart';
 import 'package:customerapp/core/theme/color_constant.dart';
 import 'package:customerapp/presentation/account_screen/controller/account_controller.dart';
 import 'package:customerapp/presentation/common_widgets/nookcorner_button.dart';
@@ -16,6 +17,7 @@ class EditAccountScreen extends GetView<AccountController> {
 
   @override
   Widget build(BuildContext context) {
+    controller.getAccount();
     return SafeArea(
       top: false,
       bottom: false,
@@ -79,7 +81,7 @@ class EditAccountScreen extends GetView<AccountController> {
                             ),
                             const SizedBox(height: 5),
                             NookCornerTextField(
-                              textInputAction: TextInputAction.next,
+                              textInputAction: TextInputAction.done,
                               controller: controller.emailController,
                               title: 'Email',
                               textStyle: AppTextStyle.txt14,
@@ -91,84 +93,107 @@ class EditAccountScreen extends GetView<AccountController> {
                               autoValidate: true,
                             ),
                             const SizedBox(height: 5),
-                            Card(
-                              elevation: 65,
-                              color: Colors.white,
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Text('Primary Address',
-                                        textAlign: TextAlign.left,
-                                        style: AppTextStyle.txtBold16
-                                            .copyWith(color: AppColors.gray)),
-                                    const SizedBox(height: 5),
-                                    Row(
+                            Obx(
+                              () => Visibility(
+                                visible:
+                                    controller.primaryAddress.value.addressId !=
+                                        0,
+                                child: Card(
+                                  elevation: 65,
+                                  color: Colors.white,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                                          MainAxisAlignment.start,
                                       children: [
-                                        Text('Home',
+                                        Text('Primary Address',
                                             textAlign: TextAlign.left,
-                                            style: AppTextStyle.txtBold12),
-                                        const SizedBox(width: 10),
-                                        GestureDetector(
-                                          onTap: () {
-                                            Get.toNamed(
-                                                AppRoutes.addressScreen);
-                                          },
-                                          child: Card(
-                                            elevation: 1,
-                                            color: Colors.white,
-                                            shape: RoundedRectangleBorder(
-                                              side: const BorderSide(
-                                                color: Colors.orange,
-                                                width: 1.0,
-                                              ),
-                                              borderRadius:
-                                                  BorderRadius.circular(12.0),
-                                            ),
-                                            child: const Padding(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 10.0,
-                                                  vertical: 6),
-                                              child: Row(
-                                                children: [
-                                                  Icon(
-                                                    Icons.edit,
+                                            style: AppTextStyle.txtBold16
+                                                .copyWith(
+                                                    color: AppColors.gray)),
+                                        const SizedBox(height: 5),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                                controller.primaryAddress.value
+                                                    .addressType.toCapitalized,
+                                                textAlign: TextAlign.left,
+                                                style: AppTextStyle.txtBold12),
+                                            const SizedBox(width: 10),
+                                            GestureDetector(
+                                              onTap: () {
+                                                Get.toNamed(
+                                                    AppRoutes
+                                                        .confirmAddressScreen,
+                                                    arguments: {
+                                                      'jobId': '0',
+                                                      'from': 'profile'
+                                                    });
+                                              },
+                                              child: Card(
+                                                elevation: 1,
+                                                color: Colors.white,
+                                                shape: RoundedRectangleBorder(
+                                                  side: const BorderSide(
                                                     color: Colors.orange,
-                                                    size: 15,
+                                                    width: 1.0,
                                                   ),
-                                                  SizedBox(width: 5),
-                                                  Text(
-                                                    'Change',
-                                                    style: TextStyle(
-                                                        color: Colors.orange),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          12.0),
+                                                ),
+                                                child: const Padding(
+                                                  padding: EdgeInsets.symmetric(
+                                                      horizontal: 10.0,
+                                                      vertical: 6),
+                                                  child: Row(
+                                                    children: [
+                                                      Icon(
+                                                        Icons.edit,
+                                                        color: Colors.orange,
+                                                        size: 15,
+                                                      ),
+                                                      SizedBox(width: 5),
+                                                      Text(
+                                                        'Change',
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.orange),
+                                                      ),
+                                                    ],
                                                   ),
-                                                ],
+                                                ),
                                               ),
-                                            ),
+                                            )
+                                          ],
+                                        ),
+                                        Text(
+                                          "${controller.primaryAddress.value.addresslineOne}, ${controller.primaryAddress.value.addresslineTwo}",
+                                          textAlign: TextAlign.left,
+                                          style:
+                                              AppTextStyle.txtBold12.copyWith(
+                                            color: AppColors.gray,
                                           ),
-                                        )
+                                        ),
+                                        SizedBox(height: 3),
+                                        Text(
+                                          controller.primaryAddress.value
+                                                  .location ??
+                                              '',
+                                          textAlign: TextAlign.left,
+                                          style:
+                                              AppTextStyle.txtBold12.copyWith(
+                                            color: AppColors.gray,
+                                          ),
+                                        ),
                                       ],
                                     ),
-                                    Text(
-                                      'City',
-                                      textAlign: TextAlign.left,
-                                      style: AppTextStyle.txtBold12.copyWith(
-                                        color: AppColors.gray,
-                                      ),
-                                    ),
-                                    SizedBox(height: 3),
-                                    Text(
-                                      'Full Address',
-                                      textAlign: TextAlign.left,
-                                      style: AppTextStyle.txtBold12.copyWith(
-                                        color: AppColors.gray,
-                                      ),
-                                    ),
-                                  ],
+                                  ),
                                 ),
                               ),
                             ),
@@ -179,7 +204,22 @@ class EditAccountScreen extends GetView<AccountController> {
                               text: 'Update',
                               backGroundColor: AppColors.primaryColor,
                               onPressed: () {
-                                Get.back();
+                                if (controller.nameController.text.isEmpty ||
+                                    controller.phoneController.text.isEmpty ||
+                                    controller.emailController.text.isEmpty) {
+                                  "Please fill all the fields".showToast();
+                                  return;
+                                }
+                                if (!controller.emailController.text.isEmail) {
+                                  "Please enter valid email".showToast();
+                                  return;
+                                }
+                                if (!controller
+                                    .phoneController.text.isPhoneNumber) {
+                                  "Please enter valid phone number".showToast();
+                                  return;
+                                }
+                                controller.updateAccount();
                               },
                             ),
                           ],

@@ -3,7 +3,9 @@ import 'package:customerapp/core/extensions/list_extensions.dart';
 import 'package:customerapp/core/extensions/string_extensions.dart';
 import 'package:customerapp/core/routes/app_routes.dart';
 import 'package:customerapp/core/theme/color_constant.dart';
+import 'package:customerapp/domain/model/account/profile_response.dart';
 import 'package:customerapp/domain/model/address/address_responds.dart';
+import 'package:customerapp/presentation/account_screen/controller/account_controller.dart';
 import 'package:customerapp/presentation/address_screen/controller/address_controller.dart';
 import 'package:customerapp/presentation/common_widgets/conditional_widget.dart';
 import 'package:customerapp/presentation/common_widgets/nookcorner_button.dart';
@@ -38,6 +40,7 @@ class ConfirmAddressScreen extends GetView<AddressController> {
       advanceAmount = mController.advanceAmount.value ?? 0.0;
       serviceDate =
           "${mController.selectedDateValue.value} ${mController.selectedTime.value}";
+    } else if (controller.confirmFrom.value == 'profile') {
     } else {
       MyBookingController mController = Get.find<MyBookingController>();
       serviceName =
@@ -50,7 +53,6 @@ class ConfirmAddressScreen extends GetView<AddressController> {
     if (controller.addressList.value.isNullOrEmpty) {
       controller.getAddress();
     }
-    var serviceController = Get.find<ServiceController>();
     return SafeArea(
       top: false,
       bottom: false,
@@ -61,14 +63,19 @@ class ConfirmAddressScreen extends GetView<AddressController> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const TitleBarWidget(title: "Confirm Address"),
-                  SizedBox(height: 15),
+                  TitleBarWidget(
+                      title: controller.confirmFrom.value == 'profile'
+                          ? 'Update Address'
+                          : "Confirm Address"),
+                  SizedBox(height: 5),
                   Obx(
                     () => Flexible(
                       child: ConditionalWidget(
                         condition:
                             controller.addressList.value.isNotNullOrEmpty,
                         onFalse: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             NotDataFound(
                               message: "No address yet, please add one.",
@@ -96,6 +103,32 @@ class ConfirmAddressScreen extends GetView<AddressController> {
                               onTap: () {
                                 controller.selectedAddress.value = address;
                                 controller.selectedAddressIndex.value = index;
+
+                                if (controller.confirmFrom.value == 'profile') {
+                                  AccountController mController =
+                                      Get.find<AccountController>();
+                                  mController.updatedAddressId =
+                                      address.addressId.toString();
+                                  mController.primaryAddress.value =
+                                      PrimaryAddress(
+                                    addressId: address.addressId,
+                                    addressType: address.addressType,
+                                    addresslineOne: address.addresslineOne,
+                                    addresslineTwo: address.addresslineTwo,
+                                    location: address.location,
+                                    lat: address.lat,
+                                    lng: address.lng,
+                                    name: address.name,
+                                    userId: address.userId,
+                                    delete: address.delete,
+                                    addressName: address.addressName,
+                                    address: address.address,
+                                    cityId: address.cityId,
+                                    createdAt: address.createdAt,
+                                    updatedAt: address.updatedAt,
+                                  );
+                                  Get.back(result: true);
+                                }
                               },
                               child: AddressCardWidget(
                                   index: index,
@@ -137,43 +170,49 @@ class ConfirmAddressScreen extends GetView<AddressController> {
                   ),
                   // Payment Summary Section
                   const SizedBox(height: 20),
-                  Column(
-                    children: [
-                      Text(
-                        serviceName,
-                        textAlign: TextAlign.center,
-                        style: AppTextStyle.txtBold16.copyWith(
-                          letterSpacing: getHorizontalSize(
-                            3,
+                  Visibility(
+                    visible: controller.confirmFrom.value != 'profile',
+                    child: Column(
+                      children: [
+                        Text(
+                          serviceName,
+                          textAlign: TextAlign.center,
+                          style: AppTextStyle.txtBold16.copyWith(
+                            letterSpacing: getHorizontalSize(
+                              3,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 15),
-                      PaymentSummaryRow(
-                        title: 'Advance Amount',
-                        value: advanceAmount.toString(),
-                        isBold: false,
-                        valueColor: AppColors.black,
-                      ),
-                      PaymentSummaryRow(
-                          title: 'Service On', value: serviceDate),
-                      const SizedBox(height: 5),
-                    ],
+                        const SizedBox(height: 15),
+                        PaymentSummaryRow(
+                          title: 'Advance Amount',
+                          value: advanceAmount.toString(),
+                          isBold: false,
+                          valueColor: AppColors.black,
+                        ),
+                        PaymentSummaryRow(
+                            title: 'Service On', value: serviceDate),
+                        const SizedBox(height: 5),
+                      ],
+                    ),
                   ),
+                  const SizedBox(height: 10),
                 ])),
-        bottomNavigationBar: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: NookCornerButton(
-            text: 'Confirm Address',
-            onPressed: () {
-              if (controller.addressList.value.isNotNullOrEmpty) {
-                controller.confirmAddress();
-              } else {
-                "Please choose address".showToast();
-              }
-            },
-          ),
-        ),
+        bottomNavigationBar: controller.confirmFrom.value != 'profile'
+            ? Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: NookCornerButton(
+                  text: 'Confirm Address',
+                  onPressed: () {
+                    if (controller.addressList.value.isNotNullOrEmpty) {
+                      controller.confirmAddress();
+                    } else {
+                      "Please choose address".showToast();
+                    }
+                  },
+                ),
+              )
+            : const SizedBox.shrink(),
       ),
     );
   }

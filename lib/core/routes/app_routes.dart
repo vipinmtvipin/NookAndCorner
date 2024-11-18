@@ -161,6 +161,7 @@ class AppRoutes {
     GetPage(
       name: confirmAddressScreen,
       page: () => const ConfirmAddressScreen(),
+      binding: AddressBinding(),
     ),
     GetPage(
       name: webScreen,
