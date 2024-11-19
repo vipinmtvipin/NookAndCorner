@@ -4,6 +4,7 @@ import 'package:customerapp/presentation/account_screen/edit_account_screen.dart
 import 'package:customerapp/presentation/address_screen/add_address_screen.dart';
 import 'package:customerapp/presentation/address_screen/address_screen.dart';
 import 'package:customerapp/presentation/address_screen/binding/address_binding.dart';
+import 'package:customerapp/presentation/chat/chat_screen.dart';
 import 'package:customerapp/presentation/forget_password_screen/forget_password_screen.dart';
 import 'package:customerapp/presentation/main_screen/binding/main_binding.dart';
 import 'package:customerapp/presentation/main_screen/main_screen.dart';
@@ -52,6 +53,7 @@ class AppRoutes {
   static const String bookingDetailsScreen = '/booking-details-screen';
   static const String paymentStatusScreen = '/payment-status-screen';
   static const String paymentScreen = '/payment-screen';
+  static const String chatScreen = '/chat-screen';
   static List<GetPage> pages = [
     GetPage(
       name: initialRoute,
@@ -176,6 +178,10 @@ class AppRoutes {
       name: contactScreen,
       page: () => const ContactScreen(),
       binding: SettingsBinding(),
+    ),
+    GetPage(
+      name: chatScreen,
+      page: () => const ChatScreen(),
     ),
   ];
 }

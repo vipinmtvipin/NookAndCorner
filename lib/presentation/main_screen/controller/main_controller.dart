@@ -6,8 +6,10 @@ import 'package:customerapp/domain/model/home/active_banner_responds.dart';
 import 'package:customerapp/domain/model/home/city_responds.dart';
 import 'package:customerapp/domain/model/home/city_service_responds.dart';
 import 'package:customerapp/domain/model/home/mid_banner_responds.dart';
+import 'package:customerapp/domain/model/home/push_request.dart';
 import 'package:customerapp/domain/usecases/home/city_service_use_case.dart';
 import 'package:customerapp/domain/usecases/home/home_use_case.dart';
+import 'package:customerapp/domain/usecases/home/push_token_use_case.dart';
 import 'package:customerapp/presentation/base_controller.dart';
 import 'package:customerapp/presentation/main_screen/widgets/city_bottomsheet.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +25,12 @@ enum HomeStatus {
 class MainScreenController extends BaseController {
   final HomeUseCase _homeUseCase;
   final CityServiceUseCase _cityServiceUseCase;
-  MainScreenController(this._homeUseCase, this._cityServiceUseCase);
+  final PushTokenUseCase _pushTokenUseCase;
+  MainScreenController(
+    this._homeUseCase,
+    this._cityServiceUseCase,
+    this._pushTokenUseCase,
+  );
   final sessionStorage = GetStorage();
   late final _connectivityService = getIt<ConnectivityService>();
 
@@ -50,6 +57,7 @@ class MainScreenController extends BaseController {
   void onReady() {
     super.onReady();
     getCity();
+    updatePushToken();
   }
 
   getCity() async {
@@ -117,6 +125,30 @@ class MainScreenController extends BaseController {
       }
     } else {
       showToast(LocalizationKeys.noNetwork.tr);
+    }
+  }
+
+  Future<void> updatePushToken() async {
+    if (await _connectivityService.isConnected()) {
+      try {
+        var userId = sessionStorage.read(StorageKeys.userId).toString();
+        var userType = '';
+        if (userId.isNotEmpty) {
+          userType = 'user';
+        } else {
+          userType = '';
+          userId = '';
+        }
+
+        var request = PushRequest(
+          userId: userId.toString(),
+          userType: userType,
+          deviceToken: sessionStorage.read(StorageKeys.pushToken) ?? '',
+        );
+        await _pushTokenUseCase.execute(request);
+      } catch (e) {
+        e.printInfo();
+      }
     }
   }
 }

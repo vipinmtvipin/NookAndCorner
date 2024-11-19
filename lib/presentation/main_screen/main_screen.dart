@@ -95,7 +95,8 @@ class MainScreen extends GetView<MainScreenController> {
               size: getSize(23),
             ),
             onPressed: () {
-              Get.toNamed(AppRoutes.settingsScreen);
+              //Get.toNamed(AppRoutes.settingsScreen);
+              Get.toNamed(AppRoutes.chatScreen);
             },
           ),
           Obx(() {

@@ -1,5 +1,6 @@
 import 'package:customerapp/core/di/app_module.dart';
 import 'package:customerapp/core/localization/app_localization.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -9,6 +10,9 @@ import 'core/utils/initial_bindings.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
+  await Firebase.initializeApp();
 
   final appModule = AppModule();
   await appModule.init();

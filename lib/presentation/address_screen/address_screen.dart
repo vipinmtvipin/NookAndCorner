@@ -83,8 +83,6 @@ class AddressScreen extends GetView<AddressController> {
                                   double.tryParse(address.lng ?? '0.0') ?? 0.0,
                                 );
                                 navigateAndFetchAddress();
-                              } else {
-                                controller.deleteAddress();
                               }
                             });
                       },
@@ -188,18 +186,6 @@ class AddressCardWidget extends StatelessWidget {
                       },
                       child: Text(
                         "Edit",
-                        style: AppTextStyle.txtBold14.copyWith(
-                            color: AppColors.primaryColor,
-                            decoration: TextDecoration.underline),
-                      ),
-                    ),
-                    const SizedBox(width: 20),
-                    GestureDetector(
-                      onTap: () {
-                        onTap('Delete');
-                      },
-                      child: Text(
-                        "Delete",
                         style: AppTextStyle.txtBold14.copyWith(
                             color: AppColors.primaryColor,
                             decoration: TextDecoration.underline),

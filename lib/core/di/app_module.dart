@@ -4,6 +4,7 @@ import 'package:customerapp/core/network/connectivity_service.dart';
 import 'package:customerapp/core/notifications/notification_manager.dart';
 import 'package:customerapp/core/utils/common_util.dart';
 import 'package:customerapp/core/utils/logger.dart';
+import 'package:customerapp/presentation/chat/chat_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -30,6 +31,8 @@ class AppModule {
         FlutterLocalNotificationsPlugin());
     GetIt.I.registerSingleton<NotificationManager>(NotificationManager());
     GetIt.I<NotificationManager>().init();
+
+    GetIt.I.registerSingleton<ChatService>(ChatService());
 
     GetIt.I.registerSingleton<ApiService>(ApiService());
     GetIt.I.registerSingleton<CommonUtil>(CommonUtil());

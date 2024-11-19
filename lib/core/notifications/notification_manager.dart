@@ -1,18 +1,21 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:customerapp/core/constants/constants.dart';
 import 'package:customerapp/core/notifications/notification_msg_util.dart';
 import 'package:customerapp/core/utils/logger.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get_it/get_it.dart';
+import 'package:get_storage/get_storage.dart';
 
 class NotificationManager {
   Future init() async {
     try {
       await _initializeNotifications();
       await _initiateFirebase();
+      await getPushToken();
     } catch (e, s) {
       Logger.e(
         'Error initializing FirebaseMessaging',
@@ -88,6 +91,16 @@ class NotificationManager {
         }
       });
     }
+  }
+}
+
+Future<void> getPushToken() async {
+  String? token = await FirebaseMessaging.instance.getToken();
+  final sessionStorage = GetStorage();
+  if (token != null) {
+    sessionStorage.write(StorageKeys.pushToken, token);
+    Logger.e("---------########----------",
+        "PushToken: ${sessionStorage.read(StorageKeys.pushToken)}");
   }
 }
 

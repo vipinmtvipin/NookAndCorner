@@ -637,6 +637,7 @@ class ServiceController extends BaseController {
 
     try {
       Get.find<MainScreenController>().loggedIn.value = true;
+      Get.find<MainScreenController>().updatePushToken();
     } catch (e) {
       Logger.e("Error in controller", e);
     }

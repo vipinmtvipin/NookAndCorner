@@ -22,6 +22,8 @@ class NetworkKeys {
   static const String forgetPassword = '/auth/forgot-password';
 
   static const String city = '/cities';
+
+  static const String pushToken = '/fcm/device-token';
   static const String cityService = '/customer-category/city';
   static const String midBanner = '/mid-banner/ban/active';
   static const String activeBanner = '/banner/ban/active';

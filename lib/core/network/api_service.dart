@@ -18,6 +18,8 @@ class ApiService {
       LoggingInterceptor(
         requestBody: true,
         requestHeader: true,
+        request: true,
+        responseBody: true,
       ),
     ])
     ..transformer =
