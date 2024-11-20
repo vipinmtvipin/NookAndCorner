@@ -3,6 +3,7 @@ import 'package:customerapp/core/network/api_service.dart';
 import 'package:customerapp/core/network/dio_exception.dart';
 import 'package:customerapp/domain/model/common_responds.dart';
 import 'package:customerapp/domain/model/settings/address_request.dart';
+import 'package:customerapp/domain/model/settings/review_request.dart';
 import 'package:customerapp/domain/model/settings/reviews_responds.dart';
 import 'package:customerapp/domain/repositories/settings/settings_repository.dart';
 import 'package:dio/dio.dart';
@@ -30,16 +31,12 @@ class SettingsRepositoryIml extends SettingsRepository {
   }
 
   @override
-  Future<ReviewListResponds?> reviewList(String request) async {
+  Future<ReviewListResponds?> reviewList(ReviewRequest request) async {
     try {
       Response response;
 
       response = await GetIt.I.get<ApiService>().get(NetworkKeys.reviews,
-          queryParameters: {
-            "limit": null,
-            "offset": null,
-            "search": null,
-          },
+          queryParameters: request.toJson(),
           options: Options(
             contentType: 'application/json',
           ));

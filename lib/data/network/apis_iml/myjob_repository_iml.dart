@@ -3,6 +3,8 @@ import 'package:customerapp/core/network/api_service.dart';
 import 'package:customerapp/core/network/dio_exception.dart';
 import 'package:customerapp/domain/model/address/address_request.dart';
 import 'package:customerapp/domain/model/common_responds.dart';
+import 'package:customerapp/domain/model/my_jobs/file_upload_request.dart';
+import 'package:customerapp/domain/model/my_jobs/file_upload_responds.dart';
 import 'package:customerapp/domain/model/my_jobs/my_job_responds.dart';
 import 'package:customerapp/domain/model/my_jobs/myjob_request.dart';
 import 'package:customerapp/domain/repositories/my_job/myjob_repository.dart';
@@ -131,6 +133,26 @@ class MyJobRepositoryIml extends MyJobRepository {
               ));
 
       final CommonResponds data = commonRespondsFromJson(response.toString());
+
+      return data;
+    } on DioException catch (e) {
+      var error = DioExceptionData.fromDioError(e);
+      throw error.errorMessage;
+    }
+  }
+
+  @override
+  Future<FileUploadResponse?> fileUpload(List<FileUploadRequest> file) async {
+    try {
+      Response response =
+          await GetIt.I.get<ApiService>().post(NetworkKeys.fileUpload,
+              data: file.toList(),
+              options: Options(
+                contentType: 'application/json',
+              ));
+
+      final FileUploadResponse data =
+          fileUploadRespondsFromJson(response.toString());
 
       return data;
     } on DioException catch (e) {

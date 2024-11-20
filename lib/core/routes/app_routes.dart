@@ -5,6 +5,7 @@ import 'package:customerapp/presentation/address_screen/add_address_screen.dart'
 import 'package:customerapp/presentation/address_screen/address_screen.dart';
 import 'package:customerapp/presentation/address_screen/binding/address_binding.dart';
 import 'package:customerapp/presentation/chat/chat_screen.dart';
+import 'package:customerapp/presentation/chat/full_image_view.dart';
 import 'package:customerapp/presentation/forget_password_screen/forget_password_screen.dart';
 import 'package:customerapp/presentation/main_screen/binding/main_binding.dart';
 import 'package:customerapp/presentation/main_screen/main_screen.dart';
@@ -54,6 +55,7 @@ class AppRoutes {
   static const String paymentStatusScreen = '/payment-status-screen';
   static const String paymentScreen = '/payment-screen';
   static const String chatScreen = '/chat-screen';
+  static const String fullScreenImageView = '/full-screen-image-view';
   static List<GetPage> pages = [
     GetPage(
       name: initialRoute,
@@ -104,9 +106,6 @@ class AppRoutes {
     GetPage(
       name: settingsScreen,
       page: () => const SettingsScreen(),
-      bindings: [
-        SettingsBinding(),
-      ],
     ),
     GetPage(
       name: serviceScreen,
@@ -182,6 +181,10 @@ class AppRoutes {
     GetPage(
       name: chatScreen,
       page: () => const ChatScreen(),
+    ),
+    GetPage(
+      name: fullScreenImageView,
+      page: () => const FullScreenImageView(),
     ),
   ];
 }

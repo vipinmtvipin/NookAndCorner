@@ -33,6 +33,7 @@ class ConfirmAddressScreen extends GetView<AddressController> {
     var serviceName = '';
     double advanceAmount = 0.0;
     var serviceDate = '';
+    var isFromService = false;
 
     if (controller.confirmFrom.value == 'payment') {
       ServiceController mController = Get.find<ServiceController>();
@@ -46,6 +47,7 @@ class ConfirmAddressScreen extends GetView<AddressController> {
       serviceName =
           mController.selectedJob.value.servicePrice?.service?.category?.name ??
               '';
+      advanceAmount = mController.advanceAmount.value ?? 0.0;
       advanceAmount = mController.advanceAmount.value ?? 0.0;
       serviceDate =
           mController.selectedJob.value.jobDate?.convertUtcToIst() ?? '';
@@ -64,6 +66,11 @@ class ConfirmAddressScreen extends GetView<AddressController> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   TitleBarWidget(
+                      onBack: () {
+                        if (controller.confirmFrom.value == 'payment') {
+                          Get.offAndToNamed(AppRoutes.mainScreen);
+                        }
+                      },
                       title: controller.confirmFrom.value == 'profile'
                           ? 'Update Address'
                           : "Confirm Address"),
@@ -85,6 +92,7 @@ class ConfirmAddressScreen extends GetView<AddressController> {
                             Padding(
                               padding: const EdgeInsets.all(20.0),
                               child: NookCornerButton(
+                                type: NookCornerButtonType.outlined,
                                 text: 'Add Address',
                                 onPressed: () {
                                   controller.selectedAddress.value =

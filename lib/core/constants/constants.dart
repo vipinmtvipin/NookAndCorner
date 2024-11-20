@@ -39,6 +39,7 @@ class NetworkKeys {
 
   static const String confirmAddress = '/job/confirm';
 
+  static const String fileUpload = '/firebase-chat/presigned-url';
   static const String applyCoupon = '/promotion/validate';
   static const String metaData = '/meta-values';
   static const String createJobLogin = '/job/V1/login';

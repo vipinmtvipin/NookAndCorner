@@ -1,9 +1,14 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:customerapp/core/constants/constants.dart';
 import 'package:customerapp/core/extensions/date_time_extensions.dart';
 import 'package:customerapp/core/localization/localization_keys.dart';
 import 'package:customerapp/core/network/connectivity_service.dart';
+import 'package:customerapp/core/network/logging_interceptor.dart';
 import 'package:customerapp/core/routes/app_routes.dart';
 import 'package:customerapp/core/utils/common_util.dart';
+import 'package:customerapp/domain/model/my_jobs/file_upload_request.dart';
 import 'package:customerapp/domain/model/my_jobs/my_job_responds.dart';
 import 'package:customerapp/domain/model/my_jobs/myjob_request.dart';
 import 'package:customerapp/domain/model/service/time_slote_request.dart';
@@ -12,6 +17,7 @@ import 'package:customerapp/domain/model/summery/addon_request.dart';
 import 'package:customerapp/domain/model/summery/addon_service_responds.dart';
 import 'package:customerapp/domain/model/summery/meta_responds.dart';
 import 'package:customerapp/domain/usecases/my_job/cancel_job_use_case.dart';
+import 'package:customerapp/domain/usecases/my_job/file_upload_use_case.dart';
 import 'package:customerapp/domain/usecases/my_job/my_job_use_case.dart';
 import 'package:customerapp/domain/usecases/my_job/rating_job_use_case.dart';
 import 'package:customerapp/domain/usecases/my_job/reschedule_job_use_case.dart';
@@ -19,7 +25,11 @@ import 'package:customerapp/domain/usecases/my_job/review_job_use_case.dart';
 import 'package:customerapp/domain/usecases/service/service_slots_use_case.dart';
 import 'package:customerapp/domain/usecases/summery/summery_use_case.dart';
 import 'package:customerapp/presentation/base_controller.dart';
+import 'package:customerapp/presentation/chat/chat_service.dart';
+import 'package:customerapp/presentation/chat/message_data.dart';
 import 'package:customerapp/presentation/services_screen/controller/service_controller.dart';
+import 'package:dio/dio.dart';
+import 'package:file_picker/src/platform_file.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:get_storage/get_storage.dart';
@@ -39,6 +49,8 @@ class MyBookingController extends BaseController {
   final RescheduleJobUseCase _rescheduleJobUseCase;
   final ReviewJobUseCase _reviewJobUseCase;
 
+  final FileUploadUseCase _fileUploadUseCase;
+
   MyBookingController(
     this._myJobUseCase,
     this._summeryUseCase,
@@ -47,6 +59,7 @@ class MyBookingController extends BaseController {
     this._ratingJobUseCase,
     this._rescheduleJobUseCase,
     this._reviewJobUseCase,
+    this._fileUploadUseCase,
   );
 
   var screenTitle = 'My Bookings'.obs;
@@ -67,6 +80,7 @@ class MyBookingController extends BaseController {
   Rx<DateTime> selectedDate = Rx(
     DateTime.now().add(Duration(days: 1)),
   );
+
   var selectedDateValue = 'Select Date'.obs;
   var selectedTime = ''.obs;
   Rx<List<TimeSlotData>> timeSlots = Rx([]);
@@ -432,5 +446,157 @@ class MyBookingController extends BaseController {
     convenienceFee.value = 0;
     convenienceFee.value = convenienceFees;
     calculateGrandTotal();
+  }
+
+  Future<void> uploadFile(
+      PlatformFile file, String adminMessage, String userName) async {
+    if (await _connectivityService.isConnected()) {
+      try {
+        showLoadingDialog();
+
+        var fileType = 'image';
+        if (file.path!.contains('jpg') ||
+            file.path!.contains('jpeg') ||
+            file.path!.contains('png')) {
+          fileType = 'image';
+        } else {
+          fileType = 'video';
+        }
+
+        List<FileUploadRequest> request = [];
+
+        request.add(FileUploadRequest(
+          fileName: file.path?.split('/').last,
+          fileType: fileType,
+        ));
+        var services = await _fileUploadUseCase.execute(request);
+
+        if (services?.success == true) {
+          final fileData = File(file.path!);
+
+          _uploadToAws(
+            services?.data?.urls.first.preSignedUrl ?? '',
+            services?.data?.urls.first.filePath ?? '',
+            fileData,
+            adminMessage,
+            userName,
+          );
+        } else {
+          showToast('File Uploaded failed');
+        }
+
+        hideLoadingDialog();
+      } catch (e) {
+        hideLoadingDialog();
+        showToast('File Uploaded failed');
+        e.printInfo();
+      }
+    } else {
+      showToast(LocalizationKeys.noNetwork.tr);
+    }
+  }
+
+  Future<void> _uploadToAws(String preSignedUrl, String imageUrl, File file,
+      String adminMessage, String name) async {
+    try {
+      showLoadingDialog();
+
+      final Dio dio = Dio(BaseOptions(
+        baseUrl: NetworkKeys.baseUrl,
+        connectTimeout: const Duration(minutes: 5),
+        receiveTimeout: const Duration(minutes: 5),
+        sendTimeout: const Duration(minutes: 5),
+      ))
+        ..interceptors.addAll([
+          LoggingInterceptor(
+            requestBody: true,
+            requestHeader: true,
+            request: true,
+            responseBody: true,
+          ),
+        ])
+        ..transformer = BackgroundTransformer();
+
+      // Determine the Content-Type based on file extension
+      String contentType = '';
+      final fileExtension = file.path.split('.').last.toLowerCase();
+      switch (fileExtension) {
+        case 'jpg':
+        case 'jpeg':
+          contentType = 'image/jpeg';
+          break;
+        case 'png':
+          contentType = 'image/png';
+          break;
+        case 'pdf':
+          contentType = 'application/pdf';
+          break;
+        case 'mp4':
+          contentType = 'video/mp4';
+          break;
+        default:
+          contentType =
+              'application/octet-stream'; // Fallback for unknown types
+      }
+
+      // Init the request
+      final response = await dio.put(
+        preSignedUrl,
+        data: file.openRead(),
+        options: Options(
+          headers: {
+            Headers.contentLengthHeader: file.lengthSync(),
+            Headers.contentTypeHeader: contentType,
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        sendFileToFirebase(
+          imageUrl,
+          selectedJob.value.userId.toString(),
+          selectedJob.value.jobId.toString(),
+          adminMessage,
+          name,
+        );
+      } else {
+        showToast('File Uploaded failed');
+      }
+    } catch (e) {
+      showToast('File Uploaded failed');
+    } finally {
+      hideLoadingDialog();
+    }
+  }
+
+  void sendFileToFirebase(String fileUrl, String userId, String jobId,
+      String adminMessage, String name) {
+    final ChatService chatService = GetIt.I<ChatService>();
+    final message = Message(
+      from: 'user',
+      message: '',
+      timestamp: Timestamp.now(),
+      userId: sessionStorage.read(StorageKeys.userId).toString(),
+      fileUrl: fileUrl,
+      name: name,
+    );
+    chatService.sendMessage(
+      userId,
+      jobId,
+      message,
+    );
+    final messageAdmin = Message(
+      from: 'admin',
+      message: adminMessage,
+      timestamp: Timestamp.now(),
+      userId: userId,
+      fileUrl: '',
+      name: "Admin",
+    );
+    chatService.sendMessage(
+      userId,
+      jobId,
+      messageAdmin,
+    );
   }
 }

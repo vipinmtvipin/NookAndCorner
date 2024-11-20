@@ -19,42 +19,53 @@ class ReviewsScreen extends GetView<SettingsController> {
 
   @override
   Widget build(BuildContext context) {
-    controller.getReviews();
     return SafeArea(
       top: false,
       bottom: false,
       child: Scaffold(
-        body: mobileView(),
+        body: RefreshIndicator(
+            color: Colors.black,
+            backgroundColor: Colors.white,
+            strokeWidth: 2,
+            onRefresh: () {
+              controller.reviewList.value = [];
+              controller.getReviews('10', '0', '');
+              return Future<void>.value();
+            },
+            child: mobileView()),
       ),
     );
   }
 
   Widget mobileView() {
-    return Container(
-        padding: getPadding(left: 16, top: 50, right: 16),
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const TitleBarWidget(title: "Reviews"),
-              Flexible(
-                child: ConditionalWidget(
-                  condition: controller.reviewList.value.isNotNullOrEmpty,
-                  onFalse: NotDataFound(
-                    message: "No Reviews yet, be the first to review.",
-                    size: 150,
-                    style: AppTextStyle.txtBold16,
-                  ),
-                  child: ListView.builder(
-                    itemCount: controller.reviewList.value.length,
-                    itemBuilder: (context, index) {
-                      var item = controller.reviewList.value[index];
-                      return ReviewCardWidget(item: item, onTap: () {});
-                    },
+    return Obx(
+      () => Container(
+          padding: getPadding(left: 16, top: 50, right: 16),
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const TitleBarWidget(title: "Reviews"),
+                Flexible(
+                  child: ConditionalWidget(
+                    condition: controller.reviewList.value.isNotNullOrEmpty,
+                    onFalse: NotDataFound(
+                      message: "No Reviews yet, be the first to review.",
+                      size: 150,
+                      style: AppTextStyle.txtBold16,
+                    ),
+                    child: ListView.builder(
+                      controller: controller.scrollController,
+                      itemCount: controller.reviewList.value.length,
+                      itemBuilder: (context, index) {
+                        var item = controller.reviewList.value[index];
+                        return ReviewCardWidget(item: item, onTap: () {});
+                      },
+                    ),
                   ),
                 ),
-              ),
-            ]));
+              ])),
+    );
   }
 }
 

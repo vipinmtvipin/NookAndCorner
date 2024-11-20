@@ -305,6 +305,7 @@ class MyBookingCard extends GetView<MyBookingController> {
                             text: 'Chat with us',
                             onTap: () {
                               controller.selectedJob.value = item;
+                              Get.toNamed(AppRoutes.chatScreen);
                             },
                             color: AppColors.black,
                             icon: Icons.chat,

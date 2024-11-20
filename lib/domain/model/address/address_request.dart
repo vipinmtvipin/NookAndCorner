@@ -61,7 +61,7 @@ class ConfirmAddressRequest {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['userId'] = userId;
-    data['cityId'] = jobId;
+    data['jobId'] = jobId;
     data['status'] = status;
     data['addressId'] = addressId;
     return data;

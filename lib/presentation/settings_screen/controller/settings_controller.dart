@@ -4,6 +4,7 @@ import 'package:customerapp/core/localization/localization_keys.dart';
 import 'package:customerapp/core/network/connectivity_service.dart';
 import 'package:customerapp/domain/model/common_responds.dart';
 import 'package:customerapp/domain/model/settings/address_request.dart';
+import 'package:customerapp/domain/model/settings/review_request.dart';
 import 'package:customerapp/domain/model/settings/reviews_responds.dart';
 import 'package:customerapp/domain/usecases/settings/contact_use_case.dart';
 import 'package:customerapp/domain/usecases/settings/reviews_use_case.dart';
@@ -26,6 +27,8 @@ class SettingsController extends BaseController {
     this._reviewsUseCase,
   );
 
+  final ScrollController scrollController = ScrollController();
+
   var settingStatus = SettingsStatus.unknown.obs;
   late final _connectivityService = getIt<ConnectivityService>();
   final sessionStorage = GetStorage();
@@ -37,12 +40,25 @@ class SettingsController extends BaseController {
   Rx<List<ReviewData>> reviewList = Rx<List<ReviewData>>([]);
 
   @override
+  void onInit() {
+    super.onInit();
+    _setupScrollListener();
+    getReviews('10', '0', '');
+  }
+
+  @override
   void onClose() {
     super.onClose();
     emailController.dispose();
     phoneController.dispose();
     nameController.dispose();
     messageController.dispose();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    scrollController.dispose();
   }
 
   postContactInfo() async {
@@ -95,15 +111,17 @@ class SettingsController extends BaseController {
     }
   }
 
-  getReviews() async {
+  getReviews(String limit, String offset, String search) async {
     if (await _connectivityService.isConnected()) {
       try {
         showLoadingDialog();
 
-        ReviewListResponds? responds = await _reviewsUseCase.execute("");
+        ReviewRequest request =
+            ReviewRequest(limit: limit, offset: offset, search: search);
+        ReviewListResponds? responds = await _reviewsUseCase.execute(request);
 
         if (responds?.success == true) {
-          reviewList.value = responds?.data ?? [];
+          reviewList.value = responds?.data?.rows ?? [];
         }
         hideLoadingDialog();
       } catch (e) {
@@ -113,6 +131,15 @@ class SettingsController extends BaseController {
     } else {
       showToast(LocalizationKeys.noNetwork.tr);
     }
+  }
+
+  void _setupScrollListener() {
+    scrollController.addListener(() {
+      if (scrollController.position.pixels >=
+          scrollController.position.maxScrollExtent) {
+        getReviews('10', reviewList.value.length.toString(), '');
+      }
+    });
   }
 
   void clearState() {

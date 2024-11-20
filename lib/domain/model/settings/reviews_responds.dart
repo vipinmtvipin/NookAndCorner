@@ -1,5 +1,8 @@
 import 'dart:convert';
 
+import 'package:customerapp/core/utils/common_util.dart';
+import 'package:get_it/get_it.dart';
+
 ReviewListResponds reviewsListRespondsFromJson(String str) =>
     ReviewListResponds.fromJson(json.decode(str));
 
@@ -12,23 +15,45 @@ class ReviewListResponds {
 
   final bool? success;
   final String? message;
-  final List<ReviewData> data;
+  final Data? data;
 
   factory ReviewListResponds.fromJson(Map<String, dynamic> json) {
     return ReviewListResponds(
       success: json["success"],
       message: json["message"],
-      data: json["data"] == null
-          ? []
-          : List<ReviewData>.from(
-              json["data"]!.map((x) => ReviewData.fromJson(x))),
+      data: json["data"] == null ? null : Data.fromJson(json["data"]),
     );
   }
 
   Map<String, dynamic> toJson() => {
         "success": success,
         "message": message,
-        "data": data.map((x) => x?.toJson()).toList(),
+        "data": data?.toJson(),
+      };
+}
+
+class Data {
+  Data({
+    required this.rows,
+    required this.count,
+  });
+
+  final List<ReviewData> rows;
+  final int? count;
+
+  factory Data.fromJson(Map<String, dynamic> json) {
+    return Data(
+      rows: json["rows"] == null
+          ? []
+          : List<ReviewData>.from(
+              json["rows"]!.map((x) => ReviewData.fromJson(x))),
+      count: json["count"],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        "rows": rows.map((x) => x.toJson()).toList(),
+        "count": count,
       };
 }
 
@@ -153,10 +178,10 @@ class Job {
   final String? otp;
   final String? txnId;
   final String? workDone;
-  final int? promotionId;
+  final dynamic promotionId;
   final double? promotionAmount;
-  final dynamic addlPromotionId;
-  final dynamic addlPromotionAmount;
+  final int? addlPromotionId;
+  final double? addlPromotionAmount;
   final dynamic promotionStatus;
   final double? price;
   final dynamic addonId;
@@ -202,15 +227,16 @@ class Job {
       txnId: json["txnId"],
       workDone: json["workDone"],
       promotionId: json["promotionId"],
-      promotionAmount: json["promotionAmount"],
+      promotionAmount: GetIt.I<CommonUtil>().toDouble(json["promotionAmount"]),
       addlPromotionId: json["addlPromotionId"],
-      addlPromotionAmount: json["addlPromotionAmount"],
+      addlPromotionAmount:
+          GetIt.I<CommonUtil>().toDouble(json["addlPromotionAmount"]),
       promotionStatus: json["promotionStatus"],
-      price: json["price"],
+      price: GetIt.I<CommonUtil>().toDouble(json["price"]),
       addonId: json["addonId"],
-      convenienceFee: json["convenienceFee"],
+      convenienceFee: GetIt.I<CommonUtil>().toDouble(json["convenienceFee"]),
       conveniencePercent: json["conveniencePercent"],
-      advanceAmount: json["advanceAmount"],
+      advanceAmount: GetIt.I<CommonUtil>().toDouble(json["advanceAmount"]),
       advancePercent: json["advancePercent"],
       advStatus: json["advStatus"],
       refundStatus: json["refundStatus"],
@@ -301,6 +327,7 @@ class User {
     required this.accountNum,
     required this.blackListMessage,
     required this.blackList,
+    required this.deletedAt,
   });
 
   final int? userId;
@@ -318,6 +345,7 @@ class User {
   final dynamic accountNum;
   final dynamic blackListMessage;
   final bool? blackList;
+  final dynamic deletedAt;
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
@@ -336,6 +364,7 @@ class User {
       accountNum: json["accountNum"],
       blackListMessage: json["blackListMessage"],
       blackList: json["blackList"],
+      deletedAt: json["deletedAt"],
     );
   }
 
@@ -355,5 +384,6 @@ class User {
         "accountNum": accountNum,
         "blackListMessage": blackListMessage,
         "blackList": blackList,
+        "deletedAt": deletedAt,
       };
 }

@@ -34,7 +34,7 @@ class NetworkImageView extends StatelessWidget {
       width: 40,
     );
 
-    return InkWell(
+    return GestureDetector(
         onTap: onTap,
         child: url.isNullOrEmpty
             ? defaultIcon

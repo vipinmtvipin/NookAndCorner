@@ -3,6 +3,7 @@ import 'package:customerapp/data/network/apis_iml/service_repository_iml.dart';
 import 'package:customerapp/domain/repositories/my_job/myjob_repository.dart';
 import 'package:customerapp/domain/repositories/service/service_repository.dart';
 import 'package:customerapp/domain/usecases/my_job/cancel_job_use_case.dart';
+import 'package:customerapp/domain/usecases/my_job/file_upload_use_case.dart';
 import 'package:customerapp/domain/usecases/my_job/my_job_use_case.dart';
 import 'package:customerapp/domain/usecases/my_job/rating_job_use_case.dart';
 import 'package:customerapp/domain/usecases/my_job/reschedule_job_use_case.dart';
@@ -24,8 +25,10 @@ class MyBookingBinding extends Bindings {
     Get.put<RatingJobUseCase>(RatingJobUseCase(Get.find()));
     Get.put<RescheduleJobUseCase>(RescheduleJobUseCase(Get.find()));
     Get.put<ReviewJobUseCase>(ReviewJobUseCase(Get.find()));
+    Get.put<FileUploadUseCase>(FileUploadUseCase(Get.find()));
 
     Get.put<MyBookingController>(MyBookingController(
+      Get.find(),
       Get.find(),
       Get.find(),
       Get.find(),

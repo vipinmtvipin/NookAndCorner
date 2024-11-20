@@ -10,8 +10,9 @@ import 'request_interceptors.dart';
 class ApiService {
   final Dio _dio = Dio(BaseOptions(
     baseUrl: NetworkKeys.baseUrl,
-    connectTimeout: const Duration(seconds: 60),
-    receiveTimeout: const Duration(seconds: 60),
+    connectTimeout: const Duration(minutes: 5),
+    receiveTimeout: const Duration(minutes: 5),
+    sendTimeout: const Duration(minutes: 5),
   ))
     ..interceptors.addAll([
       RequestHeaderInterceptor(),
