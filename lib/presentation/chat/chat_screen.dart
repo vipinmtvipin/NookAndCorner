@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:customerapp/core/constants/constants.dart';
+import 'package:customerapp/core/extensions/bool_extension.dart';
 import 'package:customerapp/core/extensions/date_time_extensions.dart';
 import 'package:customerapp/core/extensions/list_extensions.dart';
 import 'package:customerapp/core/extensions/string_extensions.dart';
 import 'package:customerapp/core/routes/app_routes.dart';
 import 'package:customerapp/core/theme/color_constant.dart';
+import 'package:customerapp/generated/assets.gen.dart';
 import 'package:customerapp/presentation/chat/message_data.dart';
 import 'package:customerapp/presentation/common_widgets/conditional_widget.dart';
 import 'package:customerapp/presentation/common_widgets/custom_icon_button.dart';
@@ -89,7 +91,7 @@ class ChatScreenState extends State<ChatScreen> {
   Future<void> _pickFile() async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['jpg', 'jpeg', 'png'],
+      allowedExtensions: ['jpg', 'jpeg', 'png', 'mp4', 'mov', 'avi', '3gp'],
       allowCompression: true,
     );
     if (result != null) {
@@ -190,7 +192,16 @@ class ChatScreenState extends State<ChatScreen> {
                       final messageData = messages[index];
                       final isCurrentUser = messageData.from == currentUserType;
                       final isFile = messageData.fileUrl?.isNotEmpty ?? false;
-
+                      var fileType = 'image';
+                      if (isFile.absolute) {
+                        if (messageData.fileUrl!.contains('jpg') ||
+                            messageData.fileUrl!.contains('jpeg') ||
+                            messageData.fileUrl!.contains('png')) {
+                          fileType = 'image';
+                        } else {
+                          fileType = 'video';
+                        }
+                      }
                       return Align(
                         alignment: isCurrentUser
                             ? Alignment.centerRight
@@ -202,21 +213,53 @@ class ChatScreenState extends State<ChatScreen> {
                                 horizontal: 15.0, vertical: 10),
                             child: Hero(
                               tag: messageData.fileUrl ?? '',
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(20),
-                                clipBehavior: Clip.antiAlias,
-                                child: NetworkImageView(
+                              child: ConditionalWidget(
+                                condition: fileType == 'image',
+                                onFalse: GestureDetector(
                                   onTap: () {
-                                    Get.toNamed(AppRoutes.fullScreenImageView,
+                                    Get.toNamed(AppRoutes.videoPlayerScreen,
                                         arguments: {
-                                          'imageUrl': messageData.fileUrl ?? '',
+                                          'videoUrl': messageData.fileUrl ?? '',
                                         });
                                   },
-                                  borderRadius: 20,
-                                  url: messageData.fileUrl ?? '',
-                                  height: 250,
-                                  width: 200,
-                                  fit: BoxFit.contain,
+                                  child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(20),
+                                      clipBehavior: Clip.antiAlias,
+                                      child: Stack(
+                                        children: [
+                                          Assets.images.videoThum.image(
+                                            height: 180,
+                                            width: 250,
+                                            fit: BoxFit.fill,
+                                          ),
+                                          Positioned(
+                                            top: 0,
+                                            left: 0,
+                                            bottom: 0,
+                                            right: 0,
+                                            child: Icon(Icons.play_circle,
+                                                color: Colors.black, size: 50),
+                                          )
+                                        ],
+                                      )),
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(20),
+                                  clipBehavior: Clip.antiAlias,
+                                  child: NetworkImageView(
+                                    onTap: () {
+                                      Get.toNamed(AppRoutes.fullScreenImageView,
+                                          arguments: {
+                                            'imageUrl':
+                                                messageData.fileUrl ?? '',
+                                          });
+                                    },
+                                    borderRadius: 20,
+                                    url: messageData.fileUrl ?? '',
+                                    height: 250,
+                                    width: 200,
+                                    fit: BoxFit.contain,
+                                  ),
                                 ),
                               ),
                             ),

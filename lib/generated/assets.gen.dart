@@ -75,9 +75,16 @@ class $AssetsImagesGen {
   SvgGenImage get profileBg =>
       const SvgGenImage('assets/images/profile_bg.svg');
 
+  /// File path: assets/images/up_arrow.svg
+  SvgGenImage get upArrow => const SvgGenImage('assets/images/up_arrow.svg');
+
+  /// File path: assets/images/video_thum.png
+  AssetGenImage get videoThum =>
+      const AssetGenImage('assets/images/video_thum.png');
+
   /// List of all assets
   List<dynamic> get values =>
-      [google, nookCornerLogo, nookCornerRound, profileBg];
+      [google, nookCornerLogo, nookCornerRound, profileBg, upArrow, videoThum];
 }
 
 class $AssetsLottieGen {
@@ -139,7 +146,7 @@ class AssetGenImage {
     ImageRepeat repeat = ImageRepeat.noRepeat,
     Rect? centerSlice,
     bool matchTextDirection = false,
-    bool gaplessPlayback = false,
+    bool gaplessPlayback = true,
     bool isAntiAlias = false,
     String? package,
     FilterQuality filterQuality = FilterQuality.low,

@@ -90,26 +90,36 @@ class ServiceScreen extends GetView<ServiceController> {
                     const SizedBox(height: 20),
                     SizedBox(
                       height: 250,
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Image.network(
-                          controller.categoryImage.value.toString(),
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return const SizedBox.shrink();
-                          },
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) {
-                              return child;
-                            } else {
-                              return Center(
-                                  child: Padding(
-                                padding:
-                                    EdgeInsets.only(left: context.width * 0.4),
-                                child: CircularProgressIndicator(),
-                              ));
-                            }
-                          },
+                      child: Scrollbar(
+                        controller: controller.scrollController,
+                        interactive: true,
+                        thumbVisibility: true,
+                        radius: const Radius.circular(20),
+                        thickness: 5,
+                        trackVisibility: true,
+                        child: SingleChildScrollView(
+                          controller: controller.scrollController,
+                          scrollDirection: Axis.horizontal,
+                          physics: const BouncingScrollPhysics(),
+                          child: Image.network(
+                            controller.categoryImage.value.toString(),
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return const SizedBox.shrink();
+                            },
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) {
+                                return child;
+                              } else {
+                                return Center(
+                                    child: Padding(
+                                  padding: EdgeInsets.only(
+                                      left: context.width * 0.4),
+                                  child: CircularProgressIndicator(),
+                                ));
+                              }
+                            },
+                          ),
                         ),
                       ),
                     ),
@@ -149,7 +159,6 @@ class ServiceScreen extends GetView<ServiceController> {
                       child: ListView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        controller: controller.scrollController,
                         itemCount: controller.serviceInfo.value.length,
                         itemBuilder: (context, index) {
                           return ServiceCardWidget(

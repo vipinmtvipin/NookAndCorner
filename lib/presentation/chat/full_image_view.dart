@@ -44,7 +44,7 @@ class _FullScreenImageViewState extends State<FullScreenImageView> {
             ),
           ),
           Positioned(
-            top: 40,
+            top: 50,
             left: 20,
             child: IconButton(
               icon: Icon(Icons.close, color: Colors.white, size: 30),

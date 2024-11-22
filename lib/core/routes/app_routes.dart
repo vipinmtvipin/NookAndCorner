@@ -6,6 +6,7 @@ import 'package:customerapp/presentation/address_screen/address_screen.dart';
 import 'package:customerapp/presentation/address_screen/binding/address_binding.dart';
 import 'package:customerapp/presentation/chat/chat_screen.dart';
 import 'package:customerapp/presentation/chat/full_image_view.dart';
+import 'package:customerapp/presentation/chat/video_player.dart';
 import 'package:customerapp/presentation/forget_password_screen/forget_password_screen.dart';
 import 'package:customerapp/presentation/main_screen/binding/main_binding.dart';
 import 'package:customerapp/presentation/main_screen/main_screen.dart';
@@ -56,6 +57,8 @@ class AppRoutes {
   static const String paymentScreen = '/payment-screen';
   static const String chatScreen = '/chat-screen';
   static const String fullScreenImageView = '/full-screen-image-view';
+
+  static const String videoPlayerScreen = '/video-player-screen';
   static List<GetPage> pages = [
     GetPage(
       name: initialRoute,
@@ -185,6 +188,10 @@ class AppRoutes {
     GetPage(
       name: fullScreenImageView,
       page: () => const FullScreenImageView(),
+    ),
+    GetPage(
+      name: videoPlayerScreen,
+      page: () => const VideoPlayerScreen(),
     ),
   ];
 }

@@ -8,6 +8,7 @@ import 'package:customerapp/domain/usecases/my_job/my_job_use_case.dart';
 import 'package:customerapp/domain/usecases/my_job/rating_job_use_case.dart';
 import 'package:customerapp/domain/usecases/my_job/reschedule_job_use_case.dart';
 import 'package:customerapp/domain/usecases/my_job/review_job_use_case.dart';
+import 'package:customerapp/domain/usecases/my_job/update_addon_use_case.dart';
 import 'package:customerapp/domain/usecases/service/service_slots_use_case.dart';
 import 'package:customerapp/domain/usecases/summery/summery_use_case.dart';
 import 'package:customerapp/presentation/my_job_screen/controller/mybooking_controller.dart';
@@ -26,8 +27,10 @@ class MyBookingBinding extends Bindings {
     Get.put<RescheduleJobUseCase>(RescheduleJobUseCase(Get.find()));
     Get.put<ReviewJobUseCase>(ReviewJobUseCase(Get.find()));
     Get.put<FileUploadUseCase>(FileUploadUseCase(Get.find()));
+    Get.put<UpdateAddonUseCase>(UpdateAddonUseCase(Get.find()));
 
     Get.put<MyBookingController>(MyBookingController(
+      Get.find(),
       Get.find(),
       Get.find(),
       Get.find(),

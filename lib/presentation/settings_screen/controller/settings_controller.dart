@@ -121,7 +121,9 @@ class SettingsController extends BaseController {
         ReviewListResponds? responds = await _reviewsUseCase.execute(request);
 
         if (responds?.success == true) {
-          reviewList.value = responds?.data?.rows ?? [];
+          var list = reviewList.value;
+          list.addAll(responds?.data?.rows ?? []);
+          reviewList.value = list;
         }
         hideLoadingDialog();
       } catch (e) {

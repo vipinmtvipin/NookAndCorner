@@ -6,7 +6,7 @@ extension DateTimeUtil on DateTime? {
     DateTime istDateTime = this!.add(Duration(hours: 5, minutes: 30));
 
     // Format the IST DateTime to a string
-    DateFormat dateFormat = DateFormat("dd, MMM yyyy HH:mm aa");
+    DateFormat dateFormat = DateFormat("dd, MMM yyyy hh:mm aa");
     String istDateString = dateFormat.format(istDateTime);
 
     return istDateString;

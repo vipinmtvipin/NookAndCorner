@@ -7,6 +7,8 @@ import 'package:customerapp/domain/model/home/city_responds.dart';
 import 'package:customerapp/domain/model/home/city_service_responds.dart';
 import 'package:customerapp/domain/model/home/mid_banner_responds.dart';
 import 'package:customerapp/domain/model/home/push_request.dart';
+import 'package:customerapp/domain/model/settings/review_request.dart';
+import 'package:customerapp/domain/model/settings/reviews_responds.dart';
 import 'package:customerapp/domain/repositories/home/home_repository.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
@@ -98,6 +100,27 @@ class HomeRepositoryIml extends HomeRepository {
               ));
 
       final CommonResponds data = commonRespondsFromJson(response.toString());
+
+      return data;
+    } on DioException catch (e) {
+      var error = DioExceptionData.fromDioError(e);
+      throw error.errorMessage;
+    }
+  }
+
+  @override
+  Future<ReviewListResponds?> reviewList(ReviewRequest request) async {
+    try {
+      Response response;
+
+      response = await GetIt.I.get<ApiService>().get(NetworkKeys.reviews,
+          queryParameters: request.toJson(),
+          options: Options(
+            contentType: 'application/json',
+          ));
+
+      final ReviewListResponds data =
+          reviewsListRespondsFromJson(response.toString());
 
       return data;
     } on DioException catch (e) {

@@ -7,6 +7,7 @@ import 'package:customerapp/domain/model/my_jobs/file_upload_request.dart';
 import 'package:customerapp/domain/model/my_jobs/file_upload_responds.dart';
 import 'package:customerapp/domain/model/my_jobs/my_job_responds.dart';
 import 'package:customerapp/domain/model/my_jobs/myjob_request.dart';
+import 'package:customerapp/domain/model/my_jobs/update_addon_request.dart';
 import 'package:customerapp/domain/repositories/my_job/myjob_repository.dart';
 import 'package:customerapp/presentation/my_job_screen/controller/mybooking_controller.dart';
 import 'package:dio/dio.dart';
@@ -153,6 +154,26 @@ class MyJobRepositoryIml extends MyJobRepository {
 
       final FileUploadResponse data =
           fileUploadRespondsFromJson(response.toString());
+
+      return data;
+    } on DioException catch (e) {
+      var error = DioExceptionData.fromDioError(e);
+      throw error.errorMessage;
+    }
+  }
+
+  @override
+  Future<CommonResponds?> updateAddOns(UpdateAddonRequest request) async {
+    try {
+      Response response = await GetIt.I
+          .get<ApiService>()
+          .put('${NetworkKeys.updateAddon}/${request.jobId}',
+              data: request.toJson(),
+              options: Options(
+                contentType: 'application/json',
+              ));
+
+      final CommonResponds data = commonRespondsFromJson(response.toString());
 
       return data;
     } on DioException catch (e) {

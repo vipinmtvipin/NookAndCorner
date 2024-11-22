@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
+import 'package:customerapp/core/constants/constants.dart';
 import 'package:customerapp/core/routes/app_routes.dart';
 import 'package:customerapp/core/theme/color_constant.dart';
 import 'package:customerapp/core/utils/logger.dart';
@@ -20,19 +21,6 @@ class PaymentScreen extends StatefulWidget {
 
 class PaymentScreenState extends State<PaymentScreen> {
   late WebViewController webViewController;
-
-  static const String ccaMerchantId = "2115707";
-  static const String ccaAccessCode = "ATSZ24KB14BV64ZSVB";
-  static const String ccaWorkingKey = "E251D59D0357F3AF1295B0B9D4E84776";
-
-  static const String ccAvenueUrl =
-      "https://test.ccavenue.com/transaction/transaction.do?command=initiateTransaction";
-  static const String ccaCallbackUrl =
-      "https://staging-api.nookandcorner.org/api/v1/payu-payment/success";
-  static const String ccaAdvCallbackUrl =
-      "https://staging-api.nookandcorner.org/api/v1/payu-payment/advance-payment/success";
-  static const String ccAvenueCancelUrl =
-      "https://staging-api.nookandcorner.org/api/v1/payu-payment/cancel";
 
   late String paymentUrl;
   late ServiceController serviceController;
@@ -145,17 +133,18 @@ class PaymentScreenState extends State<PaymentScreen> {
   }
 
   void _initializePaymentUrl() {
-    String callbackUrl =
-        paymentType == "Advance" ? ccaAdvCallbackUrl : ccaCallbackUrl;
+    String callbackUrl = paymentType == "Advance"
+        ? NetworkKeys.ccaAdvCallbackUrl
+        : NetworkKeys.ccaCallbackUrl;
 
     // Define parameters
     String plainTextPayload =
-        "merchant_id=$ccaMerchantId&order_id=$oderId&amount=$amount&currency=INR&redirect_url=$callbackUrl&cancel_url=$ccAvenueCancelUrl&language=EN";
-    String encRequest = encrypter(plainTextPayload, ccaWorkingKey);
+        "merchant_id=${NetworkKeys.ccaMerchantId}&order_id=$oderId&amount=$amount&currency=INR&redirect_url=$callbackUrl&cancel_url=${NetworkKeys.ccAvenueCancelUrl}&language=EN";
+    String encRequest = encrypter(plainTextPayload, NetworkKeys.ccaWorkingKey);
 
     // Construct the full URL
     paymentUrl =
-        "$ccAvenueUrl&encRequest=$encRequest&access_code=$ccaAccessCode";
+        "${NetworkKeys.ccAvenueUrl}&encRequest=$encRequest&access_code=${NetworkKeys.ccaAccessCode}";
   }
 
   String encrypter(String plainText, String workingKey) {

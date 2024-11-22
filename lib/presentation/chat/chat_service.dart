@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:customerapp/core/constants/constants.dart';
 import 'package:customerapp/presentation/chat/message_data.dart';
 
 class ChatService {
@@ -10,7 +11,7 @@ class ChatService {
     Message message,
   ) async {
     var docRef = await _fireStore
-        .collection('chat-staging')
+        .collection(NetworkKeys.firebaseNode)
         .doc("userId$userId-Job$jobId")
         .collection('messages')
         .add(message.toMap());
@@ -21,7 +22,7 @@ class ChatService {
     String jobId,
   ) {
     return _fireStore
-        .collection('chat-staging')
+        .collection(NetworkKeys.firebaseNode)
         .doc("userId$userId-Job$jobId")
         .collection('messages')
         .orderBy('timestamp', descending: false)

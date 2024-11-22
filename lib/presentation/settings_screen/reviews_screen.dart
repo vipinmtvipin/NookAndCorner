@@ -1,3 +1,4 @@
+import 'package:customerapp/core/extensions/date_time_extensions.dart';
 import 'package:customerapp/core/extensions/list_extensions.dart';
 import 'package:customerapp/core/extensions/string_extensions.dart';
 import 'package:customerapp/core/theme/color_constant.dart';
@@ -107,10 +108,26 @@ class ReviewCardWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
-                      child: ResponsiveText(
-                          text: item.user?.username.toCapitalized ?? '',
-                          style: AppTextStyle.txtBold14
-                              .copyWith(color: AppColors.secondaryColor)),
+                      child: ConditionalWidget(
+                        condition: item.user != null &&
+                            item.user!.username.isNullOrEmpty,
+                        onFalse: ResponsiveText(
+                            text: item.user?.username
+                                    ?.split('@')
+                                    .first
+                                    .toCapitalized ??
+                                '',
+                            style: AppTextStyle.txtBold14
+                                .copyWith(color: AppColors.green)),
+                        child: ResponsiveText(
+                            text: item.user?.email
+                                    ?.split('@')
+                                    .first
+                                    .toCapitalized ??
+                                '',
+                            style: AppTextStyle.txtBold14
+                                .copyWith(color: AppColors.black)),
+                      ),
                     ),
                     RatingBarIndicator(
                       rating: double.tryParse(item.rating ?? '0.0') ?? 0.0,
@@ -129,6 +146,13 @@ class ReviewCardWidget extends StatelessWidget {
                 Text(item.comment.toCapitalized,
                     style: AppTextStyle.txt14
                         .copyWith(color: AppColors.lightGray)),
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: Text(item.createdAt.convertUtcToIst(),
+                      textAlign: TextAlign.end,
+                      style: AppTextStyle.txt14
+                          .copyWith(color: AppColors.lightGray)),
+                ),
               ],
             ),
           ),

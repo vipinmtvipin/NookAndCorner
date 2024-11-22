@@ -85,7 +85,6 @@ class ServiceController extends BaseController {
   Rx<JobResponds> jobData = Rx(JobResponds.empty());
   Rx<JobLoginResponds> jobLoginData = Rx(JobLoginResponds.empty());
   Rx<ServiceData> selectedService = Rx(ServiceData.empty());
-
   Rx<DateTime> selectedDate = Rx(
     DateTime.now().add(Duration(days: 1)),
   );
@@ -95,7 +94,7 @@ class ServiceController extends BaseController {
 
   var serviceStatus = ServiceStatus.unknown.obs;
   final ScrollController scrollController = ScrollController();
-  final RxBool isWidgetVisible = true.obs;
+  final ScrollController summeryScrollController = ScrollController();
 
   var couponApplied = false.obs;
   var termsAndConditionApply = false.obs;
@@ -130,6 +129,7 @@ class ServiceController extends BaseController {
     phoneController.clear();
     emailController.clear();
     scrollController.dispose();
+    summeryScrollController.dispose();
   }
 
   @override
@@ -146,14 +146,6 @@ class ServiceController extends BaseController {
     categoryImage.value = arguments['categoryImage'] ?? '';
 
     initialApisCall();
-
-    scrollController.addListener(() {
-      if (scrollController.position.pixels == 0) {
-        isWidgetVisible.value = true;
-      } else {
-        isWidgetVisible.value = false;
-      }
-    });
   }
 
   void initialApisCall() {

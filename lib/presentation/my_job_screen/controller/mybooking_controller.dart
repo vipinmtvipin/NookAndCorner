@@ -11,6 +11,7 @@ import 'package:customerapp/core/utils/common_util.dart';
 import 'package:customerapp/domain/model/my_jobs/file_upload_request.dart';
 import 'package:customerapp/domain/model/my_jobs/my_job_responds.dart';
 import 'package:customerapp/domain/model/my_jobs/myjob_request.dart';
+import 'package:customerapp/domain/model/my_jobs/update_addon_request.dart';
 import 'package:customerapp/domain/model/service/time_slote_request.dart';
 import 'package:customerapp/domain/model/service/time_slote_responds.dart';
 import 'package:customerapp/domain/model/summery/addon_request.dart';
@@ -22,6 +23,7 @@ import 'package:customerapp/domain/usecases/my_job/my_job_use_case.dart';
 import 'package:customerapp/domain/usecases/my_job/rating_job_use_case.dart';
 import 'package:customerapp/domain/usecases/my_job/reschedule_job_use_case.dart';
 import 'package:customerapp/domain/usecases/my_job/review_job_use_case.dart';
+import 'package:customerapp/domain/usecases/my_job/update_addon_use_case.dart';
 import 'package:customerapp/domain/usecases/service/service_slots_use_case.dart';
 import 'package:customerapp/domain/usecases/summery/summery_use_case.dart';
 import 'package:customerapp/presentation/base_controller.dart';
@@ -50,6 +52,7 @@ class MyBookingController extends BaseController {
   final ReviewJobUseCase _reviewJobUseCase;
 
   final FileUploadUseCase _fileUploadUseCase;
+  final UpdateAddonUseCase _updateAddonUseCase;
 
   MyBookingController(
     this._myJobUseCase,
@@ -60,6 +63,7 @@ class MyBookingController extends BaseController {
     this._rescheduleJobUseCase,
     this._reviewJobUseCase,
     this._fileUploadUseCase,
+    this._updateAddonUseCase,
   );
 
   var screenTitle = 'My Bookings'.obs;
@@ -221,6 +225,34 @@ class MyBookingController extends BaseController {
 
         if (services?.success == true) {
           showToast('Job Cancelled Successfully');
+          Get.back(result: true);
+        }
+        hideLoadingDialog();
+      } catch (e) {
+        hideLoadingDialog();
+        e.printInfo();
+      }
+    } else {
+      showToast(LocalizationKeys.noNetwork.tr);
+    }
+  }
+
+  Future<void> updateAddOn() async {
+    if (await _connectivityService.isConnected()) {
+      try {
+        showLoadingDialog();
+
+        var request = UpdateAddonRequest(
+          jobId: selectedJob.value.jobId.toString(),
+          addons: addOns.value,
+          convenienceFee: convenienceFee.value.toString(),
+          grandTotal: grandTotal.value.toString(),
+          serviceId: selectedJob.value.serviceId.toString(),
+        );
+        var services = await _updateAddonUseCase.execute(request);
+
+        if (services?.success == true) {
+          showToast('Add-On Updated');
           Get.back(result: true);
         }
         hideLoadingDialog();
@@ -533,6 +565,15 @@ class MyBookingController extends BaseController {
           break;
         case 'mp4':
           contentType = 'video/mp4';
+          break;
+        case 'mov':
+          contentType = 'video/mov';
+          break;
+        case 'avi':
+          contentType = 'video/avi';
+          break;
+        case '3gp':
+          contentType = 'video/3gp';
           break;
         default:
           contentType =

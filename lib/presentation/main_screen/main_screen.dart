@@ -7,11 +7,14 @@ import 'package:customerapp/core/utils/size_utils.dart';
 import 'package:customerapp/generated/assets.gen.dart';
 import 'package:customerapp/presentation/common_widgets/carousel_with_indicator.dart';
 import 'package:customerapp/presentation/common_widgets/conditional_widget.dart';
+import 'package:customerapp/presentation/common_widgets/custom_icon_button.dart';
 import 'package:customerapp/presentation/common_widgets/network_image_view.dart';
+import 'package:customerapp/presentation/common_widgets/nookcorner_button.dart';
 import 'package:customerapp/presentation/common_widgets/responsive_text.dart';
 import 'package:customerapp/presentation/main_screen/controller/main_controller.dart';
 import 'package:customerapp/presentation/main_screen/widgets/city_bottomsheet.dart';
 import 'package:customerapp/presentation/main_screen/widgets/map_screen_shimmer.dart';
+import 'package:customerapp/presentation/settings_screen/reviews_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
@@ -176,6 +179,7 @@ Widget _buildMainScreen() {
     child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
       child: SingleChildScrollView(
+        controller: controller.scrollController,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -206,9 +210,11 @@ Widget _buildMainScreen() {
               style: AppTextStyle.txtBold18,
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Pick your Service',
-              style: TextStyle(color: AppColors.secondaryColor),
+              style: AppTextStyle.txt14.copyWith(
+                color: AppColors.secondaryColor,
+              ),
             ),
             const SizedBox(height: 20),
             Obx(() {
@@ -268,6 +274,87 @@ Widget _buildMainScreen() {
               ),
             ),
             const SizedBox(height: 20),
+            Visibility(
+              visible: controller.reviewList.value.isNotNullOrEmpty,
+              child: Obx(
+                () => Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Trusted by Customers, Loved by All',
+                        style: AppTextStyle.txtBold18,
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'Delivering Excellence Every Time!',
+                        style: AppTextStyle.txt14
+                            .copyWith(color: AppColors.secondaryColor),
+                      ),
+                      const SizedBox(height: 20),
+                      ListView.builder(
+                        controller: controller.scrollController,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: controller.reviewList.value.length,
+                        itemBuilder: (context, index) {
+                          var item = controller.reviewList.value[index];
+                          return ReviewCardWidget(item: item, onTap: () {});
+                        },
+                      ),
+                      const SizedBox(height: 5),
+                      ConditionalWidget(
+                        condition: controller.reviewList.value.length !=
+                            controller.reviewCount.value,
+                        onFalse: Align(
+                          alignment: Alignment.topCenter,
+                          child: CustomIconButton(
+                              margin: EdgeInsets.only(
+                                  top: 10, left: (width / 2) - 50),
+                              height: 40,
+                              width: 40,
+                              onTap: () {
+                                WidgetsBinding.instance
+                                    .addPostFrameCallback((_) {
+                                  if (controller.scrollController.hasClients) {
+                                    controller.scrollController.animateTo(
+                                      0.0,
+                                      duration:
+                                          const Duration(milliseconds: 300),
+                                      curve: Curves.easeOut,
+                                    );
+                                  }
+                                });
+                              },
+                              alignment: Alignment.topLeft,
+                              shape: IconButtonShape.CircleBorder35,
+                              child: Assets.images.upArrow.svg(
+                                color: AppColors.white,
+                                height: 30,
+                                width: 30,
+                              )),
+                        ),
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: NookCornerButton(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 10),
+                              expandedWidth: false,
+                              text: 'See More Reviews',
+                              onPressed: () {
+                                controller.getReviews(
+                                    '10',
+                                    controller.reviewList.value.length
+                                        .toString(),
+                                    "",
+                                    true);
+                              }),
+                        ),
+                      ),
+                      const SizedBox(height: 50),
+                    ]),
+              ),
+            ),
           ],
         ),
       ),
@@ -277,37 +364,6 @@ Widget _buildMainScreen() {
 
 Widget _buildShimmerMainScreen() {
   return const MainShimmerWidget();
-}
-
-class BottomSectionWidget extends StatelessWidget {
-  const BottomSectionWidget({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.bottomCenter,
-      width: double.infinity,
-      color: AppColors.primaryColor,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 10),
-          Text(
-            'Transform your home into a worry-free haven th our comprehensive services',
-            style: AppTextStyle.txtSemiBoldWhite16,
-          ),
-          const SizedBox(height: 10),
-          Text(
-            'Our expert team offers a range of services to alleviate the stress of hom maintenance,'
-            ' from repairs to  deep cleaning to regular upkeep. Enjoy a worry-free home with our comprehensive solution,'
-            'tailored to handle everything from leaks to HVAC maintenance.',
-            style: AppTextStyle.txtGray14,
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 class ServiceCard extends StatelessWidget {

@@ -83,26 +83,36 @@ class SummeryScreen extends GetView<ServiceController> {
                     children: [
                       SizedBox(
                         height: 250,
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Image.network(
-                            controller.categoryImage.value.toString(),
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return const SizedBox.shrink();
-                            },
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) {
-                                return child;
-                              } else {
-                                return Center(
-                                    child: Padding(
-                                  padding: EdgeInsets.only(
-                                      left: context.width * 0.4),
-                                  child: CircularProgressIndicator(),
-                                ));
-                              }
-                            },
+                        child: Scrollbar(
+                          controller: controller.summeryScrollController,
+                          interactive: true,
+                          thumbVisibility: true,
+                          radius: const Radius.circular(20),
+                          thickness: 5,
+                          trackVisibility: true,
+                          child: SingleChildScrollView(
+                            controller: controller.summeryScrollController,
+                            scrollDirection: Axis.horizontal,
+                            child: Image.network(
+                              controller.categoryImage.value.toString(),
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const SizedBox.shrink();
+                              },
+                              loadingBuilder:
+                                  (context, child, loadingProgress) {
+                                if (loadingProgress == null) {
+                                  return child;
+                                } else {
+                                  return Center(
+                                      child: Padding(
+                                    padding: EdgeInsets.only(
+                                        left: context.width * 0.4),
+                                    child: CircularProgressIndicator(),
+                                  ));
+                                }
+                              },
+                            ),
                           ),
                         ),
                       ),

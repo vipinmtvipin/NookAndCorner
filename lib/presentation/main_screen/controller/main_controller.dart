@@ -1,4 +1,5 @@
 import 'package:customerapp/core/constants/constants.dart';
+import 'package:customerapp/core/extensions/bool_extension.dart';
 import 'package:customerapp/core/extensions/list_extensions.dart';
 import 'package:customerapp/core/localization/localization_keys.dart';
 import 'package:customerapp/core/network/connectivity_service.dart';
@@ -7,9 +8,12 @@ import 'package:customerapp/domain/model/home/city_responds.dart';
 import 'package:customerapp/domain/model/home/city_service_responds.dart';
 import 'package:customerapp/domain/model/home/mid_banner_responds.dart';
 import 'package:customerapp/domain/model/home/push_request.dart';
+import 'package:customerapp/domain/model/settings/review_request.dart';
+import 'package:customerapp/domain/model/settings/reviews_responds.dart';
 import 'package:customerapp/domain/usecases/home/city_service_use_case.dart';
 import 'package:customerapp/domain/usecases/home/home_use_case.dart';
 import 'package:customerapp/domain/usecases/home/push_token_use_case.dart';
+import 'package:customerapp/domain/usecases/home/reviews_list_use_case.dart';
 import 'package:customerapp/presentation/base_controller.dart';
 import 'package:customerapp/presentation/main_screen/widgets/city_bottomsheet.dart';
 import 'package:flutter/material.dart';
@@ -26,10 +30,14 @@ class MainScreenController extends BaseController {
   final HomeUseCase _homeUseCase;
   final CityServiceUseCase _cityServiceUseCase;
   final PushTokenUseCase _pushTokenUseCase;
+
+  final ReviewsListUseCase _reviewsUseCase;
+
   MainScreenController(
     this._homeUseCase,
     this._cityServiceUseCase,
     this._pushTokenUseCase,
+    this._reviewsUseCase,
   );
   final sessionStorage = GetStorage();
   late final _connectivityService = getIt<ConnectivityService>();
@@ -42,7 +50,10 @@ class MainScreenController extends BaseController {
   Rx<List<MidBannerData>> midBanners = Rx([]);
   Rx<List<CityServiceData>> cityServices = Rx([]);
   Rx<bool> loggedIn = Rx(false);
+  Rx<int> reviewCount = Rx(0);
 
+  Rx<List<ReviewData>> reviewList = Rx<List<ReviewData>>([]);
+  final ScrollController scrollController = ScrollController();
   @override
   void onInit() {
     loggedIn.value = sessionStorage.read(StorageKeys.loggedIn) ?? false;
@@ -57,7 +68,14 @@ class MainScreenController extends BaseController {
   void onReady() {
     super.onReady();
     getCity();
+    getReviews('5', '0', "", false);
     updatePushToken();
+  }
+
+  @override
+  void onClose() {
+    super.onClose();
+    scrollController.dispose();
   }
 
   getCity() async {
@@ -147,6 +165,36 @@ class MainScreenController extends BaseController {
         );
         await _pushTokenUseCase.execute(request);
       } catch (e) {
+        e.printInfo();
+      }
+    }
+  }
+
+  getReviews(String limit, String offset, String search, bool loadMore) async {
+    if (await _connectivityService.isConnected()) {
+      try {
+        if (loadMore.absolute) {
+          showLoadingDialog();
+        }
+
+        ReviewRequest request =
+            ReviewRequest(limit: limit, offset: offset, search: search);
+        ReviewListResponds? responds = await _reviewsUseCase.execute(request);
+
+        if (responds?.success == true) {
+          reviewCount.value = responds?.data?.count ?? 0;
+          var list = reviewList.value;
+          list.addAll(responds?.data?.rows ?? []);
+          reviewList.value = List<ReviewData>.from(
+              list); // Update the list using the Rx setter
+        }
+        if (loadMore.absolute) {
+          hideLoadingDialog();
+        }
+      } catch (e) {
+        if (loadMore.absolute) {
+          hideLoadingDialog();
+        }
         e.printInfo();
       }
     }

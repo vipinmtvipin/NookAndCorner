@@ -456,7 +456,9 @@ class BookingDetailsScreen extends GetView<MyBookingController> {
                                                     left: 5.0),
                                                 child: BookingButton(
                                                   text: 'Add to Booking',
-                                                  onTap: () {},
+                                                  onTap: () {
+                                                    controller.updateAddOn();
+                                                  },
                                                   color: AppColors.primaryColor,
                                                   icon: Icons.save_outlined,
                                                 ),

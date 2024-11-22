@@ -6,7 +6,49 @@
 class NetworkKeys {
   NetworkKeys._();
 
+  /// BASE URL
   static const String baseUrl = staging;
+
+  /// FIREBASE
+  static const String firebaseNode = firebaseNodeStaging;
+
+  /// PAYMENT GATEWAY
+  static const String ccAvenueUrl = ccAvenueUrlStaging;
+  static const String ccaCallbackUrl = ccaCallbackUrlStaging;
+  static const String ccaAdvCallbackUrl = ccaAdvCallbackUrlStaging;
+  static const String ccAvenueCancelUrl = ccAvenueCancelUrlStaging;
+  static const String ccaMerchantId = ccaMerchantIdStaging;
+  static const String ccaAccessCode = ccaAccessCodeStaging;
+  static const String ccaWorkingKey = ccaWorkingKeyStaging;
+
+  static const String ccaMerchantIdStaging = "2115707";
+  static const String ccaAccessCodeStaging = "ATSZ24KB14BV64ZSVB";
+  static const String ccaWorkingKeyStaging = "E251D59D0357F3AF1295B0B9D4E84776";
+
+  static const String ccaMerchantIdProd = "2115707";
+  static const String ccaAccessCodeProd = "ATSZ24KB14BV64ZSVB";
+  static const String ccaWorkingKeyProd = "E251D59D0357F3AF1295B0B9D4E84776";
+
+  static const String ccAvenueUrlStaging =
+      "https://test.ccavenue.com/transaction/transaction.do?command=initiateTransaction";
+  static const String ccaCallbackUrlStaging =
+      "https://staging-api.nookandcorner.org/api/v1/payu-payment/success";
+  static const String ccaAdvCallbackUrlStaging =
+      "https://staging-api.nookandcorner.org/api/v1/payu-payment/advance-payment/success";
+  static const String ccAvenueCancelUrlStaging =
+      "https://staging-api.nookandcorner.org/api/v1/payu-payment/cancel";
+
+  static const String ccAvenueUrlProd =
+      "https://test.ccavenue.com/transaction/transaction.do?command=initiateTransaction";
+  static const String ccaCallbackUrlProd =
+      "https://staging-api.nookandcorner.org/api/v1/payu-payment/success";
+  static const String ccaAdvCallbackUrlProd =
+      "https://staging-api.nookandcorner.org/api/v1/payu-payment/advance-payment/success";
+  static const String ccAvenueCancelUrlProd =
+      "https://staging-api.nookandcorner.org/api/v1/payu-payment/cancel";
+
+  static const String firebaseNodeStaging = 'chat-stag';
+  static const String firebaseNodeProduction = 'chat';
 
   static const String staging = 'https://staging-api.nookandcorner.org/api/v1';
   static const String production = 'https://api.nookandcorner.org';
@@ -38,6 +80,8 @@ class NetworkKeys {
   static const String user = '/users';
 
   static const String confirmAddress = '/job/confirm';
+
+  static const String updateAddon = '/job/update-addon';
 
   static const String fileUpload = '/firebase-chat/presigned-url';
   static const String applyCoupon = '/promotion/validate';
