@@ -116,7 +116,7 @@ class SummeryScreen extends GetView<ServiceController> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 15),
+                      const SizedBox(height: 25),
                       ResponsiveText(
                           maxLines: 1,
                           text: 'Scheduled Service',
@@ -443,9 +443,11 @@ class SummeryScreen extends GetView<ServiceController> {
                           text: 'Payment Summary',
                           style: AppTextStyle.txtBold18),
                       const SizedBox(height: 15),
-                      PaymentSummaryRow(
-                        title: 'Service total',
-                        value: controller.selectedService.value.price ?? '',
+                      Obx(
+                        () => PaymentSummaryRow(
+                          title: 'Service total',
+                          value: controller.serviceTotal.value.toString(),
+                        ),
                       ),
 
                       Obx(
@@ -481,8 +483,8 @@ class SummeryScreen extends GetView<ServiceController> {
                               ),
                               child: PaymentSummaryRow(
                                   title: 'Golden Hour Fee',
-                                  value:
-                                      controller.addOnsTotal.value.toString()),
+                                  value: controller.goldenHourAmount.value
+                                      .toString()),
                             )),
                       ),
 
@@ -645,6 +647,10 @@ class SummeryScreen extends GetView<ServiceController> {
     controller.addOns.value = [];
     controller.addOnList.value = [];
     controller.addOnsTotal.value = 0;
+    controller.serviceTotal.value = 0;
+    controller.termsAndConditionApply.value = false;
+    controller.addOnConvenienceFee.value = 0;
+    controller.selectedDateValue.value = '';
     controller.couponApplied.value = false;
     controller.advanceAmount.value = 0;
     controller.convenienceFee.value = 0;
@@ -762,7 +768,7 @@ class AddOnItem extends StatelessWidget {
                   width: 25,
                   height: 25,
                   decoration: BoxDecoration(
-                    color: AppColors.secondaryColor,
+                    color: AppColors.gray,
                     borderRadius: BorderRadius.circular(5),
                     shape: BoxShape.rectangle,
                   ),
@@ -798,7 +804,7 @@ class AddOnItem extends StatelessWidget {
                   width: 25,
                   height: 25,
                   decoration: BoxDecoration(
-                    color: AppColors.secondaryColor,
+                    color: AppColors.black,
                     borderRadius: BorderRadius.circular(5),
                     shape: BoxShape.rectangle,
                   ),

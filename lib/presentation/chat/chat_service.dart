@@ -12,7 +12,7 @@ class ChatService {
   ) async {
     var docRef = await _fireStore
         .collection(NetworkKeys.firebaseNode)
-        .doc("userId$userId-Job$jobId")
+        .doc("userId$userId")
         .collection('messages')
         .add(message.toMap());
   }
@@ -23,7 +23,7 @@ class ChatService {
   ) {
     return _fireStore
         .collection(NetworkKeys.firebaseNode)
-        .doc("userId$userId-Job$jobId")
+        .doc("userId$userId")
         .collection('messages')
         .orderBy('timestamp', descending: false)
         .snapshots()

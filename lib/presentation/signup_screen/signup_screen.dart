@@ -157,6 +157,7 @@ class SignupScreen extends GetView<AuthController> {
           unSelectedTextStyle: AppTextStyle.txt12,
           labels: [LocalizationKeys.phone.tr, LocalizationKeys.email.tr],
           selectedLabelIndex: (index) {
+            CommonUtil().keyboardHide(Get.context!);
             controller.isPhoneLogin.value = index == 0;
           },
           isScroll: false,

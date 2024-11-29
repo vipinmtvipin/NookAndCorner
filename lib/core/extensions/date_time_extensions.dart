@@ -12,6 +12,17 @@ extension DateTimeUtil on DateTime? {
     return istDateString;
   }
 
+  String convertUtcToIstDate() {
+    // Convert UTC to IST by adding 5 hours and 30 minutes
+    DateTime istDateTime = this!.add(Duration(hours: 5, minutes: 30));
+
+    // Format the IST DateTime to a string
+    DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
+    String istDateString = dateFormat.format(istDateTime);
+
+    return istDateString;
+  }
+
   String formatDateTimeToISO() {
     DateFormat dateFormat = DateFormat("yyyy-MM-ddTHH:mm:ss.SSS'Z'");
     String formattedDate = dateFormat.format(this!.toUtc());

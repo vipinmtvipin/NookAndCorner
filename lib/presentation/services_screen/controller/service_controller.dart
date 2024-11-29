@@ -107,6 +107,9 @@ class ServiceController extends BaseController {
   var goldenHourAmount = 0.0.obs;
   var grandTotal = 0.0.obs;
   var addOnsTotal = 0.0.obs;
+  var serviceTotal = 0.0.obs;
+  var advancePercentage = 0.0;
+  var addOnConvenienceFee = 0.0.obs;
 
   var orderID = "".obs;
   var paymentType = "".obs;
@@ -274,12 +277,13 @@ class ServiceController extends BaseController {
 
         double servicePrice =
             double.tryParse(selectedService.value.price ?? '0') ?? 0;
+        serviceTotal.value = servicePrice;
 
         grandTotal.value = servicePrice;
 
         double servicePercentage = servicePrice / 100;
 
-        double advancePercentage =
+        advancePercentage =
             double.tryParse(metaData.value.advancePercentage ?? '0') ?? 0;
         advanceAmount.value = servicePercentage * advancePercentage;
         advanceAmount.value =
@@ -334,9 +338,6 @@ class ServiceController extends BaseController {
             couponData.value = coupon?.data ?? [];
             couponApplied.value = true;
 
-            var discount = double.tryParse(
-                    couponData.value.first.discountOfferPrice ?? '0') ??
-                0;
             calculateGrandTotal();
 
             showToast(coupon?.message ?? 'Promo code applied successfully');
@@ -538,15 +539,27 @@ class ServiceController extends BaseController {
       addOns.value = currentAddOn;
 
       var price = 0.0;
+      var convenienceFees = 0.0;
+      double conveniencePercent =
+          double.tryParse(metaData.value.conveniencePercentage ?? '0') ?? 0;
       for (var e in currentAddOn) {
         var addon = addOnList.value.firstWhere((element) {
           return element.addonId == e.addonId;
         });
-        price = price + double.tryParse(addon.price ?? '0')! * e.quantity!;
+        double addonPrice = double.tryParse(addon.price ?? '0') ?? 0.0;
+
+        price = price + (addonPrice * e.quantity!);
+
+        double addOnPercentage = addonPrice / 100;
+        var convenienceValue =
+            (addOnPercentage * conveniencePercent) * e.quantity!;
+        convenienceFees = double.parse(convenienceValue.toStringAsFixed(2));
       }
       addOnsTotal.value = 0;
       addOnsTotal.value = price;
-      grandTotal.value = grandTotal.value + addOnsTotal.value;
+      addOnConvenienceFee.value = 0;
+      addOnConvenienceFee.value = convenienceFees;
+      calculateGrandTotal();
     }
   }
 
@@ -590,20 +603,35 @@ class ServiceController extends BaseController {
     }
 
     var price = 0.0;
+    var convenienceFees = 0.0;
+    double conveniencePercent =
+        double.tryParse(metaData.value.conveniencePercentage ?? '0') ?? 0;
+
     for (var e in currentAddOn) {
       var addon = addOnList.value.firstWhere((element) {
         return element.addonId == e.addonId;
       });
-      price = price + double.tryParse(addon.price ?? '0')! * e.quantity!;
+
+      double addonPrice = double.tryParse(addon.price ?? '0') ?? 0.0;
+
+      price = price + (addonPrice * e.quantity!);
+
+      double addOnPercentage = addonPrice / 100;
+      var convenienceValue =
+          (addOnPercentage * conveniencePercent) * e.quantity!;
+      convenienceFees =
+          convenienceFees + double.parse(convenienceValue.toStringAsFixed(2));
     }
+
     addOnsTotal.value = 0;
     addOnsTotal.value = price;
+    addOnConvenienceFee.value = 0;
+    addOnConvenienceFee.value = convenienceFees;
 
     calculateGrandTotal();
   }
 
   void calculateGrandTotal() {
-    var serviceTotal = double.tryParse(selectedService.value.price ?? '0') ?? 0;
     var couponAmount = 0.0;
     if (couponData.value.isNotEmpty) {
       couponAmount =
@@ -611,11 +639,17 @@ class ServiceController extends BaseController {
               0;
     }
 
-    grandTotal.value = (serviceTotal +
-        convenienceFee.value +
-        addOnsTotal.value +
-        goldenHourAmount.value -
-        couponAmount);
+    convenienceFee.value = convenienceFee.value + addOnConvenienceFee.value;
+    var servicePrice = double.tryParse(selectedService.value.price ?? '0') ?? 0;
+    serviceTotal.value = servicePrice + addOnsTotal.value;
+
+    grandTotal.value =
+        ((serviceTotal.value + convenienceFee.value + goldenHourAmount.value) -
+            couponAmount);
+
+    double servicePercentage = grandTotal.value / 100;
+    advanceAmount.value = servicePercentage * advancePercentage;
+    advanceAmount.value = double.parse(advanceAmount.value.toStringAsFixed(2));
   }
 
   void saveJobUserData() {

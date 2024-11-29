@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Message {
   final String from;
   final String message;
-  final String? fileUrl;
+  final List<String>? fileUrl;
   final Timestamp timestamp;
   final String? name;
   final String? userId;
@@ -16,21 +16,26 @@ class Message {
     this.userId,
   });
 
-  Map<String, dynamic> toMap() => {
-        'from': from,
-        'message': message,
-        'fileUrl': fileUrl,
-        'timestamp': timestamp,
-        'name': name,
-        'userId': userId,
-      };
+  Map<String, dynamic> toMap() {
+    return {
+      'from': from,
+      'message': message,
+      'timestamp': timestamp,
+      'userId': userId,
+      'fileUrl': fileUrl,
+      'name': name,
+    };
+  }
 
-  factory Message.fromMap(Map<String, dynamic> map) => Message(
-        from: map['from'],
-        message: map['message'],
-        fileUrl: map['fileUrl'],
-        timestamp: map['timestamp'],
-        name: map['name'],
-        userId: map['userId'],
-      );
+  factory Message.fromMap(Map<String, dynamic> map) {
+    return Message(
+      from: map['from'] ?? '',
+      message: map['message'] ?? '',
+      userId: map['userId'] ?? '',
+      name: map['name'] ?? '',
+      timestamp:
+          map['timestamp'] is Timestamp ? map['timestamp'] : Timestamp.now(),
+      fileUrl: map['fileUrl'] is List ? List<String>.from(map['fileUrl']) : [],
+    );
+  }
 }

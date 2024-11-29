@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:customerapp/core/constants/constants.dart';
+import 'package:customerapp/core/extensions/bool_extension.dart';
 import 'package:customerapp/core/extensions/date_time_extensions.dart';
+import 'package:customerapp/core/extensions/list_extensions.dart';
 import 'package:customerapp/core/localization/localization_keys.dart';
 import 'package:customerapp/core/network/connectivity_service.dart';
 import 'package:customerapp/core/network/logging_interceptor.dart';
@@ -16,7 +18,10 @@ import 'package:customerapp/domain/model/service/time_slote_request.dart';
 import 'package:customerapp/domain/model/service/time_slote_responds.dart';
 import 'package:customerapp/domain/model/summery/addon_request.dart';
 import 'package:customerapp/domain/model/summery/addon_service_responds.dart';
+import 'package:customerapp/domain/model/summery/apply_cupon_responds.dart';
+import 'package:customerapp/domain/model/summery/coupon_request.dart';
 import 'package:customerapp/domain/model/summery/meta_responds.dart';
+import 'package:customerapp/domain/usecases/my_job/add_coupon_use_case.dart';
 import 'package:customerapp/domain/usecases/my_job/cancel_job_use_case.dart';
 import 'package:customerapp/domain/usecases/my_job/file_upload_use_case.dart';
 import 'package:customerapp/domain/usecases/my_job/my_job_use_case.dart';
@@ -32,6 +37,7 @@ import 'package:customerapp/presentation/chat/message_data.dart';
 import 'package:customerapp/presentation/services_screen/controller/service_controller.dart';
 import 'package:dio/dio.dart';
 import 'package:file_picker/src/platform_file.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:get_storage/get_storage.dart';
@@ -53,6 +59,7 @@ class MyBookingController extends BaseController {
 
   final FileUploadUseCase _fileUploadUseCase;
   final UpdateAddonUseCase _updateAddonUseCase;
+  final AddCouponUseCase _applyCouponUseCase;
 
   MyBookingController(
     this._myJobUseCase,
@@ -64,6 +71,7 @@ class MyBookingController extends BaseController {
     this._reviewJobUseCase,
     this._fileUploadUseCase,
     this._updateAddonUseCase,
+    this._applyCouponUseCase,
   );
 
   var screenTitle = 'My Bookings'.obs;
@@ -85,6 +93,9 @@ class MyBookingController extends BaseController {
     DateTime.now().add(Duration(days: 1)),
   );
 
+  TextEditingController promoCodeController = TextEditingController();
+  var couponApplied = false.obs;
+  Rx<List<CouponData>> couponData = Rx([]);
   var selectedDateValue = 'Select Date'.obs;
   var selectedTime = ''.obs;
   Rx<List<TimeSlotData>> timeSlots = Rx([]);
@@ -110,6 +121,12 @@ class MyBookingController extends BaseController {
     }
 
     getJobs();
+  }
+
+  @override
+  void onClose() {
+    super.onClose();
+    promoCodeController.clear();
   }
 
   Future<void> getJobs() async {
@@ -200,11 +217,20 @@ class MyBookingController extends BaseController {
   }
 
   Future<void> completeJob(String from) async {
+    var paymentAmount = double.parse(
+        (selectedJob.value.price! - selectedJob.value.advanceAmount!)
+            .toStringAsFixed(2));
+
+    if (couponApplied.value.absolute && couponData.value.isNotNullOrEmpty) {
+      var discount =
+          double.tryParse(couponData.value.first.discountOfferPrice ?? '0') ??
+              0;
+      paymentAmount = paymentAmount - discount;
+    }
+
     var result = await Get.toNamed(AppRoutes.paymentScreen, arguments: {
       'orderID': selectedJob.value.txnId,
-      'paymentAmount': double.parse(
-          (selectedJob.value.price! - selectedJob.value.advanceAmount!)
-              .toStringAsFixed(2)),
+      'paymentAmount': paymentAmount,
       'paymentType': "Complete",
     });
 
@@ -242,9 +268,34 @@ class MyBookingController extends BaseController {
       try {
         showLoadingDialog();
 
+        List<AddOnData> updateAddOns = [];
+        for (var addon in addOns.value) {
+          var originalAddOn = AddOnData.empty();
+          for (var addonItem in addOnList.value) {
+            if (addonItem.addonId == addon.addonId) {
+              originalAddOn = addonItem;
+              break;
+            }
+          }
+
+          updateAddOns.add(AddOnData(
+            addonId: originalAddOn.addonId,
+            price: originalAddOn.price,
+            quantity: addon.quantity,
+            titile: originalAddOn.titile,
+            updatedAt: originalAddOn.updatedAt,
+            createdAt: originalAddOn.createdAt,
+            delete: originalAddOn.delete,
+            status: originalAddOn.status,
+            logo: originalAddOn.logo,
+            description: originalAddOn.description,
+            addonService: originalAddOn.addonService,
+          ));
+        }
+
         var request = UpdateAddonRequest(
           jobId: selectedJob.value.jobId.toString(),
-          addons: addOns.value,
+          addons: updateAddOns,
           convenienceFee: convenienceFee.value.toString(),
           grandTotal: grandTotal.value.toString(),
           serviceId: selectedJob.value.serviceId.toString(),
@@ -355,6 +406,39 @@ class MyBookingController extends BaseController {
     }
   }
 
+  Future<void> applyCoupon(String code) async {
+    if (await _connectivityService.isConnected()) {
+      try {
+        showLoadingDialog();
+
+        CouponRequest request = CouponRequest(
+          slot: selectedDate.value.toString(),
+          promotionName: code,
+          serviceId: selectedJob.value.serviceId.toString(),
+        );
+
+        var coupon = await _applyCouponUseCase.execute(request);
+        if (coupon?.data.isNotEmpty ?? false) {
+          couponData.value = coupon?.data ?? [];
+          couponApplied.value = true;
+
+          showToast(coupon?.message ?? 'Promo code applied successfully');
+
+          completeJob('details');
+        } else {
+          couponApplied.value = false;
+        }
+        hideLoadingDialog();
+      } catch (e) {
+        couponApplied.value = false;
+        hideLoadingDialog();
+        showSnackBar("Error", e.toString(), Colors.black);
+      }
+    } else {
+      showToast(LocalizationKeys.noNetwork.tr);
+    }
+  }
+
   bool isAfter6PM(DateTime? date) {
     int hour = date?.hour ?? 0;
     int minute = date?.minute ?? 0;
@@ -405,7 +489,8 @@ class MyBookingController extends BaseController {
         double addOnPercentage = addonPrice / 100;
         var convenienceValue =
             (addOnPercentage * conveniencePercent) * e.quantity!;
-        convenienceFees = double.parse(convenienceValue.toStringAsFixed(2));
+        convenienceFees =
+            convenienceFees + double.parse(convenienceValue.toStringAsFixed(2));
       }
       addOnsTotal.value = 0;
       addOnsTotal.value = price;
@@ -471,7 +556,8 @@ class MyBookingController extends BaseController {
       double addOnPercentage = addonPrice / 100;
       var convenienceValue =
           (addOnPercentage * conveniencePercent) * e.quantity!;
-      convenienceFees = double.parse(convenienceValue.toStringAsFixed(2));
+      convenienceFees =
+          convenienceFees + double.parse(convenienceValue.toStringAsFixed(2));
     }
     addOnsTotal.value = 0;
     addOnsTotal.value = price;
@@ -618,7 +704,7 @@ class MyBookingController extends BaseController {
       message: '',
       timestamp: Timestamp.now(),
       userId: sessionStorage.read(StorageKeys.userId).toString(),
-      fileUrl: fileUrl,
+      fileUrl: [fileUrl],
       name: name,
     );
     chatService.sendMessage(
@@ -631,7 +717,7 @@ class MyBookingController extends BaseController {
       message: adminMessage,
       timestamp: Timestamp.now(),
       userId: userId,
-      fileUrl: '',
+      fileUrl: [],
       name: "Admin",
     );
     chatService.sendMessage(

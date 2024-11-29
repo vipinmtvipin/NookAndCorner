@@ -11,11 +11,13 @@ import 'package:customerapp/presentation/common_widgets/nookcorner_button.dart';
 import 'package:customerapp/presentation/common_widgets/responsive_text.dart';
 import 'package:customerapp/presentation/common_widgets/title_bar_widget.dart';
 import 'package:customerapp/presentation/my_job_screen/controller/mybooking_controller.dart';
+import 'package:customerapp/presentation/my_job_screen/widgets/apply_coupon_bottomsheet.dart';
 import 'package:customerapp/presentation/my_job_screen/widgets/my_booking_card.dart';
 import 'package:customerapp/presentation/my_job_screen/widgets/reschedule_booking_date_bottomsheet.dart';
 import 'package:customerapp/presentation/summery_screen/summery_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/utils/size_utils.dart';
 
@@ -123,15 +125,24 @@ class BookingDetailsScreen extends GetView<MyBookingController> {
                                   controller.screenType ==
                                       MyBookingStatus.pending,
                               child: Padding(
-                                padding: const EdgeInsets.only(top: 20.0),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 10.0),
                                 child: Card(
-                                  elevation: 2,
-                                  color: AppColors.whiteGray,
+                                  elevation: 4,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5),
+                                    side: BorderSide(
+                                        color: AppColors.lightGreen,
+                                        width: 0.5),
+                                  ),
+                                  color: AppColors.white,
                                   child: Padding(
-                                    padding: const EdgeInsets.all(10.0),
+                                    padding: const EdgeInsets.all(8.0),
                                     child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
                                       children: [
                                         Expanded(
                                           child: ResponsiveText(
@@ -140,16 +151,17 @@ class BookingDetailsScreen extends GetView<MyBookingController> {
                                                   ? "Confirm your address"
                                                   : selectedJob.status ==
                                                           'started'
-                                                      ? "OTP to complete the service"
-                                                      : "OTP to start the service",
-                                              style: AppTextStyle.txt16
+                                                      ? "Provide OTP to complete service"
+                                                      : "Provide OTP to start service",
+                                              style: AppTextStyle.txtBold14
                                                   .copyWith(
                                                       color: controller
                                                                   .screenType ==
                                                               MyBookingStatus
                                                                   .pending
-                                                          ? AppColors.red
-                                                          : AppColors.black)),
+                                                          ? AppColors.black
+                                                          : AppColors
+                                                              .darkGray)),
                                         ),
                                         GestureDetector(
                                           onTap: () async {
@@ -168,7 +180,8 @@ class BookingDetailsScreen extends GetView<MyBookingController> {
                                             }
                                           },
                                           child: Card(
-                                            color: AppColors.white,
+                                            color: AppColors.lightGreen
+                                                .withOpacity(0.9),
                                             child: Padding(
                                               padding:
                                                   const EdgeInsets.symmetric(
@@ -188,8 +201,8 @@ class BookingDetailsScreen extends GetView<MyBookingController> {
                                                               '',
                                                   style: AppTextStyle.txt14
                                                       .copyWith(
-                                                          color: AppColors
-                                                              .success)),
+                                                          color:
+                                                              AppColors.white)),
                                             ),
                                           ),
                                         ),
@@ -241,10 +254,11 @@ class BookingDetailsScreen extends GetView<MyBookingController> {
                                   ),
                                 ),
                                 Visibility(
-                                  visible: controller.screenType ==
-                                          MyBookingStatus.scheduled ||
-                                      controller.screenType ==
-                                          MyBookingStatus.pending,
+                                  visible: ((controller.screenType ==
+                                              MyBookingStatus.scheduled ||
+                                          controller.screenType ==
+                                              MyBookingStatus.pending) &&
+                                      selectedJob.status != 'started'),
                                   child: GestureDetector(
                                     onTap: () {
                                       context.showBottomSheet(
@@ -259,10 +273,10 @@ class BookingDetailsScreen extends GetView<MyBookingController> {
                                     },
                                     child: Card(
                                       elevation: 1,
-                                      color: Colors.white,
+                                      color: Colors.black,
                                       shape: RoundedRectangleBorder(
                                         side: const BorderSide(
-                                          color: Colors.orange,
+                                          color: Colors.black,
                                           width: 1.0,
                                         ),
                                         borderRadius:
@@ -275,14 +289,14 @@ class BookingDetailsScreen extends GetView<MyBookingController> {
                                           children: [
                                             Icon(
                                               Icons.date_range_outlined,
-                                              color: Colors.orange,
+                                              color: Colors.white,
                                               size: 15,
                                             ),
                                             SizedBox(width: 5),
                                             Text(
                                               'Reschedule',
                                               style: TextStyle(
-                                                  color: Colors.orange),
+                                                  color: Colors.white),
                                             ),
                                           ],
                                         ),
@@ -455,11 +469,14 @@ class BookingDetailsScreen extends GetView<MyBookingController> {
                                                 padding: const EdgeInsets.only(
                                                     left: 5.0),
                                                 child: BookingButton(
+                                                  fillColor:
+                                                      AppColors.primaryColor,
                                                   text: 'Add to Booking',
                                                   onTap: () {
                                                     controller.updateAddOn();
                                                   },
-                                                  color: AppColors.primaryColor,
+                                                  textColor: AppColors.white,
+                                                  color: AppColors.black,
                                                   icon: Icons.save_outlined,
                                                 ),
                                               ),
@@ -648,11 +665,45 @@ class BookingDetailsScreen extends GetView<MyBookingController> {
                                             value: selectedJob
                                                     .assignedUser?.username ??
                                                 ''),
-                                        PaymentSummaryRow(
-                                            title: 'Supervisor  Mobile',
-                                            value: selectedJob
-                                                    .assignedUser?.phone ??
-                                                ''),
+                                        GestureDetector(
+                                          onTap: () {
+                                            showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return AlertDialog(
+                                                    title: Text(
+                                                        'Do you want to call?'),
+                                                    content: Text(
+                                                        'Mobile number is, ${selectedJob.assignedUser?.phone}'),
+                                                    actions: [
+                                                      TextButton(
+                                                          onPressed: () {
+                                                            Get.back();
+                                                          },
+                                                          child:
+                                                              Text('Cancel')),
+                                                      TextButton(
+                                                          onPressed: () {
+                                                            launchUrl(Uri(
+                                                              scheme: 'tel',
+                                                              path: selectedJob
+                                                                      .assignedUser
+                                                                      ?.phone ??
+                                                                  '',
+                                                            ));
+                                                            Get.back();
+                                                          },
+                                                          child: Text('Call'))
+                                                    ],
+                                                  );
+                                                });
+                                          },
+                                          child: PaymentSummaryRow(
+                                              title: 'Supervisor  Mobile',
+                                              value: selectedJob
+                                                      .assignedUser?.phone ??
+                                                  ''),
+                                        ),
                                       ],
                                     ),
                                   ),
@@ -660,10 +711,11 @@ class BookingDetailsScreen extends GetView<MyBookingController> {
                               ),
                             ),
                             Visibility(
-                                visible: controller.screenType ==
-                                        MyBookingStatus.scheduled ||
-                                    controller.screenType ==
-                                        MyBookingStatus.pending ||
+                                visible: ((controller.screenType ==
+                                                MyBookingStatus.scheduled ||
+                                            controller.screenType ==
+                                                MyBookingStatus.pending) &&
+                                        selectedJob.status != 'started') ||
                                     (controller.screenType ==
                                             MyBookingStatus.completed &&
                                         selectedJob.paymentStatus !=
@@ -672,24 +724,32 @@ class BookingDetailsScreen extends GetView<MyBookingController> {
                                   children: [
                                     SizedBox(height: 30),
                                     NookCornerButton(
-                                        text: (controller.screenType ==
-                                                    MyBookingStatus.scheduled ||
-                                                controller.screenType ==
-                                                    MyBookingStatus.pending)
+                                        text: ((controller.screenType ==
+                                                        MyBookingStatus
+                                                            .scheduled ||
+                                                    controller.screenType ==
+                                                        MyBookingStatus
+                                                            .pending) &&
+                                                selectedJob.status != 'started')
                                             ? 'Cancel Booking'
                                             : 'Pay Now',
                                         onPressed: () {
-                                          if (controller.screenType ==
-                                                  MyBookingStatus.scheduled ||
-                                              controller.screenType ==
-                                                  MyBookingStatus.pending) {
+                                          if ((controller.screenType ==
+                                                      MyBookingStatus
+                                                          .scheduled ||
+                                                  controller.screenType ==
+                                                      MyBookingStatus
+                                                          .pending) &&
+                                              selectedJob.status != 'started') {
                                             controller.cancelJob();
                                           } else if (controller.screenType ==
                                                   MyBookingStatus.completed &&
                                               controller.selectedJob.value
                                                       .paymentStatus !=
                                                   'completed') {
-                                            controller.completeJob('details');
+                                            context.showBottomSheet(
+                                                body: ApplyCouponBottomSheet(
+                                                    from: 'details'));
                                           } else {
                                             Get.back();
                                           }

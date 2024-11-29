@@ -61,7 +61,6 @@ class AddressScreen extends GetView<AddressController> {
                       itemBuilder: (context, index) {
                         var address = controller.addressList.value[index];
                         return AddressCardWidget(
-                            index: index,
                             data: address,
                             onTap: (type) {
                               controller.selectedAddress.value = address;
@@ -103,13 +102,11 @@ class AddressScreen extends GetView<AddressController> {
 class AddressCardWidget extends StatelessWidget {
   final AddressData data;
   final Function(String type) onTap;
-  final int index;
 
   const AddressCardWidget({
     super.key,
     required this.data,
     required this.onTap,
-    required this.index,
   });
 
   @override
@@ -143,23 +140,22 @@ class AddressCardWidget extends StatelessWidget {
                         style: AppTextStyle.txtBold16
                             .copyWith(color: AppColors.secondaryColor)),
                     Visibility(
-                        visible: index == 0,
-                        child: SizedBox(
-                          height: 30,
-                          child: Checkbox(
-                            checkColor: AppColors.white,
-                            fillColor: WidgetStateProperty.resolveWith(
-                                (states) => AppColors.success),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              side: BorderSide(
-                                  color: AppColors.success, width: 1),
-                            ),
-                            value: true,
-                            onChanged: (selected) {},
-                            activeColor: AppColors.primaryColor,
+                      visible: data.isPrimary ?? false,
+                      child: Card(
+                        elevation: 6,
+                        color: AppColors.secondaryColor,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0, vertical: 3),
+                          child: Text(
+                            "Primary",
+                            style: AppTextStyle.txt10
+                                .copyWith(color: Colors.white),
+                            textAlign: TextAlign.center,
                           ),
-                        )),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 2),

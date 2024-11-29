@@ -44,6 +44,10 @@ class SettingsController extends BaseController {
     super.onInit();
     _setupScrollListener();
     getReviews('10', '0', '');
+
+    nameController.text = sessionStorage.read(StorageKeys.username) ?? "";
+    phoneController.text = sessionStorage.read(StorageKeys.mobile) ?? "";
+    emailController.text = sessionStorage.read(StorageKeys.email) ?? "";
   }
 
   @override

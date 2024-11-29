@@ -116,8 +116,16 @@ class AddressController extends BaseController {
 
         addressList.value = addresses?.data ?? [];
         if (addressList.value.isNotNullOrEmpty) {
-          selectedAddress.value = addressList.value.first;
-          selectedAddressIndex.value = 0;
+          addressList.value.firstWhere((element) {
+            if (element.isPrimary == true) {
+              selectedAddress.value = element;
+              selectedAddressIndex.value = addressList.value.indexOf(element);
+              return true;
+            }
+            selectedAddress.value = addressList.value.first;
+            selectedAddressIndex.value = 0;
+            return false;
+          });
         }
 
         addressStatus.value = AddressStatus.loaded;

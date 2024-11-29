@@ -46,7 +46,7 @@ class MainScreen extends GetView<MainScreenController> {
             child: Obx(() {
               return controller.selectedCity.value.cityId != null
                   ? Card(
-                      elevation: 6,
+                      elevation: 1,
                       color: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
@@ -153,12 +153,12 @@ class MainScreen extends GetView<MainScreenController> {
         elevation: 6,
         heroTag: 'contact',
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(60),
         ),
-        backgroundColor: AppColors.primaryColor,
+        backgroundColor: AppColors.secondaryColor,
         child: const Icon(
-          Icons.mail_outline_sharp,
-          color: Colors.white,
+          Icons.mail,
+          color: Colors.black,
         ),
       ),
     );
@@ -166,6 +166,7 @@ class MainScreen extends GetView<MainScreenController> {
 }
 
 Widget _buildMainScreen() {
+  final GlobalKey reviewListKey = GlobalKey();
   var controller = Get.find<MainScreenController>();
 
   return RefreshIndicator(
@@ -177,100 +178,119 @@ Widget _buildMainScreen() {
       return Future<void>.value();
     },
     child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
+      padding: const EdgeInsets.only(
+        top: 10,
+      ),
       child: SingleChildScrollView(
         controller: controller.scrollController,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            ConditionalWidget(
-              condition: controller.activeBanners.value.isNotNullOrEmpty,
-              onFalse: const SizedBox.shrink(),
-              child: CarouselWithIndicator(
-                height: 150,
-                carouselSliderItems: controller.activeBanners.value
-                    .map((e) => CarouselItem(
-                          navigationPath: e.routePath,
-                          image: NetworkImageView(
-                            borderRadius: 15,
-                            url: e.image,
-                            width: double.infinity,
-                            fit: BoxFit.fill,
-                          ),
-                        ))
-                    .toList(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: ConditionalWidget(
+                condition: controller.activeBanners.value.isNotNullOrEmpty,
+                onFalse: const SizedBox.shrink(),
+                child: CarouselWithIndicator(
+                  height: 150,
+                  carouselSliderItems: controller.activeBanners.value
+                      .map((e) => CarouselItem(
+                            navigationPath: e.routePath,
+                            image: NetworkImageView(
+                              borderRadius: 15,
+                              url: e.image,
+                              width: double.infinity,
+                              fit: BoxFit.fill,
+                            ),
+                          ))
+                      .toList(),
+                ),
               ),
             ),
             SizedBox(
               height: getSize(15),
             ),
-            Text(
-              'Home services at your door',
-              style: AppTextStyle.txtBold18,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                'Home services at your door',
+                style: AppTextStyle.txtBold18,
+              ),
             ),
             const SizedBox(height: 8),
-            Text(
-              'Pick your Service',
-              style: AppTextStyle.txt14.copyWith(
-                color: AppColors.secondaryColor,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                'Pick your Service',
+                style: AppTextStyle.txtBold12,
               ),
             ),
             const SizedBox(height: 20),
             Obx(() {
               if (controller.cityServices.value.isEmpty) {
-                return const NotDataFound(message: 'No Service Available Now');
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child:
+                      const NotDataFound(message: 'No Service Available Now'),
+                );
               }
-              return GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  childAspectRatio: 0.8,
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    childAspectRatio: 0.8,
+                  ),
+                  itemCount: controller.cityServices.value.length,
+                  itemBuilder: (context, index) {
+                    final item = controller.cityServices.value[index];
+                    return GestureDetector(
+                      onTap: () {
+                        Get.toNamed(
+                          AppRoutes.serviceScreen,
+                          arguments: {
+                            'categoryId': item.catid.toString(),
+                            'categoryName': item.name,
+                            'categoryDescription': item.description,
+                            'categoryImage': item.descriptionImageHorizontal,
+                          },
+                        );
+                      },
+                      child: ServiceCard(
+                        image: item.logo,
+                        label: item.name,
+                      ),
+                    );
+                  },
                 ),
-                itemCount: controller.cityServices.value.length,
-                itemBuilder: (context, index) {
-                  final item = controller.cityServices.value[index];
-                  return GestureDetector(
-                    onTap: () {
-                      Get.toNamed(
-                        AppRoutes.serviceScreen,
-                        arguments: {
-                          'categoryId': item.catid.toString(),
-                          'categoryName': item.name,
-                          'categoryDescription': item.description,
-                          'categoryImage': item.descriptionImageHorizontal,
-                        },
-                      );
-                    },
-                    child: ServiceCard(
-                      image: item.logo,
-                      label: item.name,
-                    ),
-                  );
-                },
               );
             }),
             const SizedBox(height: 20),
-            ConditionalWidget(
-              condition: controller.activeBanners.value.isNotNullOrEmpty,
-              onFalse: const SizedBox.shrink(),
-              child: CarouselWithIndicator(
-                height: 120,
-                isIndicatorVisible: false,
-                carouselSliderItems: controller.midBanners.value
-                    .map((e) => CarouselItem(
-                          navigationPath: e.routePath,
-                          image: NetworkImageView(
-                            borderRadius: 12,
-                            url: e.image,
-                            width: double.infinity,
-                            fit: BoxFit.fill,
-                          ),
-                        ))
-                    .toList(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: ConditionalWidget(
+                condition: controller.activeBanners.value.isNotNullOrEmpty,
+                onFalse: const SizedBox.shrink(),
+                child: CarouselWithIndicator(
+                  height: 120,
+                  isIndicatorVisible: false,
+                  carouselSliderItems: controller.midBanners.value
+                      .map((e) => CarouselItem(
+                            navigationPath: e.routePath,
+                            image: NetworkImageView(
+                              borderRadius: 12,
+                              url: e.image,
+                              width: double.infinity,
+                              fit: BoxFit.fill,
+                            ),
+                          ))
+                      .toList(),
+                ),
               ),
             ),
             const SizedBox(height: 20),
@@ -281,77 +301,161 @@ Widget _buildMainScreen() {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Trusted by Customers, Loved by All',
-                        style: AppTextStyle.txtBold18,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Text(
+                          'Trusted by Customers, Loved by All',
+                          style: AppTextStyle.txtBold18,
+                        ),
                       ),
                       const SizedBox(height: 10),
-                      Text(
-                        'Delivering Excellence Every Time!',
-                        style: AppTextStyle.txt14
-                            .copyWith(color: AppColors.secondaryColor),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Text(
+                          'Delivering Excellence Every Time!',
+                          style: AppTextStyle.txtBold12,
+                        ),
                       ),
                       const SizedBox(height: 20),
-                      ListView.builder(
-                        controller: controller.scrollController,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: controller.reviewList.value.length,
-                        itemBuilder: (context, index) {
-                          var item = controller.reviewList.value[index];
-                          return ReviewCardWidget(item: item, onTap: () {});
-                        },
+                      Stack(
+                        children: [
+                          AnimatedSize(
+                            duration: const Duration(milliseconds: 600),
+                            curve: Curves.bounceIn,
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 16.0, right: 16, bottom: 70),
+                              child: ListView.builder(
+                                key: reviewListKey,
+                                controller: controller.scrollController,
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: controller.reviewList.value.length,
+                                itemBuilder: (context, index) {
+                                  var item = controller.reviewList.value[index];
+                                  return ReviewCardWidget(
+                                      item: item, onTap: () {});
+                                },
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            left: 0,
+                            child: Container(
+                              height: 100,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppColors.gray.withOpacity(0.3),
+                                    spreadRadius: 1,
+                                    blurRadius: 5,
+                                    offset: const Offset(0, 3),
+                                  ),
+                                ],
+                              ),
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 15.0),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      ConditionalWidget(
+                                        condition: (controller
+                                                    .reviewList.value.length !=
+                                                controller.reviewCount.value &&
+                                            controller
+                                                    .reviewList.value.length >=
+                                                5),
+                                        onFalse: SizedBox.shrink(),
+                                        child: NookCornerButton(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 20, vertical: 10),
+                                            expandedWidth: false,
+                                            text: 'See More Reviews',
+                                            onPressed: () {
+                                              controller.getReviews(
+                                                  '10',
+                                                  controller
+                                                      .reviewList.value.length
+                                                      .toString(),
+                                                  "",
+                                                  true);
+                                            }),
+                                      ),
+                                      ConditionalWidget(
+                                        condition: (controller
+                                                    .reviewList.value.length ==
+                                                controller.reviewCount.value ||
+                                            controller.reviewList.value.length >
+                                                5),
+                                        onFalse: SizedBox.shrink(),
+                                        child: CustomIconButton(
+                                            margin: EdgeInsets.only(
+                                                top: 20, left: 15),
+                                            height: 40,
+                                            width: 40,
+                                            onTap: () {
+                                              if (controller.reviewList.value
+                                                      .length >=
+                                                  5) {
+                                                controller.reviewList.value =
+                                                    controller.reviewList.value
+                                                        .take(5)
+                                                        .toList();
+                                              } else {
+                                                controller.reviewList.value =
+                                                    controller.reviewList.value
+                                                        .take(controller
+                                                            .reviewList
+                                                            .value
+                                                            .length)
+                                                        .toList();
+                                              }
+
+                                              final RenderBox renderBox =
+                                                  reviewListKey.currentContext
+                                                          ?.findRenderObject()
+                                                      as RenderBox;
+                                              final position = renderBox
+                                                  .localToGlobal(Offset.zero);
+
+                                              WidgetsBinding.instance
+                                                  .addPostFrameCallback((_) {
+                                                if (controller.scrollController
+                                                    .hasClients) {
+                                                  controller.scrollController
+                                                      .animateTo(
+                                                    position.dy,
+                                                    duration: const Duration(
+                                                        milliseconds: 600),
+                                                    curve: Curves.bounceIn,
+                                                  );
+                                                }
+                                              });
+                                            },
+                                            alignment: Alignment.topLeft,
+                                            shape:
+                                                IconButtonShape.CircleBorder35,
+                                            child: Assets.images.upArrow.svg(
+                                              color: AppColors.white,
+                                              height: 30,
+                                              width: 30,
+                                            )),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 5),
-                      ConditionalWidget(
-                        condition: controller.reviewList.value.length !=
-                            controller.reviewCount.value,
-                        onFalse: Align(
-                          alignment: Alignment.topCenter,
-                          child: CustomIconButton(
-                              margin: EdgeInsets.only(
-                                  top: 10, left: (width / 2) - 50),
-                              height: 40,
-                              width: 40,
-                              onTap: () {
-                                WidgetsBinding.instance
-                                    .addPostFrameCallback((_) {
-                                  if (controller.scrollController.hasClients) {
-                                    controller.scrollController.animateTo(
-                                      0.0,
-                                      duration:
-                                          const Duration(milliseconds: 300),
-                                      curve: Curves.easeOut,
-                                    );
-                                  }
-                                });
-                              },
-                              alignment: Alignment.topLeft,
-                              shape: IconButtonShape.CircleBorder35,
-                              child: Assets.images.upArrow.svg(
-                                color: AppColors.white,
-                                height: 30,
-                                width: 30,
-                              )),
-                        ),
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: NookCornerButton(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 10),
-                              expandedWidth: false,
-                              text: 'See More Reviews',
-                              onPressed: () {
-                                controller.getReviews(
-                                    '10',
-                                    controller.reviewList.value.length
-                                        .toString(),
-                                    "",
-                                    true);
-                              }),
-                        ),
-                      ),
-                      const SizedBox(height: 50),
                     ]),
               ),
             ),

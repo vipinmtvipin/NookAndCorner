@@ -9,7 +9,6 @@ import 'package:customerapp/core/theme/color_constant.dart';
 import 'package:customerapp/generated/assets.gen.dart';
 import 'package:customerapp/presentation/chat/message_data.dart';
 import 'package:customerapp/presentation/common_widgets/conditional_widget.dart';
-import 'package:customerapp/presentation/common_widgets/custom_icon_button.dart';
 import 'package:customerapp/presentation/common_widgets/network_image_view.dart';
 import 'package:customerapp/presentation/my_job_screen/controller/mybooking_controller.dart';
 import 'package:file_picker/file_picker.dart';
@@ -54,7 +53,7 @@ class ChatScreenState extends State<ChatScreen> {
       message: _messageController.text,
       timestamp: Timestamp.now(),
       userId: userId,
-      fileUrl: '',
+      fileUrl: [],
       name: name,
     );
     _chatService.sendMessage(
@@ -68,7 +67,7 @@ class ChatScreenState extends State<ChatScreen> {
       message: adminCommonMessage,
       timestamp: Timestamp.now(),
       userId: userId,
-      fileUrl: '',
+      fileUrl: [],
       name: "Admin",
     );
     _chatService.sendMessage(
@@ -171,7 +170,7 @@ class ChatScreenState extends State<ChatScreen> {
                       message: initialAdminMessage,
                       timestamp: Timestamp.now(),
                       userId: userId,
-                      fileUrl: '',
+                      fileUrl: [],
                       name: "Admin",
                     );
                     _chatService.sendMessage(userId, jobId, messageAdmin);
@@ -191,12 +190,13 @@ class ChatScreenState extends State<ChatScreen> {
                     itemBuilder: (context, index) {
                       final messageData = messages[index];
                       final isCurrentUser = messageData.from == currentUserType;
-                      final isFile = messageData.fileUrl?.isNotEmpty ?? false;
+                      final isFile =
+                          messageData.fileUrl?.isNotNullOrEmpty ?? false;
                       var fileType = 'image';
                       if (isFile.absolute) {
-                        if (messageData.fileUrl!.contains('jpg') ||
-                            messageData.fileUrl!.contains('jpeg') ||
-                            messageData.fileUrl!.contains('png')) {
+                        if (messageData.fileUrl!.first.contains('jpg') ||
+                            messageData.fileUrl!.first.contains('jpeg') ||
+                            messageData.fileUrl!.first.contains('png')) {
                           fileType = 'image';
                         } else {
                           fileType = 'video';
@@ -212,14 +212,20 @@ class ChatScreenState extends State<ChatScreen> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 15.0, vertical: 10),
                             child: Hero(
-                              tag: messageData.fileUrl ?? '',
+                              tag: messageData.fileUrl?.isNotEmpty == true
+                                  ? messageData.fileUrl!.first
+                                  : '',
                               child: ConditionalWidget(
                                 condition: fileType == 'image',
                                 onFalse: GestureDetector(
                                   onTap: () {
                                     Get.toNamed(AppRoutes.videoPlayerScreen,
                                         arguments: {
-                                          'videoUrl': messageData.fileUrl ?? '',
+                                          'videoUrl':
+                                              messageData.fileUrl?.isNotEmpty ==
+                                                      true
+                                                  ? messageData.fileUrl?.first
+                                                  : ''
                                         });
                                   },
                                   child: ClipRRect(
@@ -250,12 +256,17 @@ class ChatScreenState extends State<ChatScreen> {
                                     onTap: () {
                                       Get.toNamed(AppRoutes.fullScreenImageView,
                                           arguments: {
-                                            'imageUrl':
-                                                messageData.fileUrl ?? '',
+                                            'imageUrl': messageData
+                                                        .fileUrl?.isNotEmpty ==
+                                                    true
+                                                ? messageData.fileUrl?.first
+                                                : ''
                                           });
                                     },
                                     borderRadius: 20,
-                                    url: messageData.fileUrl ?? '',
+                                    url: messageData.fileUrl?.isNotEmpty == true
+                                        ? messageData.fileUrl?.first
+                                        : '',
                                     height: 250,
                                     width: 200,
                                     fit: BoxFit.contain,
@@ -307,64 +318,60 @@ class ChatScreenState extends State<ChatScreen> {
               ),
             ),
             SizedBox(height: 10),
-            Container(
-              padding: const EdgeInsets.all(8.0),
-              margin: const EdgeInsets.all(8.0),
-              decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.5),
-                    offset: Offset(0, -1),
-                    blurRadius: 4.0,
-                  ),
-                ],
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(16.0),
-                ),
-              ),
-              child: Row(
+            SizedBox(
+              height: 65,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  IconButton(
-                    onPressed: () {
-                      _pickFile();
-                    },
-                    iconSize: 25,
-                    icon: Icon(
-                      Icons.attach_file_sharp,
-                      color: AppColors.white,
+                  Divider(
+                    height: 0.4,
+                    color: AppColors.whiteGray,
+                  ),
+                  Container(
+                    margin: const EdgeInsets.all(6.0),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            _pickFile();
+                          },
+                          iconSize: 25,
+                          icon: Icon(
+                            Icons.attach_file_sharp,
+                            color: AppColors.gray,
+                          ),
+                        ),
+                        Flexible(
+                          child: TextField(
+                            controller: _messageController,
+                            decoration: InputDecoration(
+                              hintText: 'Type a message...',
+                              contentPadding: const EdgeInsets.all(0),
+                              filled: true,
+                              fillColor: Colors.transparent,
+                              border: InputBorder.none,
+                              enabledBorder: InputBorder.none,
+                              focusedBorder: InputBorder.none,
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            _sendMessage();
+                          },
+                          child: const Padding(
+                            padding: EdgeInsets.only(left: 8.0, right: 6),
+                            child: Icon(
+                              Icons.send,
+                              size: 25,
+                              color: AppColors.gray,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  Flexible(
-                    child: TextField(
-                      controller: _messageController,
-                      decoration: InputDecoration(
-                        hintText: 'Type a message...',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12.0),
-                          borderSide: BorderSide(color: Colors.black),
-                        ),
-                        filled: true,
-                        fillColor: Colors.grey[100],
-                      ),
-                    ),
-                  ),
-                  CustomIconButton(
-                      margin: const EdgeInsets.symmetric(horizontal: 8.0),
-                      height: 35,
-                      width: 35,
-                      onTap: () {
-                        _sendMessage();
-                      },
-                      alignment: Alignment.topLeft,
-                      shape: IconButtonShape.CircleBorder35,
-                      child: const Padding(
-                        padding: EdgeInsets.only(left: 5.0),
-                        child: Icon(
-                          Icons.send,
-                          size: 18,
-                          color: AppColors.white,
-                        ),
-                      )),
                 ],
               ),
             ),

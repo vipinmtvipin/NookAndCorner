@@ -80,17 +80,15 @@ class _CarouselWithIndicatorState extends State<CarouselWithIndicator> {
                       color: Colors.transparent,
                       border: isSelected
                           ? Border.all(
-                              color: AppColors.secondaryColor,
-                              width: 2,
+                              color: AppColors.black,
+                              width: 1,
                             )
                           : null,
                     ),
                     child: Container(
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: isSelected
-                            ? AppColors.red
-                            : AppColors.secondaryColor,
+                        color: isSelected ? AppColors.black : Colors.black38,
                       ),
                     ),
                   ),

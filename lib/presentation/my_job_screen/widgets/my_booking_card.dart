@@ -4,13 +4,16 @@ import 'package:customerapp/core/extensions/string_extensions.dart';
 import 'package:customerapp/core/routes/app_routes.dart';
 import 'package:customerapp/core/theme/app_text_style.dart';
 import 'package:customerapp/core/theme/color_constant.dart';
+import 'package:customerapp/core/utils/common_util.dart';
 import 'package:customerapp/domain/model/my_jobs/my_job_responds.dart';
 import 'package:customerapp/presentation/common_widgets/responsive_text.dart';
 import 'package:customerapp/presentation/my_job_screen/controller/mybooking_controller.dart';
+import 'package:customerapp/presentation/my_job_screen/widgets/apply_coupon_bottomsheet.dart';
 import 'package:customerapp/presentation/my_job_screen/widgets/review_bottomsheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 
 class MyBookingCard extends GetView<MyBookingController> {
   final MyJobData item;
@@ -51,39 +54,10 @@ class MyBookingCard extends GetView<MyBookingController> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Flexible(
-                        child: ResponsiveText(
-                            text: item.servicePrice?.service?.name ?? '',
-                            style: AppTextStyle.txtBold14
-                                .copyWith(color: AppColors.secondaryColor)),
-                      ),
-                      Card(
-                        elevation: 6,
-                        color: controller.screenType ==
-                                MyBookingStatus.cancelled
-                            ? Colors.red[300]
-                            : controller.screenType == MyBookingStatus.completed
-                                ? Colors.green[300]
-                                : controller.screenType ==
-                                        MyBookingStatus.pending
-                                    ? Colors.blue[300]
-                                    : AppColors.gray,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8.0, vertical: 3),
-                          child: Text(
-                            item.status.toCapitalized ?? '',
-                            style: AppTextStyle.txt10
-                                .copyWith(color: Colors.white),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  ResponsiveText(
+                      text: item.servicePrice?.service?.name ?? '',
+                      style: AppTextStyle.txtBold14
+                          .copyWith(color: AppColors.secondaryColor)),
                   const SizedBox(height: 5),
                   ResponsiveText(
                       text: "Booking ID: ${item.jobId}",
@@ -96,7 +70,7 @@ class MyBookingCard extends GetView<MyBookingController> {
                           .copyWith(color: AppColors.darkGray)),
                   const SizedBox(height: 5),
                   Divider(
-                    color: AppColors.gray,
+                    color: AppColors.whiteGray,
                     thickness: 0.5,
                   ),
                   Row(
@@ -107,23 +81,31 @@ class MyBookingCard extends GetView<MyBookingController> {
                         flex: 1,
                         fit: FlexFit.tight,
                         child: ListTile(
-                          title: Row(
-                            children: [
-                              Icon(
+                          contentPadding: EdgeInsets.zero,
+                          leading: ClipRRect(
+                            borderRadius: BorderRadius.circular(50),
+                            child: Container(
+                              height: 30,
+                              width: 30,
+                              color: AppColors.skyBlue.withOpacity(0.4),
+                              child: Icon(
                                 Icons.calendar_today,
-                                size: 14,
+                                size: 16,
+                                color: AppColors.black,
                               ),
-                              const SizedBox(width: 5),
-                              Text("Date",
-                                  style: AppTextStyle.txt12
-                                      .copyWith(color: AppColors.gray)),
-                            ],
+                            ),
                           ),
+                          title: Text(
+                              GetIt.I<CommonUtil>().dateFormat(
+                                  item.jobDate.convertUtcToIstDate()),
+                              style: AppTextStyle.txtBold12
+                                  .copyWith(color: AppColors.black)),
                           subtitle: ResponsiveText(
+                              text: GetIt.I<CommonUtil>().dateFormatTime(
+                                  item.jobDate.convertUtcToIstDate()),
                               maxLines: 1,
-                              text: item.jobDate.convertUtcToIst(),
-                              style: AppTextStyle.txt14.copyWith(
-                                color: AppColors.darkGray,
+                              style: AppTextStyle.txt12.copyWith(
+                                color: AppColors.black,
                               )),
                         ),
                       ),
@@ -135,24 +117,29 @@ class MyBookingCard extends GetView<MyBookingController> {
                           flex: 1,
                           fit: FlexFit.tight,
                           child: ListTile(
-                            title: Row(
-                              children: [
-                                Icon(
+                            contentPadding: EdgeInsets.zero,
+                            leading: ClipRRect(
+                              borderRadius: BorderRadius.circular(50),
+                              child: Container(
+                                height: 30,
+                                width: 30,
+                                color: AppColors.orange.withOpacity(0.6),
+                                child: Icon(
                                   Icons.payment_rounded,
                                   size: 16,
+                                  color: AppColors.black,
                                 ),
-                                const SizedBox(width: 5),
-                                Text("Payable",
-                                    style: AppTextStyle.txt12
-                                        .copyWith(color: AppColors.gray)),
-                              ],
+                              ),
                             ),
+                            title: Text("Payable",
+                                style: AppTextStyle.txt12
+                                    .copyWith(color: AppColors.gray)),
                             subtitle: ResponsiveText(
                                 text:
                                     "${double.parse((item.price! - item.advanceAmount!).toStringAsFixed(2))} Rs",
                                 maxLines: 1,
-                                style: AppTextStyle.txt14.copyWith(
-                                  color: AppColors.green,
+                                style: AppTextStyle.txtBold12.copyWith(
+                                  color: AppColors.black,
                                 )),
                           ),
                         ),
@@ -210,39 +197,33 @@ class MyBookingCard extends GetView<MyBookingController> {
                   Visibility(
                     visible: controller.screenType == MyBookingStatus.scheduled,
                     child: Padding(
-                      padding: const EdgeInsets.only(top: 5.0),
-                      child: Card(
-                        elevation: 2,
-                        color: AppColors.whiteGray,
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: ResponsiveText(
-                                    text: item.status == 'started'
-                                        ? "OTP to complete the service"
-                                        : "OTP to start the service",
-                                    style: AppTextStyle.txt14
-                                        .copyWith(color: AppColors.black)),
-                              ),
-                              Card(
-                                color: AppColors.white,
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10.0, vertical: 5),
-                                  child: Text(
-                                      item.status == 'started'
-                                          ? item.otp ?? ''
-                                          : item.startOtp ?? '',
-                                      style: AppTextStyle.txt14
-                                          .copyWith(color: AppColors.success)),
-                                ),
-                              ),
-                            ],
+                      padding: const EdgeInsets.all(10.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: ResponsiveText(
+                                text: item.status == 'started'
+                                    ? "Provide OTP to complete service"
+                                    : "Provide OTP to start service",
+                                style: AppTextStyle.txt14
+                                    .copyWith(color: AppColors.darkGray)),
                           ),
-                        ),
+                          Card(
+                            color: AppColors.lightGreen.withOpacity(0.9),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10.0, vertical: 3),
+                              child: Text(
+                                  item.status == 'started'
+                                      ? item.otp ?? ''
+                                      : item.startOtp ?? '',
+                                  style: AppTextStyle.txt14
+                                      .copyWith(color: AppColors.white)),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -260,8 +241,10 @@ class MyBookingCard extends GetView<MyBookingController> {
                                 'from': 'MyBooking'
                               });
                         },
-                        color: AppColors.red,
+                        color: AppColors.skyBlue,
                         icon: Icons.add_business,
+                        textColor: AppColors.white,
+                        fillColor: AppColors.skyBlue,
                       ),
                     ),
                   ),
@@ -275,10 +258,13 @@ class MyBookingCard extends GetView<MyBookingController> {
                         text: 'Pay Now',
                         onTap: () {
                           controller.selectedJob.value = item;
-                          controller.completeJob('list');
+                          context.showBottomSheet(
+                              body: ApplyCouponBottomSheet(from: 'list'));
                         },
                         color: AppColors.skyBlue,
-                        icon: Icons.add_business,
+                        icon: Icons.payment_rounded,
+                        textColor: AppColors.white,
+                        fillColor: AppColors.skyBlue,
                       ),
                     ),
                   ),
@@ -302,22 +288,6 @@ class MyBookingCard extends GetView<MyBookingController> {
                         child: Padding(
                           padding: const EdgeInsets.only(right: 3.0),
                           child: BookingButton(
-                            text: 'Chat with us',
-                            onTap: () {
-                              controller.selectedJob.value = item;
-                              Get.toNamed(AppRoutes.chatScreen);
-                            },
-                            color: AppColors.black,
-                            icon: Icons.chat,
-                            textColor: AppColors.white,
-                            fillColor: AppColors.black,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 3.0),
-                          child: BookingButton(
                             text: (controller.screenType ==
                                         MyBookingStatus.cancelled ||
                                     controller.screenType ==
@@ -327,8 +297,24 @@ class MyBookingCard extends GetView<MyBookingController> {
                             onTap: () {
                               onTap.call();
                             },
-                            color: AppColors.black,
+                            color: AppColors.whiteGray,
                             icon: Icons.bookmark,
+                            textColor: AppColors.black,
+                            fillColor: AppColors.whiteGray,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 3.0),
+                          child: BookingButton(
+                            text: 'Chat with us',
+                            onTap: () {
+                              controller.selectedJob.value = item;
+                              Get.toNamed(AppRoutes.chatScreen);
+                            },
+                            color: AppColors.black,
+                            icon: Icons.headset_mic,
                             textColor: AppColors.white,
                             fillColor: AppColors.black,
                           ),

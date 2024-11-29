@@ -5,6 +5,8 @@ import 'package:customerapp/domain/model/my_jobs/file_upload_responds.dart';
 import 'package:customerapp/domain/model/my_jobs/my_job_responds.dart';
 import 'package:customerapp/domain/model/my_jobs/myjob_request.dart';
 import 'package:customerapp/domain/model/my_jobs/update_addon_request.dart';
+import 'package:customerapp/domain/model/summery/apply_cupon_responds.dart';
+import 'package:customerapp/domain/model/summery/coupon_request.dart';
 
 abstract class MyJobRepository {
   Future<MyJobResponds?> getJob(MyJobRequest request);
@@ -15,4 +17,5 @@ abstract class MyJobRepository {
   Future<CommonResponds?> ratingJob(JobCommentRequest request);
   Future<CommonResponds?> confirmAddress(ConfirmAddressRequest request);
   Future<CommonResponds?> updateAddOns(UpdateAddonRequest request);
+  Future<CuponResponds?> applyCoupon(CouponRequest request);
 }

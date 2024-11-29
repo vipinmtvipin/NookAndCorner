@@ -49,6 +49,7 @@ class AddressData {
     required this.cityId,
     required this.createdAt,
     required this.updatedAt,
+    this.isPrimary = false,
   });
 
   final int? addressId;
@@ -66,6 +67,7 @@ class AddressData {
   final int? cityId;
   final DateTime? createdAt;
   final DateTime? updatedAt;
+  final bool? isPrimary;
 
   factory AddressData.fromJson(Map<String, dynamic> json) {
     return AddressData(
@@ -84,6 +86,7 @@ class AddressData {
       cityId: json["cityId"],
       createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
       updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
+      isPrimary: json["isPrimary"],
     );
   }
 
@@ -103,6 +106,7 @@ class AddressData {
         "cityId": cityId,
         "createdAt": createdAt?.toIso8601String(),
         "updatedAt": updatedAt?.toIso8601String(),
+        "isPrimary": isPrimary,
       };
 
   static AddressData empty() {
@@ -122,6 +126,7 @@ class AddressData {
       cityId: 0,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
+      isPrimary: false,
     );
   }
 }

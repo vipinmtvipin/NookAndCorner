@@ -2,7 +2,6 @@ import 'package:customerapp/core/localization/localization_keys.dart';
 import 'package:customerapp/core/routes/app_routes.dart';
 import 'package:customerapp/core/theme/app_text_style.dart';
 import 'package:customerapp/core/theme/color_constant.dart';
-import 'package:customerapp/generated/assets.gen.dart';
 import 'package:customerapp/presentation/common_widgets/custom_icon_button.dart';
 import 'package:customerapp/presentation/common_widgets/custom_pin_code_text_field.dart';
 import 'package:customerapp/presentation/common_widgets/nookcorner_button.dart';
@@ -48,11 +47,9 @@ class LoginScreen extends GetView<AuthController> {
                   Padding(
                     padding: getPadding(left: 16, top: 60, right: 16),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Assets.images.nookCornerRound
-                            .image(fit: BoxFit.contain, height: 60, width: 60),
                         CustomIconButton(
                           height: 30,
                           width: 30,
@@ -171,6 +168,7 @@ class LoginScreen extends GetView<AuthController> {
           unSelectedTextStyle: AppTextStyle.txt12,
           labels: [LocalizationKeys.phone.tr, LocalizationKeys.email.tr],
           selectedLabelIndex: (index) {
+            CommonUtil().keyboardHide(Get.context!);
             controller.isPhoneLogin.value = index == 0;
           },
           isScroll: false,
@@ -237,10 +235,13 @@ class LoginScreen extends GetView<AuthController> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Please enter the OTP to verify your account',
-          textAlign: TextAlign.center,
-          style: AppTextStyle.txt14Secondary,
+        Padding(
+          padding: const EdgeInsets.only(left: 2.0),
+          child: Text(
+            'Please enter the OTP to verify your account',
+            textAlign: TextAlign.center,
+            style: AppTextStyle.txtBold12,
+          ),
         ),
         const SizedBox(height: 20),
         Padding(

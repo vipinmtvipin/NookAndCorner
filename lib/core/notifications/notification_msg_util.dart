@@ -1,23 +1,19 @@
-import 'dart:convert';
-
-import 'package:customerapp/core/extensions/string_extensions.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get_it/get_it.dart';
 
 class NotificationMsgUtil {
-  static Future<void> parse(String? msg) async {
-    if (msg.isNotNullOrEmpty) {
-      Map<String, dynamic> data = jsonDecode(msg!);
-
+  static Future<void> parse(RemoteNotification? notification) async {
+    if (notification != null) {
       AndroidNotificationDetails androidPlatformChannelSpecifics;
-      if (data.containsKey('image')) {
-        final String? imageUrl = data['image'] ?? '';
+      if (notification.android?.imageUrl != null) {
+        final String imageUrl = notification.android?.imageUrl ?? '';
         // Use big picture style for image notifications
         final BigPictureStyleInformation bigPictureStyleInformation =
             BigPictureStyleInformation(
-          FilePathAndroidBitmap(imageUrl!),
-          contentTitle: data['title'] ?? '',
-          summaryText: data['body'] ?? '',
+          FilePathAndroidBitmap(imageUrl),
+          contentTitle: notification.title ?? '',
+          summaryText: notification.body ?? '',
         );
         androidPlatformChannelSpecifics = AndroidNotificationDetails(
           'nook_corner_id',
@@ -29,6 +25,7 @@ class NotificationMsgUtil {
           enableLights: true,
           enableVibration: true,
           playSound: true,
+          icon: '@mipmap/ic_launcher',
           styleInformation: bigPictureStyleInformation,
         );
       } else {
@@ -42,6 +39,7 @@ class NotificationMsgUtil {
           enableLights: true,
           enableVibration: true,
           playSound: true,
+          icon: '@mipmap/ic_launcher',
         );
       }
 
@@ -50,8 +48,8 @@ class NotificationMsgUtil {
 
       await GetIt.I<FlutterLocalNotificationsPlugin>().show(
         0,
-        data['title'] ?? '',
-        data['body'] ?? '',
+        notification.title ?? '',
+        notification.body ?? '',
         platformChannelSpecifics,
       );
     }
@@ -71,6 +69,7 @@ class NotificationMsgUtil {
       enableLights: true,
       enableVibration: true,
       playSound: true,
+      icon: '@mipmap/ic_launcher',
     );
     const NotificationDetails platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);

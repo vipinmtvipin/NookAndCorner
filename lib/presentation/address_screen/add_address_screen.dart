@@ -23,29 +23,6 @@ class AddAddressScreen extends GetView<AddressController> {
       bottom: false,
       child: Scaffold(
         body: mobileView(context),
-        bottomNavigationBar: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: NookCornerButton(
-            text: controller.selectedAddress.value.location.isNotNullOrEmpty
-                ? 'Update Address'
-                : 'Save Address',
-            onPressed: () {
-              if (controller.cityController.text.isEmpty ||
-                  controller.streetController.text.isEmpty ||
-                  controller.houseFlatController.text.isEmpty) {
-                Get.snackbar('Error', 'Please fill all the fields',
-                    backgroundColor: Colors.black,
-                    colorText: Colors.white,
-                    icon: const Icon(
-                      Icons.error,
-                      color: Colors.white,
-                    ));
-                return;
-              }
-              controller.saveAddress();
-            },
-          ),
-        ),
       ),
     );
   }
@@ -54,158 +31,220 @@ class AddAddressScreen extends GetView<AddressController> {
     return Obx(
       () => Container(
           padding: getPadding(left: 16, top: 50, right: 16),
-          child: SingleChildScrollView(
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  TitleBarWidget(
-                    title: controller
-                            .selectedAddress.value.location.isNotNullOrEmpty
-                        ? 'Address Details'
-                        : 'Add Address',
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  SizedBox(
-                    height: 280,
-                    child: Stack(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: GoogleMap(
-                            initialCameraPosition: CameraPosition(
-                              target: controller.currentLocation.value,
-                              zoom: 16.0,
-                            ),
-                            onMapCreated: (mController) {
-                              controller.mapController = mController;
-                              // Move the camera to fit the city bounds
-                              if (controller.selectedAddress.value.location
-                                  .isNullOrEmpty) {
-                                controller.mapController?.moveCamera(
-                                    CameraUpdate.newLatLngBounds(
-                                        controller.cityBounds!, 0));
-                              } else {
-                                controller.mapController?.animateCamera(
-                                    CameraUpdate.newLatLngZoom(
-                                        controller.currentLocation.value, 15));
-                              }
-                            },
-                            // Restrict the camera movement to the city bounds
-                            cameraTargetBounds:
-                                CameraTargetBounds(controller.cityBounds),
-                            minMaxZoomPreference: MinMaxZoomPreference(10, 20),
-                            markers: {
-                              Marker(
-                                markerId: const MarkerId('currentLocation'),
-                                icon: controller.customMarkerIcon.value,
-                                position: controller.currentLocation.value,
-                                draggable: true,
-                                onDragEnd: (newPosition) {
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                TitleBarWidget(
+                  title:
+                      controller.selectedAddress.value.location.isNotNullOrEmpty
+                          ? 'Address Details'
+                          : 'Add Address',
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                SizedBox(
+                  height: 280,
+                  child: Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: GoogleMap(
+                          tiltGesturesEnabled: true,
+                          rotateGesturesEnabled: true,
+                          scrollGesturesEnabled: true,
+                          zoomControlsEnabled: true,
+                          zoomGesturesEnabled: true,
+                          initialCameraPosition: CameraPosition(
+                            target: controller.currentLocation.value,
+                            zoom: 16.0,
+                          ),
+                          onMapCreated: (mController) {
+                            controller.mapController = mController;
+                            // Move the camera to fit the city bounds
+                            if (controller
+                                .selectedAddress.value.location.isNullOrEmpty) {
+                              controller.mapController?.moveCamera(
+                                  CameraUpdate.newLatLngBounds(
+                                      controller.cityBounds!, 0));
+                            } else {
+                              controller.mapController?.animateCamera(
+                                  CameraUpdate.newLatLngZoom(
+                                      controller.currentLocation.value, 15));
+                            }
+                          },
+                          // Restrict the camera movement to the city bounds
+                          cameraTargetBounds:
+                              CameraTargetBounds(controller.cityBounds),
+                          minMaxZoomPreference: MinMaxZoomPreference(10, 20),
+                          markers: {
+                            Marker(
+                              markerId: const MarkerId('currentLocation'),
+                              icon: controller.customMarkerIcon.value,
+                              position: controller.currentLocation.value,
+                              draggable: true,
+                              onDrag: (newPosition) {
+                                _moveCameraToPosition(newPosition);
+                              },
+                              onDragEnd: (newPosition) {
+                                if (isWithinBounds(
+                                    newPosition, controller.cityBounds!)) {
                                   _updateLocation(newPosition);
-                                },
-                                onTap: () {
-                                  controller.hideToolTip.value =
-                                      !controller.hideToolTip.value;
-                                },
+                                } else {
+                                  Get.snackbar(
+                                    'Warning',
+                                    'Marker must stay within the city bounds.',
+                                    backgroundColor: Colors.black,
+                                    colorText: Colors.white,
+                                    icon: const Icon(Icons.error,
+                                        color: Colors.white),
+                                  );
+                                  controller.mapController?.animateCamera(
+                                      CameraUpdate.newLatLng(
+                                          controller.currentLocation.value));
+                                }
+                              },
+                              onTap: () {
+                                controller.hideToolTip.value =
+                                    !controller.hideToolTip.value;
+                              },
+                            ),
+                          },
+                        ),
+                      ),
+                      Positioned(
+                        top: 10,
+                        left: 10,
+                        right: 10,
+                        child: InkWell(
+                          onTap: () {
+                            getPlaceDetails(context);
+                          },
+                          child: TextField(
+                            controller: controller.searchController,
+                            decoration: InputDecoration(
+                              hintText: 'Search for your location',
+                              fillColor: Colors.white,
+                              filled: true,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide.none,
                               ),
-                            },
+                              contentPadding: const EdgeInsets.all(10),
+                            ),
+                            readOnly: true,
+                            enabled: false,
                           ),
                         ),
-                        Positioned(
-                          top: 10,
-                          left: 10,
-                          right: 10,
-                          child: InkWell(
-                            onTap: () {
-                              getPlaceDetails(context);
-                            },
-                            child: TextField(
-                              controller: controller.searchController,
-                              decoration: InputDecoration(
-                                hintText: 'Search for your location',
-                                fillColor: Colors.white,
-                                filled: true,
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide.none,
-                                ),
-                                contentPadding: const EdgeInsets.all(10),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        NookCornerTextField(
+                          textInputAction: TextInputAction.next,
+                          controller: controller.cityController,
+                          enabled: false,
+                          title: 'City',
+                          textStyle: AppTextStyle.txt16,
+                          type: NookCornerTextFieldType.email,
+                          isFormField: true,
+                          validator: (value) {
+                            return null;
+                          },
+                          autoValidate: true,
+                        ),
+                        NookCornerTextField(
+                          textInputAction: TextInputAction.next,
+                          controller: controller.streetController,
+                          title: 'Street',
+                          textStyle: AppTextStyle.txt16,
+                          type: NookCornerTextFieldType.email,
+                          isFormField: true,
+                          validator: (value) {
+                            return null;
+                          },
+                          autoValidate: true,
+                        ),
+                        NookCornerTextField(
+                          textInputAction: TextInputAction.done,
+                          controller: controller.houseFlatController,
+                          title: 'House/Flat',
+                          textStyle: AppTextStyle.txt16,
+                          type: NookCornerTextFieldType.email,
+                          isFormField: true,
+                          validator: (value) {
+                            return null;
+                          },
+                          autoValidate: true,
+                        ),
+                        Row(
+                          children: [
+                            Flexible(
+                              child: RadioListTile<String>(
+                                title: const Text('Home'),
+                                value: 'Home',
+                                groupValue: controller.addressType.value,
+                                onChanged: (value) {
+                                  controller.addressType.value = value!;
+                                },
                               ),
-                              readOnly: true,
-                              enabled: false,
                             ),
+                            Flexible(
+                              child: RadioListTile<String>(
+                                title: const Text('Office'),
+                                value: 'Office',
+                                groupValue: controller.addressType.value,
+                                onChanged: (value) {
+                                  controller.addressType.value = value!;
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          child: NookCornerButton(
+                            text: controller.selectedAddress.value.location
+                                    .isNotNullOrEmpty
+                                ? 'Update Address'
+                                : 'Save Address',
+                            onPressed: () {
+                              if (controller.cityController.text.isEmpty ||
+                                  controller.streetController.text.isEmpty ||
+                                  controller.houseFlatController.text.isEmpty) {
+                                Get.snackbar(
+                                    'Error', 'Please fill all the fields',
+                                    backgroundColor: Colors.black,
+                                    colorText: Colors.white,
+                                    icon: const Icon(
+                                      Icons.error,
+                                      color: Colors.white,
+                                    ));
+                                return;
+                              }
+                              controller.saveAddress();
+                            },
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  NookCornerTextField(
-                    textInputAction: TextInputAction.next,
-                    controller: controller.cityController,
-                    enabled: false,
-                    title: 'City',
-                    textStyle: AppTextStyle.txt16,
-                    type: NookCornerTextFieldType.email,
-                    isFormField: true,
-                    validator: (value) {
-                      return null;
-                    },
-                    autoValidate: true,
-                  ),
-                  NookCornerTextField(
-                    textInputAction: TextInputAction.next,
-                    controller: controller.streetController,
-                    title: 'Street',
-                    textStyle: AppTextStyle.txt16,
-                    type: NookCornerTextFieldType.email,
-                    isFormField: true,
-                    validator: (value) {
-                      return null;
-                    },
-                    autoValidate: true,
-                  ),
-                  NookCornerTextField(
-                    textInputAction: TextInputAction.done,
-                    controller: controller.houseFlatController,
-                    title: 'House/Flat',
-                    textStyle: AppTextStyle.txt16,
-                    type: NookCornerTextFieldType.email,
-                    isFormField: true,
-                    validator: (value) {
-                      return null;
-                    },
-                    autoValidate: true,
-                  ),
-                  Row(
-                    children: [
-                      Flexible(
-                        child: RadioListTile<String>(
-                          title: const Text('Home'),
-                          value: 'Home',
-                          groupValue: controller.addressType.value,
-                          onChanged: (value) {
-                            controller.addressType.value = value!;
-                          },
-                        ),
-                      ),
-                      Flexible(
-                        child: RadioListTile<String>(
-                          title: const Text('Office'),
-                          value: 'Office',
-                          groupValue: controller.addressType.value,
-                          onChanged: (value) {
-                            controller.addressType.value = value!;
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ]),
-          )),
+                )
+              ])),
+    );
+  }
+
+  void _moveCameraToPosition(LatLng newPosition) {
+    controller.mapController?.animateCamera(
+      CameraUpdate.newLatLng(newPosition),
     );
   }
 

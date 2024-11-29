@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:customerapp/core/constants/constants.dart';
 import 'package:customerapp/core/notifications/notification_msg_util.dart';
@@ -68,16 +67,15 @@ class NotificationManager {
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       if (message.notification != null) {
-        String payload = jsonEncode(message.data);
         NotificationMsgUtil.parse(
-          payload,
+          message.notification,
         );
       }
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       if (message.notification != null) {
-        NotificationMsgUtil.parse(jsonEncode(message.data));
+        NotificationMsgUtil.parse(message.notification);
       }
     });
 
@@ -87,7 +85,7 @@ class NotificationManager {
     if (initialMessage != null) {
       Future.delayed(const Duration(seconds: 1), () {
         if (initialMessage.notification != null) {
-          NotificationMsgUtil.parse(jsonEncode(initialMessage.data));
+          NotificationMsgUtil.parse(initialMessage.notification);
         }
       });
     }
@@ -99,8 +97,6 @@ Future<void> getPushToken() async {
   final sessionStorage = GetStorage();
   if (token != null) {
     sessionStorage.write(StorageKeys.pushToken, token);
-    Logger.e("---------########----------",
-        "PushToken: ${sessionStorage.read(StorageKeys.pushToken)}");
   }
 }
 

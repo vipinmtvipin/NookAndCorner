@@ -251,7 +251,7 @@ class ServiceBookingDateBottomSheet extends GetView<ServiceController> {
       context: context,
       initialDate: controller.selectedDate.value,
       firstDate: DateTime.now().add(Duration(days: 1)),
-      lastDate: DateTime(2101),
+      lastDate: DateTime.now().add(Duration(days: 15)),
     );
     if (picked != null) {
       controller.dateSelected(service, picked);
