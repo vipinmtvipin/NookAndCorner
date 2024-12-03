@@ -31,7 +31,7 @@ class MainScreen extends GetView<MainScreenController> {
         leadingWidth: getHorizontalSize(175),
         elevation: 0,
         leading: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 14),
+          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12),
           child: GestureDetector(
             onTap: () {
               context.showBottomSheet(
@@ -65,7 +65,7 @@ class MainScreen extends GetView<MainScreenController> {
                               color: AppColors.secondaryColor,
                               size: 16,
                             ),
-                            const SizedBox(width: 5),
+                            const SizedBox(width: 3),
                             SizedBox(
                               width: 80,
                               child: ResponsiveText(
@@ -81,7 +81,7 @@ class MainScreen extends GetView<MainScreenController> {
                               color: Colors.black,
                               size: 25,
                             ),
-                            const SizedBox(width: 10),
+                            const SizedBox(width: 8),
                           ],
                         ),
                       ),
@@ -95,7 +95,7 @@ class MainScreen extends GetView<MainScreenController> {
             icon: Icon(
               Icons.settings,
               color: Colors.black,
-              size: getSize(23),
+              size: getSize(24),
             ),
             onPressed: () {
               Get.toNamed(AppRoutes.settingsScreen);
@@ -109,7 +109,7 @@ class MainScreen extends GetView<MainScreenController> {
                       icon: Icon(
                         Icons.account_circle_rounded,
                         color: AppColors.secondaryColor,
-                        size: getSize(25),
+                        size: getSize(26),
                       ),
                       onPressed: () {
                         Get.toNamed(AppRoutes.accountScreen);
@@ -128,7 +128,7 @@ class MainScreen extends GetView<MainScreenController> {
                       child: Container(
                         width: getSize(60),
                         alignment: Alignment.center,
-                        height: getSize(45),
+                        height: getSize(48),
                         margin: const EdgeInsets.all(1),
                         decoration: BoxDecoration(
                           color: AppColors.black,
@@ -320,8 +320,8 @@ Widget _buildMainScreen() {
                       Stack(
                         children: [
                           AnimatedSize(
-                            duration: const Duration(milliseconds: 600),
-                            curve: Curves.bounceIn,
+                            duration: const Duration(milliseconds: 500),
+                            curve: Curves.bounceInOut,
                             child: Padding(
                               padding: const EdgeInsets.only(
                                   left: 16.0, right: 16, bottom: 70),
@@ -433,8 +433,8 @@ Widget _buildMainScreen() {
                                                       .animateTo(
                                                     position.dy,
                                                     duration: const Duration(
-                                                        milliseconds: 600),
-                                                    curve: Curves.bounceIn,
+                                                        milliseconds: 300),
+                                                    curve: Curves.easeIn,
                                                   );
                                                 }
                                               });

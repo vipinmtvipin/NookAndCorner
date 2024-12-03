@@ -1,6 +1,8 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get_it/get_it.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 class NotificationMsgUtil {
   static Future<void> parse(RemoteNotification? notification) async {
@@ -55,13 +57,17 @@ class NotificationMsgUtil {
     }
   }
 
-  static showPeriodicNotification() async {
+  static Future<void> showPeriodicNotification() async {
     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
         GetIt.I<FlutterLocalNotificationsPlugin>();
+
+    // Initialize timezone data
+    tz.initializeTimeZones();
+
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-      'nook_corner_id',
-      'nook_corner_channel',
+      'nook_corner_ids',
+      'nook_corner_channels',
       channelDescription: 'Nook and Corner',
       importance: Importance.max,
       priority: Priority.high,
@@ -73,13 +79,30 @@ class NotificationMsgUtil {
     );
     const NotificationDetails platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);
-    await flutterLocalNotificationsPlugin.periodicallyShow(
+
+    // Schedule the first notification
+    await flutterLocalNotificationsPlugin.zonedSchedule(
       501,
       'Pending Job',
-      'you have a pending job, please confirm the address.',
-      RepeatInterval.everyMinute,
+      'You have a pending job, please confirm the address.',
+      _nextInstanceIn30Minutes(),
       platformChannelSpecifics,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents: DateTimeComponents.time,
     );
+  }
+
+  static tz.TZDateTime _nextInstanceIn30Minutes() {
+    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+    return now.add(const Duration(minutes: 30));
+  }
+
+  static cancelPeriodicNotification() async {
+    final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+        GetIt.I<FlutterLocalNotificationsPlugin>();
+
+    await flutterLocalNotificationsPlugin.cancel(501);
   }
 }

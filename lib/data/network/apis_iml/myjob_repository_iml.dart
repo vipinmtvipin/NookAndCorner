@@ -129,7 +129,7 @@ class MyJobRepositoryIml extends MyJobRepository {
     try {
       Response response = await GetIt.I
           .get<ApiService>()
-          .put('${NetworkKeys.confirmAddress}/${request.addressId}',
+          .put('${NetworkKeys.confirmAddress}/${request.jobId}',
               data: request.toJson(),
               options: Options(
                 contentType: 'application/json',

@@ -30,7 +30,7 @@ class SplashScreen extends GetView<SplashController> {
     return Center(
       child: CustomImageView(
         radius: BorderRadius.circular(40),
-        imagePath: Assets.images.nookCornerLogo.path,
+        imagePath: Assets.images.nookCorner.path,
         width: 200,
         height: 200,
         margin: getMargin(

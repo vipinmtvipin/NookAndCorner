@@ -19,6 +19,7 @@ import 'package:customerapp/presentation/main_screen/widgets/city_bottomsheet.da
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 enum HomeStatus {
   unknown,
@@ -67,6 +68,9 @@ class MainScreenController extends BaseController {
   @override
   void onReady() {
     super.onReady();
+
+    _requestMultiplePermissions();
+
     getCity();
     getReviews('5', '0', "", false);
     updatePushToken();
@@ -198,5 +202,44 @@ class MainScreenController extends BaseController {
         e.printInfo();
       }
     }
+  }
+
+  Future<void> _requestMultiplePermissions() async {
+    // List of permissions to request
+    final Map<Permission, PermissionStatus> statuses = await [
+      Permission.notification,
+      Permission.location,
+    ].request();
+
+    var isPermanentlyDenied =
+        statuses.values.any((status) => status.isPermanentlyDenied);
+    if (isPermanentlyDenied) {
+      _showPermissionDialogWithSettings(
+        'Permissions Required',
+        'Please allow the required permissions to continue using the app.',
+      );
+    }
+  }
+
+  void _showPermissionDialogWithSettings(String title, String message) {
+    Get.dialog(
+      AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              openAppSettings();
+              Get.back();
+            },
+            child: Text('Open Settings'),
+          ),
+        ],
+      ),
+    );
   }
 }

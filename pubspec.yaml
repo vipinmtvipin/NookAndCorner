@@ -45,6 +45,8 @@ dependencies:
   encrypt: ^5.0.3
   video_player: ^2.9.2
   chewie: ^1.8.5
+  flutter_launcher_icons: ^0.14.1
+  permission_handler: ^11.3.1
 
   # Firebase
   firebase_core: ^3.8.0
@@ -59,8 +61,21 @@ dev_dependencies:
     sdk: flutter
   flutter_gen_runner: ^5.8.0
   build_runner: ^2.4.13
-  json_serializable: ^6.8.0
+  json_serializable: ^6.9.0
   flutter_lints: ^5.0.0
+
+
+flutter_launcher_icons:
+    image_path_android: "assets/images/nook_corner.png"
+    image_path_ios: "assets/images/nook_corner.png"
+    android: true
+    ios: true
+    adaptive_icon_background: "assets/images/launcher_background.png"
+    adaptive_icon_foreground: "assets/images/nook_corner_transparent.png"
+    min_sdk_android: 21
+    android_enable_round_icon: true
+    android_round_icon: true
+
 
 
 flutter:

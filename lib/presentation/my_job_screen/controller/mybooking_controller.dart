@@ -8,6 +8,7 @@ import 'package:customerapp/core/extensions/list_extensions.dart';
 import 'package:customerapp/core/localization/localization_keys.dart';
 import 'package:customerapp/core/network/connectivity_service.dart';
 import 'package:customerapp/core/network/logging_interceptor.dart';
+import 'package:customerapp/core/notifications/notification_msg_util.dart';
 import 'package:customerapp/core/routes/app_routes.dart';
 import 'package:customerapp/core/utils/common_util.dart';
 import 'package:customerapp/domain/model/my_jobs/file_upload_request.dart';
@@ -139,6 +140,13 @@ class MyBookingController extends BaseController {
             userId: userId.toString(), bookingStatus: screenType.name);
         var jobData = await _myJobUseCase.execute(request);
         jobList.value = jobData?.data ?? [];
+
+        if (request.bookingStatus == MyBookingStatus.pending.name &&
+            jobList.value.isNotEmpty) {
+          NotificationMsgUtil.showPeriodicNotification();
+        } else {
+          NotificationMsgUtil.cancelPeriodicNotification();
+        }
 
         hideLoadingDialog();
       } catch (e) {

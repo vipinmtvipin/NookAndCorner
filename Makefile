@@ -11,6 +11,8 @@ version := $(shell yq e '.environment.flutter' ${file})
 clean:  ##@ clean project and run pub get
 	fvm flutter clean && fvm flutter pub get
 
+icon:  ##@ generate app icons
+	 fvm flutter pub run flutter_launcher_icons:main
 
 firebase: ##@ install firebase CLI and configure project for firebase (run after make migrate)
 	dart pub global activate flutterfire_cli && flutterfire configure

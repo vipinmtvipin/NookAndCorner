@@ -53,7 +53,13 @@
         <string>fetch</string>
         <string>remote-notification</string>
     </array>
-    <key>NSLocalNotificationsUsageDescription</key>
-    <string>We use notifications to remind you periodically.</string>
+
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>We need access to your location to provide better services.</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>We need access to your location to provide better services.</string>
+    <key>NSUserTrackingUsageDescription</key>
+    <string>We need permission to send you notifications.</string>
+
 </dict>
 </plist>

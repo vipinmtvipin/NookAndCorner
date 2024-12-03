@@ -233,13 +233,15 @@ class MyBookingCard extends GetView<MyBookingController> {
                       padding: const EdgeInsets.only(top: 10.0),
                       child: BookingButton(
                         text: 'Confirm Address',
-                        onTap: () {
+                        onTap: () async {
                           controller.selectedJob.value = item;
-                          Get.toNamed(AppRoutes.confirmAddressScreen,
+                          await Get.toNamed(AppRoutes.confirmAddressScreen,
                               arguments: {
                                 'jobId': item.jobId.toString(),
                                 'from': 'MyBooking'
                               });
+
+                          controller.getJobs();
                         },
                         color: AppColors.skyBlue,
                         icon: Icons.add_business,

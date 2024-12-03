@@ -63,13 +63,21 @@ class $AssetsImagesGen {
   /// File path: assets/images/google.png
   AssetGenImage get google => const AssetGenImage('assets/images/google.png');
 
-  /// File path: assets/images/nook_corner_logo.png
-  AssetGenImage get nookCornerLogo =>
-      const AssetGenImage('assets/images/nook_corner_logo.png');
+  /// File path: assets/images/launcher_background.png
+  AssetGenImage get launcherBackground =>
+      const AssetGenImage('assets/images/launcher_background.png');
+
+  /// File path: assets/images/nook_corner.png
+  AssetGenImage get nookCorner =>
+      const AssetGenImage('assets/images/nook_corner.png');
 
   /// File path: assets/images/nook_corner_round.png
   AssetGenImage get nookCornerRound =>
       const AssetGenImage('assets/images/nook_corner_round.png');
+
+  /// File path: assets/images/nook_corner_transparent.png
+  AssetGenImage get nookCornerTransparent =>
+      const AssetGenImage('assets/images/nook_corner_transparent.png');
 
   /// File path: assets/images/profile_bg.svg
   SvgGenImage get profileBg =>
@@ -83,8 +91,16 @@ class $AssetsImagesGen {
       const AssetGenImage('assets/images/video_thum.png');
 
   /// List of all assets
-  List<dynamic> get values =>
-      [google, nookCornerLogo, nookCornerRound, profileBg, upArrow, videoThum];
+  List<dynamic> get values => [
+        google,
+        launcherBackground,
+        nookCorner,
+        nookCornerRound,
+        nookCornerTransparent,
+        profileBg,
+        upArrow,
+        videoThum
+      ];
 }
 
 class $AssetsLottieGen {
