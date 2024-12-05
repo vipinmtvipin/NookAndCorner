@@ -46,6 +46,8 @@ class ChatScreenState extends State<ChatScreen> {
   var userId = GetStorage().read(StorageKeys.userId).toString();
   var name = GetStorage().read(StorageKeys.username).toString();
 
+  var chatViewLoad = false;
+
   var jobId = '';
   void _sendMessage() {
     final message = Message(
@@ -102,6 +104,7 @@ class ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
+    chatViewLoad = false;
     setUpData();
   }
 
@@ -120,9 +123,10 @@ class ChatScreenState extends State<ChatScreen> {
       var subServiceName = selectedJob.servicePrice?.service?.category?.name;
       var jobDate = selectedJob.jobDate?.convertUtcToIst() ?? '';
 
-      var name = GetStorage().read(StorageKeys.username).toString();
+      var name =
+          GetStorage().read(StorageKeys.username).toString().toCapitalized;
       if (name.trim().isNullOrEmpty) {
-        name = GetStorage().read(StorageKeys.email).toString();
+        name = GetStorage().read(StorageKeys.email).toString().toCapitalized;
       }
       if (name.trim().isNullOrEmpty) {
         name = GetStorage().read(StorageKeys.mobile).toString();
@@ -164,7 +168,7 @@ class ChatScreenState extends State<ChatScreen> {
                   }
                   final messages = snapshot.data ?? [];
 
-                  if (messages.isNullOrEmpty) {
+                  if (!chatViewLoad) {
                     final messageAdmin = Message(
                       from: 'admin',
                       message: initialAdminMessage,
@@ -174,6 +178,7 @@ class ChatScreenState extends State<ChatScreen> {
                       name: "Admin",
                     );
                     _chatService.sendMessage(userId, jobId, messageAdmin);
+                    chatViewLoad = true;
                   }
 
                   WidgetsBinding.instance.addPostFrameCallback((_) {

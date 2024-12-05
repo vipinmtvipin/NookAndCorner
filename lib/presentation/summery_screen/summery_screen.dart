@@ -1,3 +1,4 @@
+import 'package:customerapp/core/extensions/list_extensions.dart';
 import 'package:customerapp/core/extensions/sheet_extension.dart';
 import 'package:customerapp/core/extensions/string_extensions.dart';
 import 'package:customerapp/core/routes/app_routes.dart';
@@ -13,6 +14,7 @@ import 'package:customerapp/presentation/common_widgets/responsive_text.dart';
 import 'package:customerapp/presentation/my_job_screen/controller/mybooking_controller.dart';
 import 'package:customerapp/presentation/services_screen/controller/service_controller.dart';
 import 'package:customerapp/presentation/services_screen/widgets/service_booking_date_bottomsheet.dart';
+import 'package:customerapp/presentation/summery_screen/addon_confirm_bottomsheet.dart';
 import 'package:customerapp/presentation/summery_screen/force_login_bottomsheet.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -150,6 +152,7 @@ class SummeryScreen extends GetView<ServiceController> {
                                   isFromSummery: true,
                                   onDateSelected: (timeSlot) {
                                     controller.selectedTime.value = timeSlot;
+                                    controller.checkGoldenHour();
                                   },
                                   service: controller.selectedService.value,
                                 ),
@@ -479,7 +482,7 @@ class SummeryScreen extends GetView<ServiceController> {
                             ),
                             child: Padding(
                               padding: const EdgeInsets.only(
-                                bottom: 16,
+                                bottom: 2,
                               ),
                               child: PaymentSummaryRow(
                                   title: 'Golden Hour Fee',
@@ -625,12 +628,12 @@ class SummeryScreen extends GetView<ServiceController> {
             onPressed: () {
               if (controller.termsAndConditionApply.value) {
                 if (controller.isLogin) {
-                  controller.createJob();
+                  showAddOnConfirmation(context);
                 } else {
                   context.showBottomSheet(
                     body: ForceLoginBottomSheet(
                       onLoggedIn: (login) {
-                        controller.createJob();
+                        showAddOnConfirmation(context);
                       },
                     ),
                   );
@@ -641,6 +644,21 @@ class SummeryScreen extends GetView<ServiceController> {
             }),
       ],
     );
+  }
+
+  void showAddOnConfirmation(BuildContext context) {
+    if (controller.addOns.value.isNotNullOrEmpty) {
+      context.showBottomSheet(
+        body: AddonConfirmBottomSheet(
+          addOns: controller.addOns.value,
+          onConfirm: () {
+            controller.createJob();
+          },
+        ),
+      );
+    } else {
+      controller.createJob();
+    }
   }
 
   void clearAllControllerData() {

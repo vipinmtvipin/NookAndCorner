@@ -103,6 +103,7 @@ class ServiceController extends BaseController {
   var categoryDescription = "".obs;
   var categoryImage = "".obs;
   var convenienceFee = 0.0.obs;
+  var baseConvenienceFee = 0.0;
   var advanceAmount = 0.0.obs;
   var goldenHourAmount = 0.0.obs;
   var grandTotal = 0.0.obs;
@@ -295,16 +296,9 @@ class ServiceController extends BaseController {
         convenienceFee.value =
             double.parse(convenienceFee.value.toStringAsFixed(2));
 
-        double nightHikePercent =
-            double.tryParse(metaData.value.overNightHikePercentage ?? '0') ?? 0;
-        var isGoldenHour = isAfter6PM(selectedDate.value);
-        if (isGoldenHour) {
-          goldenHourAmount.value = servicePercentage * nightHikePercent;
-          goldenHourAmount.value =
-              double.parse(goldenHourAmount.value.toStringAsFixed(2));
-        }
+        baseConvenienceFee = convenienceFee.value;
 
-        calculateGrandTotal();
+        checkGoldenHour();
 
         hideLoadingDialog();
       } catch (e) {
@@ -372,7 +366,7 @@ class ServiceController extends BaseController {
               selectedTime.value;
         }, orElse: () => TimeSlotData.empty());
 
-        var isGoldenHour = isAfter6PM(selectedDate.value);
+        var isGoldenHour = isAfter6PM(selectedTimeSlot.slotStart);
 
         List<AddOnAdd> addOnList = [];
         for (var e in addOns.value) {
@@ -477,7 +471,8 @@ class ServiceController extends BaseController {
       } catch (e) {
         hideLoadingDialog();
         Get.back();
-        showSnackBar("Error", "${e.toString()}, Please login.", Colors.black54);
+        showSnackBar(
+            "Warning", "${e.toString()}, Please login.", Colors.black54);
         if (e.toString().contains('User already exists')) {
           Get.toNamed(AppRoutes.loginScreen, arguments: {
             'from': AppRoutes.summeryScreen,
@@ -576,10 +571,32 @@ class ServiceController extends BaseController {
 
     var currentAddOn = addOns.value;
 
+    var singleAddon = false;
     if (count == -1 && quantity <= 1) {
-      currentAddOn.removeAt(index);
-      addOns.value = [];
-      addOns.value = currentAddOn;
+      if (currentAddOn.length == 1) {
+        singleAddon = true;
+        var convenienceFees = 0.0;
+        double conveniencePercent =
+            double.tryParse(metaData.value.conveniencePercentage ?? '0') ?? 0;
+
+        double addonPrice = double.tryParse(originAddon.price ?? '0') ?? 0.0;
+
+        double addOnPercentage = addonPrice / 100;
+        var convenienceValue = (addOnPercentage * conveniencePercent);
+        convenienceFees = double.parse(convenienceValue.toStringAsFixed(2));
+
+        addOns.value = [];
+        addOnsTotal.value = 0;
+
+        addOnConvenienceFee.value = 0;
+        addOnConvenienceFee.value = convenienceFees;
+
+        calculateRemoveGrandTotal();
+      } else {
+        currentAddOn.removeAt(index);
+        addOns.value = [];
+        addOns.value = currentAddOn;
+      }
     } else if (count == -1) {
       var newQuantity = quantity - 1;
       var price = double.tryParse(originAddon.price ?? '0')! * newQuantity;
@@ -602,33 +619,35 @@ class ServiceController extends BaseController {
       addOns.value = currentAddOn;
     }
 
-    var price = 0.0;
-    var convenienceFees = 0.0;
-    double conveniencePercent =
-        double.tryParse(metaData.value.conveniencePercentage ?? '0') ?? 0;
+    if (singleAddon == false) {
+      var price = 0.0;
+      var convenienceFees = 0.0;
+      double conveniencePercent =
+          double.tryParse(metaData.value.conveniencePercentage ?? '0') ?? 0;
 
-    for (var e in currentAddOn) {
-      var addon = addOnList.value.firstWhere((element) {
-        return element.addonId == e.addonId;
-      });
+      for (var e in currentAddOn) {
+        var addon = addOnList.value.firstWhere((element) {
+          return element.addonId == e.addonId;
+        });
 
-      double addonPrice = double.tryParse(addon.price ?? '0') ?? 0.0;
+        double addonPrice = double.tryParse(addon.price ?? '0') ?? 0.0;
 
-      price = price + (addonPrice * e.quantity!);
+        price = price + (addonPrice * e.quantity!);
 
-      double addOnPercentage = addonPrice / 100;
-      var convenienceValue =
-          (addOnPercentage * conveniencePercent) * e.quantity!;
-      convenienceFees =
-          convenienceFees + double.parse(convenienceValue.toStringAsFixed(2));
+        double addOnPercentage = addonPrice / 100;
+        var convenienceValue =
+            (addOnPercentage * conveniencePercent) * e.quantity!;
+        convenienceFees =
+            convenienceFees + double.parse(convenienceValue.toStringAsFixed(2));
+      }
+
+      addOnsTotal.value = 0;
+      addOnsTotal.value = price;
+      addOnConvenienceFee.value = 0;
+      addOnConvenienceFee.value = convenienceFees;
+
+      calculateGrandTotal();
     }
-
-    addOnsTotal.value = 0;
-    addOnsTotal.value = price;
-    addOnConvenienceFee.value = 0;
-    addOnConvenienceFee.value = convenienceFees;
-
-    calculateGrandTotal();
   }
 
   void calculateGrandTotal() {
@@ -639,9 +658,30 @@ class ServiceController extends BaseController {
               0;
     }
 
-    convenienceFee.value = convenienceFee.value + addOnConvenienceFee.value;
+    convenienceFee.value = baseConvenienceFee + addOnConvenienceFee.value;
     var servicePrice = double.tryParse(selectedService.value.price ?? '0') ?? 0;
     serviceTotal.value = servicePrice + addOnsTotal.value;
+
+    grandTotal.value =
+        ((serviceTotal.value + convenienceFee.value + goldenHourAmount.value) -
+            couponAmount);
+
+    double servicePercentage = grandTotal.value / 100;
+    advanceAmount.value = servicePercentage * advancePercentage;
+    advanceAmount.value = double.parse(advanceAmount.value.toStringAsFixed(2));
+  }
+
+  void calculateRemoveGrandTotal() {
+    var couponAmount = 0.0;
+    if (couponData.value.isNotEmpty) {
+      couponAmount =
+          double.tryParse(couponData.value.first.discountOfferPrice ?? '0') ??
+              0;
+    }
+
+    convenienceFee.value = baseConvenienceFee;
+    var servicePrice = double.tryParse(selectedService.value.price ?? '0') ?? 0;
+    serviceTotal.value = servicePrice;
 
     grandTotal.value =
         ((serviceTotal.value + convenienceFee.value + goldenHourAmount.value) -
@@ -667,5 +707,31 @@ class ServiceController extends BaseController {
     } catch (e) {
       Logger.e("Error in controller", e);
     }
+  }
+
+  void checkGoldenHour() {
+    double servicePrice =
+        double.tryParse(selectedService.value.price ?? '0') ?? 0;
+    double servicePercentage = servicePrice / 100;
+
+    double nightHikePercent =
+        double.tryParse(metaData.value.overNightHikePercentage ?? '0') ?? 0;
+
+    var selectedTimeSlot = timeSlots.value.firstWhere((element) {
+      return DateFormat('hh:mm aa').format(element.slotStart!) ==
+          selectedTime.value;
+    }, orElse: () => TimeSlotData.empty());
+
+    var isGoldenHour = isAfter6PM(selectedTimeSlot.slotStart);
+
+    if (isGoldenHour) {
+      goldenHourAmount.value = servicePercentage * nightHikePercent;
+      goldenHourAmount.value =
+          double.parse(goldenHourAmount.value.toStringAsFixed(2));
+    } else {
+      goldenHourAmount.value = 0.0;
+    }
+
+    calculateGrandTotal();
   }
 }

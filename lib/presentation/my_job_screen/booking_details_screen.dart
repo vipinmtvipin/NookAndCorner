@@ -14,6 +14,7 @@ import 'package:customerapp/presentation/my_job_screen/controller/mybooking_cont
 import 'package:customerapp/presentation/my_job_screen/widgets/apply_coupon_bottomsheet.dart';
 import 'package:customerapp/presentation/my_job_screen/widgets/my_booking_card.dart';
 import 'package:customerapp/presentation/my_job_screen/widgets/reschedule_booking_date_bottomsheet.dart';
+import 'package:customerapp/presentation/summery_screen/addon_confirm_bottomsheet.dart';
 import 'package:customerapp/presentation/summery_screen/summery_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -473,7 +474,8 @@ class BookingDetailsScreen extends GetView<MyBookingController> {
                                                       AppColors.primaryColor,
                                                   text: 'Add to Booking',
                                                   onTap: () {
-                                                    controller.updateAddOn();
+                                                    showAddOnConfirmation(
+                                                        context);
                                                   },
                                                   textColor: AppColors.white,
                                                   color: AppColors.black,
@@ -767,6 +769,21 @@ class BookingDetailsScreen extends GetView<MyBookingController> {
     );
   }
 
+  void showAddOnConfirmation(BuildContext context) {
+    if (controller.addOns.value.isNotNullOrEmpty) {
+      context.showBottomSheet(
+        body: AddonConfirmBottomSheet(
+          addOns: controller.addOns.value,
+          onConfirm: () {
+            controller.updateAddOn();
+          },
+        ),
+      );
+    } else {
+      controller.updateAddOn();
+    }
+  }
+
   void clearAllControllerData() {
     controller.addOns.value = [];
     controller.addOnsTotal.value = 0;
@@ -796,10 +813,12 @@ class AddOnServiceSeverItem extends StatelessWidget {
                   size: 18,
                 ),
                 SizedBox(width: 5),
-                ResponsiveText(
-                  text: '${addon.addon?.titile ?? ' '} (${addon.quantity})',
-                  style: AppTextStyle.txt12,
-                  textAlign: TextAlign.center,
+                Flexible(
+                  child: ResponsiveText(
+                    text: '${addon.addon?.titile ?? ' '} (${addon.quantity})',
+                    style: AppTextStyle.txt12,
+                    textAlign: TextAlign.start,
+                  ),
                 ),
               ],
             ),

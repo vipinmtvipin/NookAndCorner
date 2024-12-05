@@ -12,6 +12,8 @@
     <application
         android:label="Nook And Corner"
         android:name="${applicationName}"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
         android:usesCleartextTraffic="true"
         android:enableOnBackInvokedCallback="true"
         android:requestLegacyExternalStorage="true"
@@ -22,9 +24,13 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCEpnfYtpqPQ8oWZXBrMdRKJYC0cTn9mH0"/>
 
-        <meta-data
+      <!--  <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@mipmap/ic_launcher" />
+            android:resource="@drawable/ic_notification" />
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/launcher_background" />-->
 
         <activity
             android:name=".MainActivity"

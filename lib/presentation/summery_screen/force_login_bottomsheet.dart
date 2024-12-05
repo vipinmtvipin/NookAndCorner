@@ -1,7 +1,6 @@
 import 'package:customerapp/core/localization/localization_keys.dart';
 import 'package:customerapp/core/theme/app_text_style.dart';
 import 'package:customerapp/core/theme/color_constant.dart';
-import 'package:customerapp/presentation/common_widgets/network_image_view.dart';
 import 'package:customerapp/presentation/common_widgets/nookcorner_button.dart';
 import 'package:customerapp/presentation/common_widgets/nookcorner_text_field.dart';
 import 'package:customerapp/presentation/common_widgets/responsive_text.dart';
@@ -70,47 +69,6 @@ class ForceLoginBottomSheet extends GetView<ServiceController> {
           ),
           const SizedBox(height: 5),
         ],
-      ),
-    );
-  }
-}
-
-class CityCard extends StatelessWidget {
-  final String? image;
-  final String? label;
-
-  const CityCard({super.key, required this.image, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 6,
-      color: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            NetworkImageView(
-              url: image,
-              width: 40,
-              height: 40,
-              fit: BoxFit.contain,
-            ),
-            const SizedBox(height: 10),
-            Text(
-              label ?? '',
-              maxLines: 3,
-              textAlign: TextAlign.center,
-              overflow: TextOverflow.ellipsis,
-              style: AppTextStyle.txt12,
-            ),
-          ],
-        ),
       ),
     );
   }

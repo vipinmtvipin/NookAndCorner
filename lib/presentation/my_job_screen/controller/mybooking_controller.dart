@@ -384,8 +384,10 @@ class MyBookingController extends BaseController {
               selectedTime.value;
         }, orElse: () => TimeSlotData.empty());
 
+        var isGoldenHour = isAfter6PM(selectedTimeSlot.slotStart);
+
         ReScheduleJobRequest request = ReScheduleJobRequest(
-          goldenHourAdded: null,
+          goldenHourAdded: isGoldenHour,
           supervisors: selectedTimeSlot.supervisors ?? [],
           jobId: selectedJob.value.jobId.toString(),
           jobDate: GetIt.I<CommonUtil>()

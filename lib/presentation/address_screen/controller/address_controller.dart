@@ -190,7 +190,7 @@ class AddressController extends BaseController {
         if (addresses?.success == true) {
           showToast('Address confirmed successfully');
           if (confirmFrom.value == 'payment') {
-            Get.offAndToNamed(AppRoutes.mainScreen);
+            Get.offNamedUntil(AppRoutes.mainScreen, (route) => false);
           } else {
             Get.back(result: true);
           }

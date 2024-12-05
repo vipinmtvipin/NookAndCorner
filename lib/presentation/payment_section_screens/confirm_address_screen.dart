@@ -177,7 +177,21 @@ class ConfirmAddressScreen extends GetView<AddressController> {
                     ),
                   ),
                   // Payment Summary Section
+                  const SizedBox(height: 10),
+
+                  Visibility(
+                    visible: controller.addressList.value.isNotNullOrEmpty,
+                    child: NookCornerButton(
+                      type: NookCornerButtonType.outlined,
+                      text: 'Add Address',
+                      onPressed: () {
+                        controller.selectedAddress.value = AddressData.empty();
+                        navigateAndFetchAddress();
+                      },
+                    ),
+                  ),
                   const SizedBox(height: 20),
+
                   Visibility(
                     visible: controller.confirmFrom.value != 'profile',
                     child: Column(
@@ -185,13 +199,13 @@ class ConfirmAddressScreen extends GetView<AddressController> {
                         Text(
                           serviceName,
                           textAlign: TextAlign.center,
-                          style: AppTextStyle.txtBold16.copyWith(
+                          style: AppTextStyle.txtBold14.copyWith(
                             letterSpacing: getHorizontalSize(
-                              3,
+                              2,
                             ),
                           ),
                         ),
-                        const SizedBox(height: 15),
+                        const SizedBox(height: 10),
                         PaymentSummaryRow(
                           title: 'Advance Amount',
                           value: advanceAmount.toString(),
@@ -204,7 +218,7 @@ class ConfirmAddressScreen extends GetView<AddressController> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 5),
                 ])),
         bottomNavigationBar: controller.confirmFrom.value != 'profile'
             ? Padding(
