@@ -42,9 +42,9 @@ class TitleBarWidget extends StatelessWidget {
           child: ResponsiveText(
               text: title,
               textAlign: TextAlign.center,
-              style: AppTextStyle.txtBold18.copyWith(
+              style: AppTextStyle.txtBold24.copyWith(
                   letterSpacing: getHorizontalSize(
-                    5,
+                    0,
                   ),
                   color: AppColors.black)),
         ),

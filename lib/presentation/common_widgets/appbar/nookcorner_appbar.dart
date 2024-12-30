@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-enum customerappAppBarType {
+enum CustomerappAppBarType {
   home,
   settings,
   defaultAppBar,
 }
 
-class customerappAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final customerappAppBarType appBarType;
+class CustomerappAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final CustomerappAppBarType appBarType;
   final double leadingWidth;
   final Widget? leading;
   final String? title;
@@ -16,7 +16,7 @@ class customerappAppBar extends StatelessWidget implements PreferredSizeWidget {
   final double appBarHeight;
   final PreferredSizeWidget? bottom;
 
-  const customerappAppBar({
+  const CustomerappAppBar({
     super.key,
     this.title,
     this.leadingWidth = 70,
@@ -24,20 +24,20 @@ class customerappAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.leading,
     this.centerTitle = true,
     this.actions,
-    this.appBarType = customerappAppBarType.defaultAppBar,
+    this.appBarType = CustomerappAppBarType.defaultAppBar,
     this.bottom,
   });
 
   @override
   Widget build(BuildContext context) {
     switch (appBarType) {
-      case customerappAppBarType.home:
+      case CustomerappAppBarType.home:
         return HomeAppBar(
           leadingWidth: leadingWidth,
           actions: actions,
         );
 
-      case customerappAppBarType.settings:
+      case CustomerappAppBarType.settings:
         return SettingsAppBar(
           title: title ?? '',
           leadingWidth: leadingWidth,

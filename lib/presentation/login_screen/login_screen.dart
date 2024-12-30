@@ -10,6 +10,7 @@ import 'package:customerapp/presentation/login_screen/controller/auth_controller
 import 'package:flutter/material.dart';
 import 'package:flutter_toggle_tab/flutter_toggle_tab.dart';
 import 'package:get/get.dart';
+import 'package:otp_autofill/otp_autofill.dart';
 
 import '../../core/utils/common_util.dart';
 import '../../core/utils/size_utils.dart';
@@ -89,7 +90,7 @@ class LoginScreen extends GetView<AuthController> {
                         Obx(() {
                           switch (controller.authStatus.value) {
                             case AuthStatus.validMobile:
-                              return loginOtpView();
+                              return OTPWidget();
                             case AuthStatus.validEmail:
                               return loginPasswordView();
                             default:
@@ -230,7 +231,48 @@ class LoginScreen extends GetView<AuthController> {
     );
   }
 
-  Widget loginOtpView() {
+  void onTapSignIn() {
+    controller.callLogin();
+  }
+}
+
+class OTPWidget extends StatefulWidget {
+  const OTPWidget({super.key});
+
+  @override
+  State<OTPWidget> createState() => _OTPWidgetState();
+}
+
+class _OTPWidgetState extends State<OTPWidget> {
+  AuthController authController = Get.find<AuthController>();
+  late OTPInteractor? _otpInteractor;
+  final _otpFocusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    _otpInteractor = OTPInteractor();
+    authController.otpController.value = OTPTextEditController(
+      codeLength: 6,
+      otpInteractor: _otpInteractor,
+    )..startListenUserConsent(
+        (code) {
+          final exp = RegExp(r'(\d{4})');
+          final otp = exp.stringMatch(code ?? '');
+          return otp ?? '';
+        },
+      );
+  }
+
+  @override
+  void dispose() {
+    _otpFocusNode.dispose();
+    _otpInteractor?.stopListenForCode();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -249,14 +291,14 @@ class LoginScreen extends GetView<AuthController> {
           child: CustomPinCodeTextField(
             context: Get.context!,
             textStyle: AppTextStyle.txt16,
-            controller: controller.otpController.value,
+            controller: authController.otpController.value,
           ),
         ),
         const SizedBox(height: 10),
         Center(
           child: TextButton(
               onPressed: () {
-                controller.loginMobile(true);
+                authController.loginMobile(true);
               },
               child: Text(LocalizationKeys.resendOtp.tr,
                   style:
@@ -264,9 +306,5 @@ class LoginScreen extends GetView<AuthController> {
         ),
       ],
     );
-  }
-
-  void onTapSignIn() {
-    controller.callLogin();
   }
 }

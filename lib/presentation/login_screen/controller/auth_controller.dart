@@ -18,6 +18,7 @@ import 'package:customerapp/presentation/services_screen/controller/service_cont
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:otp_autofill/otp_autofill.dart';
 
 enum AuthStatus {
   unknown,
@@ -53,7 +54,8 @@ class AuthController extends BaseController {
   TextEditingController emailController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-  Rx<TextEditingController> otpController = TextEditingController().obs;
+  Rx<OTPTextEditController> otpController =
+      OTPTextEditController(codeLength: 4).obs;
   Rx<String> phone = "".obs;
   Rx<String> email = Rx("");
 
@@ -80,6 +82,7 @@ class AuthController extends BaseController {
     emailController.dispose();
     phoneController.dispose();
     passwordController.dispose();
+    otpController.value.dispose();
   }
 
   callLogin() async {

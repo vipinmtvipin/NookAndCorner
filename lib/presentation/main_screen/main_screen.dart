@@ -91,16 +91,20 @@ class MainScreen extends GetView<MainScreenController> {
           ),
         ),
         actions: [
-          IconButton(
-            icon: Icon(
-              Icons.settings,
-              color: Colors.black,
-              size: getSize(24),
-            ),
-            onPressed: () {
-              Get.toNamed(AppRoutes.settingsScreen);
-            },
-          ),
+          Obx(() {
+            return controller.loggedIn.value == true
+                ? IconButton(
+                    icon: Icon(
+                      Icons.calendar_today_sharp,
+                      color: Colors.black,
+                      size: getSize(22),
+                    ),
+                    onPressed: () {
+                      Get.toNamed(AppRoutes.myBookingScreen);
+                    },
+                  )
+                : SizedBox.shrink();
+          }),
           Obx(() {
             return controller.loggedIn.value == true
                 ? Padding(
@@ -179,7 +183,7 @@ Widget _buildMainScreen() {
     },
     child: Padding(
       padding: const EdgeInsets.only(
-        top: 10,
+        top: 15,
       ),
       child: SingleChildScrollView(
         controller: controller.scrollController,
@@ -193,12 +197,12 @@ Widget _buildMainScreen() {
                 condition: controller.activeBanners.value.isNotNullOrEmpty,
                 onFalse: const SizedBox.shrink(),
                 child: CarouselWithIndicator(
-                  height: 150,
+                  height: 160,
                   carouselSliderItems: controller.activeBanners.value
                       .map((e) => CarouselItem(
                             navigationPath: e.routePath,
                             image: NetworkImageView(
-                              borderRadius: 15,
+                              borderRadius: 25,
                               url: e.image,
                               width: double.infinity,
                               fit: BoxFit.fill,
@@ -209,7 +213,7 @@ Widget _buildMainScreen() {
               ),
             ),
             SizedBox(
-              height: getSize(15),
+              height: getSize(20),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -218,7 +222,7 @@ Widget _buildMainScreen() {
                 style: AppTextStyle.txtBold18,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
@@ -226,7 +230,7 @@ Widget _buildMainScreen() {
                 style: AppTextStyle.txtBold12,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 25),
             Obx(() {
               if (controller.cityServices.value.isEmpty) {
                 return Padding(
@@ -270,20 +274,20 @@ Widget _buildMainScreen() {
                 ),
               );
             }),
-            const SizedBox(height: 20),
+            const SizedBox(height: 40),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: ConditionalWidget(
                 condition: controller.activeBanners.value.isNotNullOrEmpty,
                 onFalse: const SizedBox.shrink(),
                 child: CarouselWithIndicator(
-                  height: 120,
+                  height: 150,
                   isIndicatorVisible: false,
                   carouselSliderItems: controller.midBanners.value
                       .map((e) => CarouselItem(
                             navigationPath: e.routePath,
                             image: NetworkImageView(
-                              borderRadius: 12,
+                              borderRadius: 25,
                               url: e.image,
                               width: double.infinity,
                               fit: BoxFit.fill,
@@ -293,170 +297,184 @@ Widget _buildMainScreen() {
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 40),
             Visibility(
               visible: controller.reviewList.value.isNotNullOrEmpty,
               child: Obx(
-                () => Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Text(
-                          'Trusted by Customers, Loved by All',
-                          style: AppTextStyle.txtBold18,
+                () => Container(
+                  padding: const EdgeInsets.only(top: 30, bottom: 10),
+                  color: AppColors.whiteGray,
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: Text(
+                            'Trusted by Customers, Loved by All',
+                            style: AppTextStyle.txtBold18,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Text(
-                          'Delivering Excellence Every Time!',
-                          style: AppTextStyle.txtBold12,
+                        const SizedBox(height: 10),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: Text(
+                            'Delivering Excellence Every Time!',
+                            style: AppTextStyle.txtBold12,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 20),
-                      Stack(
-                        children: [
-                          AnimatedSize(
-                            duration: const Duration(milliseconds: 500),
-                            curve: Curves.bounceInOut,
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 16.0, right: 16, bottom: 70),
-                              child: ListView.builder(
-                                key: reviewListKey,
-                                controller: controller.scrollController,
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemCount: controller.reviewList.value.length,
-                                itemBuilder: (context, index) {
-                                  var item = controller.reviewList.value[index];
-                                  return ReviewCardWidget(
-                                      item: item, onTap: () {});
-                                },
+                        const SizedBox(height: 20),
+                        Stack(
+                          children: [
+                            AnimatedSize(
+                              duration: const Duration(milliseconds: 500),
+                              curve: Curves.bounceInOut,
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 16.0, right: 16, bottom: 70),
+                                child: ListView.builder(
+                                  key: reviewListKey,
+                                  controller: controller.scrollController,
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: controller.reviewList.value.length,
+                                  itemBuilder: (context, index) {
+                                    var item =
+                                        controller.reviewList.value[index];
+                                    return ReviewCardWidget(
+                                        item: item, onTap: () {});
+                                  },
+                                ),
                               ),
                             ),
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            right: 0,
-                            left: 0,
-                            child: Container(
-                              height: 100,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: AppColors.gray.withOpacity(0.3),
-                                    spreadRadius: 1,
-                                    blurRadius: 5,
-                                    offset: const Offset(0, 3),
-                                  ),
-                                ],
-                              ),
-                              child: Align(
+                            Positioned(
+                              bottom: 0,
+                              right: 0,
+                              left: 0,
+                              child: Container(
+                                height: 100,
                                 alignment: Alignment.center,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(top: 15.0),
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      ConditionalWidget(
-                                        condition: (controller
-                                                    .reviewList.value.length !=
-                                                controller.reviewCount.value &&
-                                            controller
-                                                    .reviewList.value.length >=
-                                                5),
-                                        onFalse: SizedBox.shrink(),
-                                        child: NookCornerButton(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 20, vertical: 10),
-                                            expandedWidth: false,
-                                            text: 'See More Reviews',
-                                            onPressed: () {
-                                              controller.getReviews(
-                                                  '10',
+                                decoration: BoxDecoration(
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: AppColors.gray.withOpacity(0.3),
+                                      spreadRadius: 1,
+                                      blurRadius: 5,
+                                      offset: const Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Align(
+                                  alignment: Alignment.center,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(top: 15.0),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        ConditionalWidget(
+                                          condition: (controller.reviewList
+                                                      .value.length !=
                                                   controller
-                                                      .reviewList.value.length
-                                                      .toString(),
-                                                  "",
-                                                  true);
-                                            }),
-                                      ),
-                                      ConditionalWidget(
-                                        condition: (controller
-                                                    .reviewList.value.length ==
-                                                controller.reviewCount.value ||
-                                            controller.reviewList.value.length >
-                                                5),
-                                        onFalse: SizedBox.shrink(),
-                                        child: CustomIconButton(
-                                            margin: EdgeInsets.only(
-                                                top: 20, left: 15),
-                                            height: 40,
-                                            width: 40,
-                                            onTap: () {
-                                              if (controller.reviewList.value
+                                                      .reviewCount.value &&
+                                              controller.reviewList.value
                                                       .length >=
-                                                  5) {
-                                                controller.reviewList.value =
-                                                    controller.reviewList.value
-                                                        .take(5)
-                                                        .toList();
-                                              } else {
-                                                controller.reviewList.value =
-                                                    controller.reviewList.value
-                                                        .take(controller
-                                                            .reviewList
-                                                            .value
-                                                            .length)
-                                                        .toList();
-                                              }
-
-                                              final RenderBox renderBox =
-                                                  reviewListKey.currentContext
-                                                          ?.findRenderObject()
-                                                      as RenderBox;
-                                              final position = renderBox
-                                                  .localToGlobal(Offset.zero);
-
-                                              WidgetsBinding.instance
-                                                  .addPostFrameCallback((_) {
-                                                if (controller.scrollController
-                                                    .hasClients) {
-                                                  controller.scrollController
-                                                      .animateTo(
-                                                    position.dy,
-                                                    duration: const Duration(
-                                                        milliseconds: 300),
-                                                    curve: Curves.easeIn,
-                                                  );
+                                                  5),
+                                          onFalse: SizedBox.shrink(),
+                                          child: NookCornerButton(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 20,
+                                                      vertical: 10),
+                                              expandedWidth: false,
+                                              text: 'See More Reviews',
+                                              onPressed: () {
+                                                controller.getReviews(
+                                                    '10',
+                                                    controller
+                                                        .reviewList.value.length
+                                                        .toString(),
+                                                    "",
+                                                    true);
+                                              }),
+                                        ),
+                                        ConditionalWidget(
+                                          condition: (controller.reviewList
+                                                      .value.length ==
+                                                  controller
+                                                      .reviewCount.value ||
+                                              controller
+                                                      .reviewList.value.length >
+                                                  5),
+                                          onFalse: SizedBox.shrink(),
+                                          child: CustomIconButton(
+                                              margin: EdgeInsets.only(
+                                                  top: 20, left: 15),
+                                              height: 40,
+                                              width: 40,
+                                              onTap: () {
+                                                if (controller.reviewList.value
+                                                        .length >=
+                                                    5) {
+                                                  controller.reviewList.value =
+                                                      controller
+                                                          .reviewList.value
+                                                          .take(5)
+                                                          .toList();
+                                                } else {
+                                                  controller.reviewList.value =
+                                                      controller
+                                                          .reviewList.value
+                                                          .take(controller
+                                                              .reviewList
+                                                              .value
+                                                              .length)
+                                                          .toList();
                                                 }
-                                              });
-                                            },
-                                            alignment: Alignment.topLeft,
-                                            shape:
-                                                IconButtonShape.CircleBorder35,
-                                            child: Assets.images.upArrow.svg(
-                                              color: AppColors.white,
-                                              height: 30,
-                                              width: 30,
-                                            )),
-                                      ),
-                                    ],
+
+                                                final RenderBox renderBox =
+                                                    reviewListKey.currentContext
+                                                            ?.findRenderObject()
+                                                        as RenderBox;
+                                                final position = renderBox
+                                                    .localToGlobal(Offset.zero);
+
+                                                WidgetsBinding.instance
+                                                    .addPostFrameCallback((_) {
+                                                  if (controller
+                                                      .scrollController
+                                                      .hasClients) {
+                                                    controller.scrollController
+                                                        .animateTo(
+                                                      position.dy,
+                                                      duration: const Duration(
+                                                          milliseconds: 300),
+                                                      curve: Curves.easeIn,
+                                                    );
+                                                  }
+                                                });
+                                              },
+                                              alignment: Alignment.topLeft,
+                                              shape: IconButtonShape
+                                                  .CircleBorder35,
+                                              child: Assets.images.upArrow.svg(
+                                                color: AppColors.white,
+                                                height: 30,
+                                                width: 30,
+                                              )),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ]),
+                          ],
+                        ),
+                      ]),
+                ),
               ),
             ),
           ],

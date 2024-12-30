@@ -1,6 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:customerapp/core/theme/color_constant.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_utils/src/extensions/context_extensions.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CarouselWithIndicator extends StatefulWidget {
@@ -27,7 +27,7 @@ class _CarouselWithIndicatorState extends State<CarouselWithIndicator> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Stack(
       children: [
         CarouselSlider.builder(
           itemCount: widget.carouselSliderItems.length,
@@ -54,49 +54,34 @@ class _CarouselWithIndicatorState extends State<CarouselWithIndicator> {
             },
           ),
         ),
-        const SizedBox(height: 5),
-        Visibility(
-          visible: widget.isIndicatorVisible ?? true,
-          child: SizedBox(
-            height: 30,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              shrinkWrap: true,
-              itemCount: widget.carouselSliderItems.length,
-              itemBuilder: (BuildContext context, int index) {
-                final isSelected = _currentIndex == index;
-                return GestureDetector(
-                  onTap: () => _controller.animateToPage(index),
-                  child: Container(
-                    width: isSelected ? 16 : 6,
-                    height: isSelected ? 16 : 6,
-                    margin: const EdgeInsets.symmetric(
-                      vertical: 5.0,
-                      horizontal: 4.0,
-                    ),
-                    padding: isSelected ? const EdgeInsets.all(3.0) : null,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.transparent,
-                      border: isSelected
-                          ? Border.all(
-                              color: AppColors.black,
-                              width: 1,
-                            )
-                          : null,
-                    ),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: isSelected ? AppColors.black : Colors.black38,
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-        ),
+        Positioned(
+            bottom: 15,
+            left: context.width / 2 - 50,
+            height: 3,
+            child: Visibility(
+                visible: widget.isIndicatorVisible ?? true,
+                child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    shrinkWrap: true,
+                    itemCount: widget.carouselSliderItems.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final isSelected = _currentIndex == index;
+                      return GestureDetector(
+                        onTap: () => _controller.animateToPage(index),
+                        child: Container(
+                          alignment: Alignment.center,
+                          width: isSelected ? 30 : 30,
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 5.0,
+                          ),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.rectangle,
+                            color: isSelected ? Colors.white : Colors.white70,
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                        ),
+                      );
+                    })))
       ],
     );
   }

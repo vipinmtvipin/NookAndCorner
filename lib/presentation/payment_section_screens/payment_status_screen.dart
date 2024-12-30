@@ -104,7 +104,7 @@ class PaymentStatusScreen extends GetView<ServiceController> {
                       'Order Details',
                       style: AppTextStyle.txtBold16.copyWith(
                         letterSpacing: getHorizontalSize(
-                          3,
+                          0,
                         ),
                       ),
                     ),

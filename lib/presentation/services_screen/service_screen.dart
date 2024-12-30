@@ -35,9 +35,9 @@ class ServiceScreen extends GetView<ServiceController> {
             ),
             child: Text(
               "Services",
-              style: AppTextStyle.txtBold18.copyWith(
+              style: AppTextStyle.txtBold24.copyWith(
                 letterSpacing: getHorizontalSize(
-                  5,
+                  0,
                 ),
               ),
             ),
@@ -73,22 +73,31 @@ class ServiceScreen extends GetView<ServiceController> {
             return Future<void>.value();
           },
           child: Obx(
-            () => Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 5),
-                    Text(controller.categoryName.value.toString(),
-                        style: AppTextStyle.txtBold16),
-                    const SizedBox(height: 10),
-                    Text(controller.categoryDescription.value.toString(),
-                        style: AppTextStyle.txt12),
-                    const SizedBox(height: 20),
-                    SizedBox(
+            () => SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    color: AppColors.whiteGray,
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 5),
+                        Text(controller.categoryName.value.toString(),
+                            style: AppTextStyle.txtBold16),
+                        const SizedBox(height: 10),
+                        Text(controller.categoryDescription.value.toString(),
+                            style: AppTextStyle.txt12),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  ConditionalWidget(
+                    condition: controller.categoryImage.value.isNotEmpty,
+                    onFalse: const SizedBox.shrink(),
+                    child: SizedBox(
                       height: 250,
                       child: Scrollbar(
                         controller: controller.scrollController,
@@ -123,8 +132,11 @@ class ServiceScreen extends GetView<ServiceController> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    ConditionalWidget(
+                  ),
+                  const SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: ConditionalWidget(
                       condition: controller.tagData.value.isNotEmpty,
                       onFalse: const SizedBox.shrink(),
                       child: SizedBox(
@@ -143,14 +155,17 @@ class ServiceScreen extends GetView<ServiceController> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 5),
-                    const Divider(
-                      color: Colors.grey,
-                      thickness: 0.3,
-                      indent: 15,
-                      endIndent: 25,
-                    ),
-                    ConditionalWidget(
+                  ),
+                  const SizedBox(height: 5),
+                  const Divider(
+                    color: Colors.grey,
+                    thickness: 0.3,
+                    indent: 15,
+                    endIndent: 25,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: ConditionalWidget(
                       condition: controller.serviceInfo.value.isNotEmpty,
                       onFalse: const SizedBox(
                           height: 200,
@@ -166,8 +181,8 @@ class ServiceScreen extends GetView<ServiceController> {
                         },
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -247,7 +262,7 @@ class ServiceCardWidget extends StatelessWidget {
         color: AppColors.whiteGray,
         elevation: 6,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(10),
         ),
         child: Padding(
           padding: const EdgeInsets.all(16.0),

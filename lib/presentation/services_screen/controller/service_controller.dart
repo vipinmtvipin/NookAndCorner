@@ -390,7 +390,7 @@ class ServiceController extends BaseController {
             conveniencePercent:
                 double.tryParse(metaData.value.conveniencePercentage ?? '0'),
             email: sessionStorage.read(StorageKeys.email).toString(),
-            goldenHoursCharge: isGoldenHour ? goldenHourAmount.value : 0,
+            goldenHoursCharge: isGoldenHour ? goldenHourAmount.value : 0.0,
             isGolderHour: isGoldenHour,
             jobDate: selectedDate.value,
             jobDateOnly: selectedDate.value,
@@ -429,7 +429,7 @@ class ServiceController extends BaseController {
             conveniencePercent:
                 double.tryParse(metaData.value.conveniencePercentage ?? '0'),
             email: emailController.text.toString(),
-            goldenHoursCharge: isGoldenHour ? goldenHourAmount.value : 0,
+            goldenHoursCharge: isGoldenHour ? goldenHourAmount.value : 0.0,
             isGolderHour: isGoldenHour,
             jobDate: selectedDate.value,
             jobDateOnly: selectedDate.value,

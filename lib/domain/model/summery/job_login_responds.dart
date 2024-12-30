@@ -1,5 +1,8 @@
 import 'dart:convert';
 
+import 'package:customerapp/core/utils/common_util.dart';
+import 'package:get_it/get_it.dart';
+
 JobLoginResponds jobLoginRespondsFromJson(String str) =>
     JobLoginResponds.fromJson(json.decode(str));
 
@@ -155,7 +158,7 @@ class JobCreated {
   final String? advancePercent;
   final int? promotionAmount;
   final String? advStatus;
-  final int? goldenHoursCharge;
+  final double? goldenHoursCharge;
   final int? overNightHikePercentage;
   final bool? isGolderHour;
   final int? serviceId;
@@ -200,7 +203,8 @@ class JobCreated {
       advancePercent: json["advancePercent"],
       promotionAmount: json["promotionAmount"],
       advStatus: json["advStatus"],
-      goldenHoursCharge: json["goldenHoursCharge"],
+      goldenHoursCharge:
+          GetIt.I<CommonUtil>().toDouble(json["goldenHoursCharge"]),
       overNightHikePercentage: json["overNightHikePercentage"],
       isGolderHour: json["isGolderHour"],
       serviceId: json["serviceId"],

@@ -1,5 +1,8 @@
 import 'dart:convert';
 
+import 'package:customerapp/core/utils/common_util.dart';
+import 'package:get_it/get_it.dart';
+
 JobResponds jobRespondsFromJson(String str) =>
     JobResponds.fromJson(json.decode(str));
 
@@ -137,7 +140,7 @@ class JobCreated {
   final dynamic promotionAmount;
   final String? advStatus;
   final bool? isGolderHour;
-  final int? goldenHoursCharge;
+  final double? goldenHoursCharge;
   final int? overNightHikePercentage;
   final int? serviceId;
   final DateTime? dateString;
@@ -185,7 +188,8 @@ class JobCreated {
       promotionAmount: json["promotionAmount"],
       advStatus: json["advStatus"],
       isGolderHour: json["isGolderHour"],
-      goldenHoursCharge: json["goldenHoursCharge"],
+      goldenHoursCharge:
+          GetIt.I<CommonUtil>().toDouble(json["goldenHoursCharge"]),
       overNightHikePercentage: json["overNightHikePercentage"],
       serviceId: json["serviceId"],
       dateString: DateTime.tryParse(json["dateString"] ?? ""),
@@ -303,7 +307,7 @@ class JobData {
   final int? advancePercent;
   final String? advStatus;
   final bool? isGolderHour;
-  final int? goldenHoursCharge;
+  final double? goldenHoursCharge;
   final int? overNightHikePercentage;
   final int? serviceId;
   final DateTime? dateString;
@@ -327,7 +331,8 @@ class JobData {
       advancePercent: json["advancePercent"],
       advStatus: json["advStatus"],
       isGolderHour: json["isGolderHour"],
-      goldenHoursCharge: json["goldenHoursCharge"],
+      goldenHoursCharge:
+          GetIt.I<CommonUtil>().toDouble(json["goldenHoursCharge"]),
       overNightHikePercentage: json["overNightHikePercentage"],
       serviceId: json["serviceId"],
       dateString: DateTime.tryParse(json["dateString"] ?? ""),

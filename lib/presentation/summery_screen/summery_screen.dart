@@ -4,6 +4,7 @@ import 'package:customerapp/core/extensions/string_extensions.dart';
 import 'package:customerapp/core/routes/app_routes.dart';
 import 'package:customerapp/core/theme/app_text_style.dart';
 import 'package:customerapp/core/theme/color_constant.dart';
+import 'package:customerapp/core/utils/common_util.dart';
 import 'package:customerapp/core/utils/size_utils.dart';
 import 'package:customerapp/domain/model/summery/addon_service_responds.dart';
 import 'package:customerapp/presentation/common_widgets/conditional_widget.dart';
@@ -38,9 +39,9 @@ class SummeryScreen extends GetView<ServiceController> {
             ),
             child: Text(
               "Summary",
-              style: AppTextStyle.txtBold18.copyWith(
+              style: AppTextStyle.txtBold24.copyWith(
                 letterSpacing: getHorizontalSize(
-                  5,
+                  0,
                 ),
               ),
             ),
@@ -73,504 +74,523 @@ class SummeryScreen extends GetView<ServiceController> {
           onPopInvokedWithResult: (_, __) {
             clearAllControllerData();
           },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  const SizedBox(height: 5),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: 250,
-                        child: Scrollbar(
-                          controller: controller.summeryScrollController,
-                          interactive: true,
-                          thumbVisibility: true,
-                          radius: const Radius.circular(20),
-                          thickness: 5,
-                          trackVisibility: true,
-                          child: SingleChildScrollView(
-                            controller: controller.summeryScrollController,
-                            scrollDirection: Axis.horizontal,
-                            child: Image.network(
-                              controller.categoryImage.value.toString(),
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return const SizedBox.shrink();
-                              },
-                              loadingBuilder:
-                                  (context, child, loadingProgress) {
-                                if (loadingProgress == null) {
-                                  return child;
-                                } else {
-                                  return Center(
-                                      child: Padding(
-                                    padding: EdgeInsets.only(
-                                        left: context.width * 0.4),
-                                    child: CircularProgressIndicator(),
-                                  ));
-                                }
-                              },
-                            ),
+          child: GestureDetector(
+            onTap: () {
+              CommonUtil().keyboardHide(Get.context!);
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ConditionalWidget(
+                          condition: controller.categoryImage.value.isNotEmpty,
+                          onFalse: const SizedBox(
+                            height: 10,
                           ),
-                        ),
-                      ),
-                      const SizedBox(height: 25),
-                      ResponsiveText(
-                          maxLines: 1,
-                          text: 'Scheduled Service',
-                          style: AppTextStyle.txtBold18),
-                      const SizedBox(height: 15),
-                      ResponsiveText(
-                        text: controller.selectedService.value.name ?? '',
-                        style: AppTextStyle.txtBold12
-                            .copyWith(color: AppColors.orange.withOpacity(0.8)),
-                      ),
-                      const SizedBox(height: 20),
-                      const Divider(
-                        height: 1,
-                        color: AppColors.whiteGray,
-                      ),
-                      const SizedBox(height: 15),
-
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: ResponsiveText(
-                                text: 'Scheduled Booked On',
-                                style: AppTextStyle.txtBold18),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              context.showBottomSheet(
-                                body: ServiceBookingDateBottomSheet(
-                                  isFromSummery: true,
-                                  onDateSelected: (timeSlot) {
-                                    controller.selectedTime.value = timeSlot;
-                                    controller.checkGoldenHour();
-                                  },
-                                  service: controller.selectedService.value,
-                                ),
-                              );
-                            },
-                            child: Card(
-                              elevation: 1,
-                              color: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                side: const BorderSide(
-                                  color: Colors.orange,
-                                  width: 1.0,
-                                ),
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                              child: const Padding(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 8.0, vertical: 5),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.date_range_outlined,
-                                      color: Colors.orange,
-                                      size: 15,
-                                    ),
-                                    SizedBox(width: 5),
-                                    Text(
-                                      'Edit',
-                                      style: TextStyle(color: Colors.orange),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: ListTile(
-                              title: Text('Scheduled on',
-                                  style: AppTextStyle.txt12
-                                      .copyWith(color: AppColors.gray)),
-                              subtitle: Obx(() => Padding(
-                                    padding: const EdgeInsets.only(top: 5.0),
-                                    child: Text(
-                                        controller.selectedDateValue.value,
-                                        style: AppTextStyle.txt14),
-                                  )),
-                            ),
-                          ),
-                          Expanded(
-                            child: ListTile(
-                              title: Text('Scheduled Slot',
-                                  style: AppTextStyle.txt12
-                                      .copyWith(color: AppColors.gray)),
-                              subtitle: Obx(() => Padding(
-                                    padding: const EdgeInsets.only(top: 5.0),
-                                    child: Text(controller.selectedTime.value,
-                                        style: AppTextStyle.txt14),
-                                  )),
-                            ),
-                          )
-                        ],
-                      ),
-                      const SizedBox(height: 15),
-                      const Divider(
-                        height: 1,
-                        color: AppColors.whiteGray,
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      Card(
-                        elevation: 1,
-                        color: AppColors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          side: const BorderSide(
-                            color: AppColors.lightGray,
-                            width: 0.5,
-                          ),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16.0, vertical: 20),
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              ResponsiveText(
-                                  maxLines: 1,
-                                  text: 'Service Booked',
-                                  style: AppTextStyle.txtBold16.copyWith(
-                                    letterSpacing: getHorizontalSize(
-                                      3,
-                                    ),
-                                  )),
-                              const SizedBox(height: 10),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Flexible(
-                                    child: ResponsiveText(
-                                      text: controller
-                                              .selectedService.value.name ??
-                                          '',
-                                      style: AppTextStyle.txtBold14.copyWith(
-                                          color: AppColors.green[800]),
-                                    ),
-                                  ),
-                                  Flexible(
-                                    child: ResponsiveText(
-                                      text:
-                                          ' ${controller.selectedService.value.price ?? ''} Rs',
-                                      style: AppTextStyle.txtBold14
-                                          .copyWith(color: AppColors.green),
-                                    ),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      Get.offAndToNamed(AppRoutes.mainScreen);
-                                    },
-                                    child: Card(
-                                      elevation: 6,
-                                      color: Colors.grey[200],
-                                      shape: RoundedRectangleBorder(
-                                        side: const BorderSide(
-                                          color: Colors.grey,
-                                          width: 0.5,
-                                        ),
-                                        borderRadius:
-                                            BorderRadius.circular(12.0),
-                                      ),
-                                      child: const Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 10.0, vertical: 5),
-                                        child: Text('Remove'),
-                                      ),
+                              SizedBox(
+                                height: 250,
+                                child: Scrollbar(
+                                  controller:
+                                      controller.summeryScrollController,
+                                  interactive: true,
+                                  thumbVisibility: true,
+                                  radius: const Radius.circular(20),
+                                  thickness: 5,
+                                  trackVisibility: true,
+                                  child: SingleChildScrollView(
+                                    controller:
+                                        controller.summeryScrollController,
+                                    scrollDirection: Axis.horizontal,
+                                    child: Image.network(
+                                      controller.categoryImage.value.toString(),
+                                      fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                        return const SizedBox.shrink();
+                                      },
+                                      loadingBuilder:
+                                          (context, child, loadingProgress) {
+                                        if (loadingProgress == null) {
+                                          return child;
+                                        } else {
+                                          return Center(
+                                              child: Padding(
+                                            padding: EdgeInsets.only(
+                                                left: context.width * 0.4),
+                                            child: CircularProgressIndicator(),
+                                          ));
+                                        }
+                                      },
                                     ),
                                   ),
-                                ],
+                                ),
                               ),
-                              Obx(
-                                () => controller.addOns.value.isEmpty
-                                    ? SizedBox.shrink()
-                                    : Column(
-                                        children: [
-                                          const SizedBox(height: 20),
-                                          ListView.builder(
-                                              scrollDirection: Axis.vertical,
-                                              physics:
-                                                  const NeverScrollableScrollPhysics(),
-                                              shrinkWrap: true,
-                                              itemCount: controller
-                                                  .addOns.value.length,
-                                              itemBuilder:
-                                                  (BuildContext context,
-                                                      int index) {
-                                                final addon = controller
-                                                    .addOns.value[index];
-                                                return AddOnItem(
-                                                  from: 'Summery',
-                                                  addon: addon,
-                                                );
-                                              }),
-                                        ],
-                                      ),
-                              ),
+                              const SizedBox(height: 25),
                             ],
                           ),
                         ),
-                      ),
+                        ResponsiveText(
+                            maxLines: 1,
+                            text: 'Scheduled Service',
+                            style: AppTextStyle.txtBold18),
+                        const SizedBox(height: 15),
+                        ResponsiveText(
+                          text: controller.selectedService.value.name ?? '',
+                          style: AppTextStyle.txtBold12.copyWith(
+                              color: AppColors.orange.withOpacity(0.8)),
+                        ),
+                        const SizedBox(height: 25),
+                        const Divider(
+                          height: 1,
+                          color: AppColors.whiteGray,
+                        ),
+                        const SizedBox(height: 20),
 
-                      const SizedBox(height: 20),
-                      ResponsiveText(
-                          maxLines: 1,
-                          text: 'Add-on Services',
-                          style: AppTextStyle.txtBold18),
-                      const SizedBox(height: 20),
-
-                      Obx(
-                        () => controller.addOnList.value.isEmpty
-                            ? const Text(
-                                'No Add-on services',
-                                textAlign: TextAlign.center,
-                              )
-                            : SizedBox(
-                                height: 150,
-                                child: ListView.builder(
-                                    scrollDirection: Axis.horizontal,
-                                    shrinkWrap: true,
-                                    itemCount:
-                                        controller.addOnList.value.length,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      final addon =
-                                          controller.addOnList.value[index];
-                                      return AddOnServiceItem(
-                                        from: 'Summery',
-                                        addon: addon,
-                                      );
-                                    }),
-                              ),
-                      ),
-
-                      const SizedBox(height: 20),
-                      // Promo Code Section
-                      Card(
-                        elevation: 6,
-                        color: Colors.grey[200],
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16.0, vertical: 20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Promo Code',
-                                style: AppTextStyle.txtBold16.copyWith(
-                                  letterSpacing: getHorizontalSize(
-                                    2,
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: ResponsiveText(
+                                  text: 'Scheduled Booked On',
+                                  style: AppTextStyle.txtBold18),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                context.showBottomSheet(
+                                  body: ServiceBookingDateBottomSheet(
+                                    isFromSummery: true,
+                                    onDateSelected: (timeSlot) {
+                                      controller.selectedTime.value = timeSlot;
+                                      controller.checkGoldenHour();
+                                    },
+                                    service: controller.selectedService.value,
+                                  ),
+                                );
+                              },
+                              child: Card(
+                                elevation: 1,
+                                color: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  side: const BorderSide(
+                                    color: Colors.orange,
+                                    width: 1.0,
+                                  ),
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                child: const Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 8.0, vertical: 5),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.date_range_outlined,
+                                        color: Colors.orange,
+                                        size: 15,
+                                      ),
+                                      SizedBox(width: 5),
+                                      Text(
+                                        'Edit',
+                                        style: TextStyle(color: Colors.orange),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 10),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: TextFormField(
-                                      controller:
-                                          controller.promoCodeController,
-                                      decoration: InputDecoration(
-                                        hintStyle: const TextStyle(
-                                            color: AppColors.darkGray),
-                                        hintText: "Enter promo code",
-                                        border: OutlineInputBorder(
+                            )
+                          ],
+                        ),
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: ListTile(
+                                title: Text('Scheduled on',
+                                    style: AppTextStyle.txt12
+                                        .copyWith(color: AppColors.gray)),
+                                subtitle: Obx(() => Padding(
+                                      padding: const EdgeInsets.only(top: 5.0),
+                                      child: Text(
+                                          controller.selectedDateValue.value,
+                                          style: AppTextStyle.txt14),
+                                    )),
+                              ),
+                            ),
+                            Expanded(
+                              child: ListTile(
+                                title: Text('Scheduled Slot',
+                                    style: AppTextStyle.txt12
+                                        .copyWith(color: AppColors.gray)),
+                                subtitle: Obx(() => Padding(
+                                      padding: const EdgeInsets.only(top: 5.0),
+                                      child: Text(controller.selectedTime.value,
+                                          style: AppTextStyle.txt14),
+                                    )),
+                              ),
+                            )
+                          ],
+                        ),
+                        const SizedBox(height: 15),
+                        const Divider(
+                          height: 1,
+                          color: AppColors.whiteGray,
+                        ),
+
+                        const SizedBox(height: 25),
+
+                        Card(
+                          elevation: 1,
+                          color: AppColors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            side: const BorderSide(
+                              color: AppColors.lightGray,
+                              width: 0.5,
+                            ),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ResponsiveText(
+                                    maxLines: 1,
+                                    text: 'Service Booked',
+                                    style: AppTextStyle.txtBold16.copyWith(
+                                      letterSpacing: getHorizontalSize(
+                                        0,
+                                      ),
+                                    )),
+                                const SizedBox(height: 10),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Flexible(
+                                      child: ResponsiveText(
+                                        text: controller
+                                                .selectedService.value.name ??
+                                            '',
+                                        style: AppTextStyle.txtBold14.copyWith(
+                                            color: AppColors.green[800]),
+                                      ),
+                                    ),
+                                    Flexible(
+                                      child: ResponsiveText(
+                                        text:
+                                            ' ${controller.selectedService.value.price ?? ''} Rs',
+                                        style: AppTextStyle.txtBold14
+                                            .copyWith(color: AppColors.green),
+                                      ),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        Get.offAndToNamed(AppRoutes.mainScreen);
+                                      },
+                                      child: Card(
+                                        elevation: 6,
+                                        color: Colors.grey[200],
+                                        shape: RoundedRectangleBorder(
+                                          side: const BorderSide(
+                                            color: Colors.grey,
+                                            width: 0.5,
+                                          ),
                                           borderRadius:
                                               BorderRadius.circular(12.0),
-                                          borderSide: const BorderSide(
-                                            color: AppColors.black,
-                                            width: 2.0,
+                                        ),
+                                        child: const Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 10.0, vertical: 5),
+                                          child: Text('Remove'),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Obx(
+                                  () => controller.addOns.value.isEmpty
+                                      ? SizedBox.shrink()
+                                      : Column(
+                                          children: [
+                                            const SizedBox(height: 20),
+                                            ListView.builder(
+                                                scrollDirection: Axis.vertical,
+                                                physics:
+                                                    const NeverScrollableScrollPhysics(),
+                                                shrinkWrap: true,
+                                                itemCount: controller
+                                                    .addOns.value.length,
+                                                itemBuilder:
+                                                    (BuildContext context,
+                                                        int index) {
+                                                  final addon = controller
+                                                      .addOns.value[index];
+                                                  return AddOnItem(
+                                                    from: 'Summery',
+                                                    addon: addon,
+                                                  );
+                                                }),
+                                          ],
+                                        ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 25),
+                        ResponsiveText(
+                            maxLines: 1,
+                            text: 'Add-on Services',
+                            style: AppTextStyle.txtBold18),
+                        const SizedBox(height: 20),
+
+                        Obx(
+                          () => controller.addOnList.value.isEmpty
+                              ? const Text(
+                                  'No Add-on services',
+                                  textAlign: TextAlign.center,
+                                )
+                              : SizedBox(
+                                  height: 150,
+                                  child: ListView.builder(
+                                      scrollDirection: Axis.horizontal,
+                                      shrinkWrap: true,
+                                      itemCount:
+                                          controller.addOnList.value.length,
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        final addon =
+                                            controller.addOnList.value[index];
+                                        return AddOnServiceItem(
+                                          from: 'Summery',
+                                          addon: addon,
+                                        );
+                                      }),
+                                ),
+                        ),
+
+                        const SizedBox(height: 30),
+                        // Promo Code Section
+                        Card(
+                          elevation: 6,
+                          color: Colors.grey[200],
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Promo Code',
+                                  style: AppTextStyle.txtBold16.copyWith(
+                                    letterSpacing: getHorizontalSize(
+                                      0,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: TextFormField(
+                                        controller:
+                                            controller.promoCodeController,
+                                        decoration: InputDecoration(
+                                          hintStyle: const TextStyle(
+                                              color: AppColors.darkGray),
+                                          hintText: "Enter promo code",
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(12.0),
+                                            borderSide: const BorderSide(
+                                              color: AppColors.black,
+                                              width: 2.0,
+                                            ),
                                           ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      if (controller
-                                          .promoCodeController.text.isEmpty) {
-                                        'Please enter promo code'.showToast();
-                                      } else {
-                                        controller.applyCoupon(controller
-                                            .promoCodeController.text);
-                                      }
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 6.0, right: 6),
-                                      child: Obx(
-                                        () => Text(
-                                            controller.couponApplied.value
-                                                ? 'Remove '
-                                                : 'Apply'),
+                                    const SizedBox(width: 8),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        if (controller
+                                            .promoCodeController.text.isEmpty) {
+                                          'Please enter promo code'.showToast();
+                                        } else {
+                                          controller.applyCoupon(controller
+                                              .promoCodeController.text);
+                                        }
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 6.0, right: 6),
+                                        child: Obx(
+                                          () => Text(
+                                              controller.couponApplied.value
+                                                  ? 'Remove '
+                                                  : 'Apply'),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              const Text(
-                                'Enter your promo code to receive a discount on your purchase.',
-                                style: TextStyle(
-                                    fontSize: 14, color: Colors.black54),
-                              ),
-                            ],
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                const Text(
+                                  'Enter your promo code to receive a discount on your purchase.',
+                                  style: TextStyle(
+                                      fontSize: 14, color: Colors.black54),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
 
-                      const SizedBox(height: 30),
+                        const SizedBox(height: 40),
 
-                      ResponsiveText(
-                          maxLines: 1,
-                          text: 'Payment Summary',
-                          style: AppTextStyle.txtBold18),
-                      const SizedBox(height: 15),
-                      Obx(
-                        () => PaymentSummaryRow(
-                          title: 'Service total',
-                          value: controller.serviceTotal.value.toString(),
+                        ResponsiveText(
+                            maxLines: 1,
+                            text: 'Payment Summary',
+                            style: AppTextStyle.txtBold18),
+                        const SizedBox(height: 15),
+                        Obx(
+                          () => PaymentSummaryRow(
+                            title: 'Service total',
+                            value: controller.serviceTotal.value.toString(),
+                          ),
                         ),
-                      ),
 
-                      Obx(
-                        () => ConditionalWidget(
-                            condition: controller.convenienceFee.value > 0,
-                            onFalse: SizedBox(
-                              height: 2,
-                            ),
-                            child: PaymentSummaryRow(
-                                title: 'Convenience Fee',
-                                value: controller.convenienceFee.value
-                                    .toString())),
-                      ),
-
-                      Obx(
-                        () => PaymentSummaryRow(
-                            title: 'Coupon Discount',
-                            value: controller.couponApplied.value
-                                ? '- ${controller.couponData.value.first.discountOfferPrice}' ??
-                                    '0'
-                                : 'NOT APPLIED'),
-                      ),
-
-                      Obx(
-                        () => ConditionalWidget(
-                            condition: controller.goldenHourAmount.value > 0,
-                            onFalse: SizedBox(
-                              height: 2,
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                bottom: 2,
+                        Obx(
+                          () => ConditionalWidget(
+                              condition: controller.convenienceFee.value > 0,
+                              onFalse: SizedBox(
+                                height: 2,
                               ),
                               child: PaymentSummaryRow(
-                                  title: 'Golden Hour Fee',
-                                  value: controller.goldenHourAmount.value
-                                      .toString()),
-                            )),
-                      ),
+                                  hasInfoIcon: true,
+                                  title: 'Convenience Fee',
+                                  value: controller.convenienceFee.value
+                                      .toString())),
+                        ),
 
-                      Obx(
-                        () => ConditionalWidget(
-                            condition: controller.addOnsTotal.value > 0,
-                            onFalse: SizedBox(
-                              height: 10,
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                bottom: 16,
+                        Obx(
+                          () => PaymentSummaryRow(
+                              title: 'Coupon Discount',
+                              value: controller.couponApplied.value
+                                  ? '- ${controller.couponData.value.first.discountOfferPrice}' ??
+                                      '0'
+                                  : 'NOT APPLIED'),
+                        ),
+
+                        Obx(
+                          () => ConditionalWidget(
+                              condition: controller.goldenHourAmount.value > 0,
+                              onFalse: SizedBox(
+                                height: 2,
                               ),
-                              child: PaymentSummaryRow(
-                                  title: 'Add-On Service',
-                                  value:
-                                      controller.addOnsTotal.value.toString()),
-                            )),
-                      ),
-
-                      const Divider(
-                        height: 0.2,
-                        color: Colors.black26,
-                      ),
-                      const SizedBox(height: 16),
-                      Obx(
-                        () => PaymentSummaryRow(
-                          title: 'Grand Total',
-                          value: controller.grandTotal.value.toString(),
-                          isBold: true,
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                  bottom: 2,
+                                ),
+                                child: PaymentSummaryRow(
+                                    title: 'Golden Hour Fee',
+                                    value: controller.goldenHourAmount.value
+                                        .toString()),
+                              )),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Obx(
-                        () => PaymentSummaryRow(
-                          title: 'Advance Amount',
-                          value: controller.advanceAmount.value.toString(),
-                          isBold: true,
-                          valueColor: AppColors.secondaryColor,
+
+                        Obx(
+                          () => ConditionalWidget(
+                              condition: controller.addOnsTotal.value > 0,
+                              onFalse: SizedBox(
+                                height: 10,
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                  bottom: 16,
+                                ),
+                                child: PaymentSummaryRow(
+                                    title: 'Add-On Service',
+                                    value: controller.addOnsTotal.value
+                                        .toString()),
+                              )),
                         ),
-                      ),
 
-                      const SizedBox(height: 20),
-                      const Divider(
-                        height: 0.2,
-                        color: Colors.black26,
-                      ),
+                        const Divider(
+                          height: 0.2,
+                          color: Colors.black26,
+                        ),
+                        const SizedBox(height: 16),
+                        Obx(
+                          () => PaymentSummaryRow(
+                            title: 'Grand Total',
+                            value: controller.grandTotal.value.toString(),
+                            isBold: true,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Obx(
+                          () => PaymentSummaryRow(
+                            title: 'Advance Amount',
+                            value: controller.advanceAmount.value.toString(),
+                            isBold: true,
+                            valueColor: AppColors.secondaryColor,
+                          ),
+                        ),
 
-                      // Cancellation Policy Section
-                      const SizedBox(height: 20),
-                      ResponsiveText(
-                          maxLines: 1,
-                          text: 'Cancellation policy',
-                          style: AppTextStyle.txtBold18),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Any cancellation within 24 hours incurs an 80% fee. Refunds are processed within 7 days',
-                        style: AppTextStyle.txt12.copyWith(color: Colors.grey),
-                      ),
-                      const SizedBox(height: 8),
-                      GestureDetector(
-                        onTap: () {
-                          Get.toNamed(AppRoutes.webScreen, arguments: {
-                            "title": "Cancellation Policy",
-                            "url":
-                                "https://www.nookandcorner.org/privacy-policy"
-                          });
-                        },
-                        child: const Text('Know more',
-                            style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.black,
-                                fontWeight: FontWeight.w600,
-                                decoration: TextDecoration.underline)),
-                      ),
+                        const SizedBox(height: 20),
+                        const Divider(
+                          height: 0.2,
+                          color: Colors.black26,
+                        ),
 
-                      const SizedBox(height: 20),
+                        // Cancellation Policy Section
+                        const SizedBox(height: 20),
+                        ResponsiveText(
+                            maxLines: 1,
+                            text: 'Cancellation policy',
+                            style: AppTextStyle.txtBold18),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Any cancellation within 24 hours incurs an 80% fee. Refunds are processed within 7 days',
+                          style:
+                              AppTextStyle.txt12.copyWith(color: Colors.grey),
+                        ),
+                        const SizedBox(height: 8),
+                        GestureDetector(
+                          onTap: () {
+                            Get.toNamed(AppRoutes.webScreen, arguments: {
+                              "title": "Cancellation Policy",
+                              "url":
+                                  "https://staging.nookandcorner.org/payment-policy"
+                            });
+                          },
+                          child: const Text('Know more',
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w600,
+                                  decoration: TextDecoration.underline)),
+                        ),
 
-                      bottomSectionUI(context),
-                      const SizedBox(height: 20),
-                    ],
-                  ),
-                ],
+                        const SizedBox(height: 20),
+
+                        bottomSectionUI(context),
+                        const SizedBox(height: 20),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -595,24 +615,18 @@ class SummeryScreen extends GetView<ServiceController> {
                     controller.termsAndConditionApply.value = value ?? false;
                   }),
             ),
-            const ResponsiveText(
-              text: 'I agree to the ',
-              maxLines: 1,
-              style: TextStyle(
-                color: Colors.black,
-              ),
-            ),
             Expanded(
               child: GestureDetector(
-                onTap: () {
-                  Get.toNamed(AppRoutes.webScreen, arguments: {
-                    "title": "Terms & Conditions",
-                    "url": "https://www.nookandcorner.org/terms-conditions"
+                onTap: () async {
+                  await Get.toNamed(AppRoutes.webScreen, arguments: {
+                    "title": "Privacy Policy",
+                    "url": "https://staging.nookandcorner.org/privacy-terms"
                   });
+                  CommonUtil().keyboardHide(Get.context!);
                 },
                 child: const ResponsiveText(
-                  maxLines: 1,
-                  text: 'Terms & Conditions',
+                  maxLines: 2,
+                  text: 'I agree to the Privacy Policy And Terms & Conditions',
                   style: TextStyle(
                     color: Colors.blue,
                     decoration: TextDecoration.underline,
@@ -624,7 +638,7 @@ class SummeryScreen extends GetView<ServiceController> {
         ),
         const SizedBox(height: 5),
         NookCornerButton(
-            text: 'Proceed with Advance Payment',
+            text: 'Proceed to Pay Advance',
             onPressed: () {
               if (controller.termsAndConditionApply.value) {
                 if (controller.isLogin) {

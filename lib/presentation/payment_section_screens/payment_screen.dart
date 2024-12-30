@@ -72,7 +72,9 @@ class PaymentScreenState extends State<PaymentScreen> {
           },
           onWebResourceError: (WebResourceError error) {
             Logger.e('WebScreen-----',
-                ': WebResourceError error--: ${error..toString()}');
+                ': WebResourceError error--: ${error.description}');
+            Logger.e('WebScreen-----',
+                ': WebResourceError error--: ${error.errorCode}');
           },
           onNavigationRequest: (NavigationRequest request) {
             if (request.url.contains('status=Success')) {

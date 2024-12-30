@@ -154,6 +154,15 @@ class ServiceBookingDateBottomSheet extends GetView<ServiceController> {
                                               : const EdgeInsets.all(0),
                                       padding: const EdgeInsets.all(1.0),
                                       decoration: BoxDecoration(
+                                        boxShadow: const [
+                                          BoxShadow(
+                                            color:
+                                                Colors.black26, // Shadow color
+                                            offset:
+                                                Offset(0, 4), // Shadow position
+                                            blurRadius: 5.0, // Shadow blur
+                                          ),
+                                        ],
                                         color: controller
                                                 .isAfter6PM(item.slotStart)
                                             ? AppColors.secondaryColor
@@ -186,13 +195,22 @@ class ServiceBookingDateBottomSheet extends GetView<ServiceController> {
                                       onFalse: const SizedBox.shrink(),
                                       child: Positioned(
                                         right: 0,
-                                        top: 5,
+                                        top: 3,
                                         child: Container(
                                           alignment: Alignment.center,
                                           height: 10,
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 5),
                                           decoration: BoxDecoration(
+                                            boxShadow: const [
+                                              BoxShadow(
+                                                color: Colors
+                                                    .black38, // Shadow color
+                                                offset: Offset(
+                                                    0, 4), // Shadow position
+                                                blurRadius: 5.0, // Shadow blur
+                                              ),
+                                            ],
                                             color: Colors.green,
                                             borderRadius:
                                                 BorderRadius.circular(2),

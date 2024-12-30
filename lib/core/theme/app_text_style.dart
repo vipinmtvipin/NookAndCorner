@@ -59,6 +59,24 @@ class AppTextStyle {
     fontWeight: FontWeight.w600,
   );
 
+  static TextStyle txtBold22 = TextStyle(
+    color: AppColors.black,
+    fontSize: getFontSize(
+      22,
+    ),
+    fontFamily: FontFamily.poppins,
+    fontWeight: FontWeight.w600,
+  );
+
+  static TextStyle txtBold20 = TextStyle(
+    color: AppColors.black,
+    fontSize: getFontSize(
+      20,
+    ),
+    fontFamily: FontFamily.poppins,
+    fontWeight: FontWeight.w600,
+  );
+
   static TextStyle txt10 = TextStyle(
     color: AppColors.black,
     fontSize: getFontSize(

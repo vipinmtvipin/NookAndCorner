@@ -118,7 +118,7 @@ class AccountScreen extends GetView<AccountController> {
                                                 .copyWith(
                                                     letterSpacing:
                                                         getHorizontalSize(
-                                                      3,
+                                                      1,
                                                     ),
                                                     color: AppColors.white)),
                                         const SizedBox(
@@ -230,10 +230,23 @@ class AccountScreen extends GetView<AccountController> {
                         endIndent: 25,
                       ),
                       MoveClickItemsWidget(
-                        iconData: Icons.note_alt,
+                        iconData: Icons.calendar_today_sharp,
                         label: "My Bookings",
                         onTap: () {
                           Get.toNamed(AppRoutes.myBookingScreen);
+                        },
+                      ),
+                      const Divider(
+                        color: AppColors.lightGray,
+                        thickness: 0.3,
+                        indent: 15,
+                        endIndent: 25,
+                      ),
+                      MoveClickItemsWidget(
+                        iconData: Icons.settings,
+                        label: "Settings",
+                        onTap: () {
+                          Get.toNamed(AppRoutes.settingsScreen);
                         },
                       ),
                       const Divider(

@@ -225,7 +225,7 @@ class BookingDetailsScreen extends GetView<MyBookingController> {
                                 "Booked On",
                                 style: AppTextStyle.txtBold14.copyWith(
                                   letterSpacing: getHorizontalSize(
-                                    3,
+                                    0,
                                   ),
                                 ),
                               ),
@@ -320,7 +320,7 @@ class BookingDetailsScreen extends GetView<MyBookingController> {
                                       "Added Services",
                                       style: AppTextStyle.txtBold14.copyWith(
                                         letterSpacing: getHorizontalSize(
-                                          3,
+                                          0,
                                         ),
                                       ),
                                     ),
@@ -364,7 +364,7 @@ class BookingDetailsScreen extends GetView<MyBookingController> {
                                           style:
                                               AppTextStyle.txtBold14.copyWith(
                                             letterSpacing: getHorizontalSize(
-                                              3,
+                                              0,
                                             ),
                                           ),
                                         ),
@@ -401,7 +401,7 @@ class BookingDetailsScreen extends GetView<MyBookingController> {
                                             style:
                                                 AppTextStyle.txtBold12.copyWith(
                                               letterSpacing: getHorizontalSize(
-                                                3,
+                                                0,
                                               ),
                                             ),
                                           ),
@@ -513,7 +513,7 @@ class BookingDetailsScreen extends GetView<MyBookingController> {
                                           style:
                                               AppTextStyle.txtBold16.copyWith(
                                             letterSpacing: getHorizontalSize(
-                                              3,
+                                              0,
                                             ),
                                           ),
                                         ),

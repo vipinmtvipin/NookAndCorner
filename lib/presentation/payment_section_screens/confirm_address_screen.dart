@@ -201,7 +201,7 @@ class ConfirmAddressScreen extends GetView<AddressController> {
                           textAlign: TextAlign.center,
                           style: AppTextStyle.txtBold14.copyWith(
                             letterSpacing: getHorizontalSize(
-                              2,
+                              0,
                             ),
                           ),
                         ),
