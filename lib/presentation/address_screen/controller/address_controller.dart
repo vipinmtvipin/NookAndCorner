@@ -61,7 +61,6 @@ class AddressController extends BaseController {
   @override
   void onInit() {
     super.onInit();
-    _loadCustomMarkerIcon();
     getAddress();
 
     final value = sessionStorage.read(StorageKeys.selectedCity);
@@ -191,6 +190,7 @@ class AddressController extends BaseController {
           showToast('Address confirmed successfully');
           if (confirmFrom.value == 'payment') {
             Get.offNamedUntil(AppRoutes.myBookingScreen, (route) => false);
+            sessionStorage.write(StorageKeys.from, 'payment');
           } else {
             Get.back(result: true);
           }
@@ -228,8 +228,8 @@ class AddressController extends BaseController {
             addresslineTwo: houseFlatController.text,
             location: cityController.text,
             addressType: addressType.value,
-            lat: selectedLocation.value.longitude.toString(),
-            lng: selectedLocation.value.latitude.toString(),
+            lat: selectedLocation.value.latitude.toString(),
+            lng: selectedLocation.value.longitude.toString(),
             cityId: selectedCity.cityId.toString(),
             userId: sessionStorage.read(StorageKeys.userId).toString(),
           );
@@ -239,8 +239,8 @@ class AddressController extends BaseController {
             addresslineTwo: houseFlatController.text,
             location: cityController.text,
             addressType: addressType.value,
-            lat: selectedLocation.value.longitude.toString(),
-            lng: selectedLocation.value.latitude.toString(),
+            lat: selectedLocation.value.latitude.toString(),
+            lng: selectedLocation.value.longitude.toString(),
             cityId: selectedCity.cityId.toString(),
             userId: sessionStorage.read(StorageKeys.userId).toString(),
           );
@@ -249,7 +249,6 @@ class AddressController extends BaseController {
         var services = await _saveAddressUseCase.execute(request);
 
         if (services != null && services.success == true) {
-          clearAddressInfo();
           if (selectedAddress.value.location.isNotNullOrEmpty) {
             showToast('Address updated successfully');
             addressStatus.value = AddressStatus.updated;
@@ -257,6 +256,7 @@ class AddressController extends BaseController {
             showToast('Address added successfully');
             addressStatus.value = AddressStatus.saved;
           }
+          clearAddressInfo();
 
           Get.back(result: true);
         }
@@ -278,6 +278,4 @@ class AddressController extends BaseController {
     searchController.clear();
     selectedAddress.value = AddressData.empty();
   }
-
-  void _loadCustomMarkerIcon() async {}
 }

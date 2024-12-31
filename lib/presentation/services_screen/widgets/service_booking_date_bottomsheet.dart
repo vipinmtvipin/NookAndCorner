@@ -234,6 +234,7 @@ class ServiceBookingDateBottomSheet extends GetView<ServiceController> {
                       ),
                       const SizedBox(height: 16),
                       NookCornerButton(
+                        height: 45,
                         outlinedColor: AppColors.primaryColor,
                         textStyle: AppTextStyle.txtBoldWhite14,
                         text: isFromSummery ? 'Update' : 'Confirm and Proceed',

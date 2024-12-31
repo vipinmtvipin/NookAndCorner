@@ -75,14 +75,14 @@ class AddOn {
   });
 
   final int? addonId;
-  final int? addonPrice;
+  final double? addonPrice;
   final int? quantity;
   final int? serviceId;
 
   factory AddOn.fromJson(Map<String, dynamic> json) {
     return AddOn(
       addonId: json["addonId"],
-      addonPrice: json["addonPrice"],
+      addonPrice: GetIt.I<CommonUtil>().toDouble(json["addonPrice"]),
       quantity: json["quantity"],
       serviceId: json["serviceId"],
     );
@@ -151,12 +151,12 @@ class JobCreated {
   final int? assignedUserId;
   final int? promotionId;
   final String? txnId;
-  final int? price;
+  final double? price;
   final double? convenienceFee;
   final String? conveniencePercent;
   final double? advanceAmount;
   final String? advancePercent;
-  final int? promotionAmount;
+  final double? promotionAmount;
   final String? advStatus;
   final double? goldenHoursCharge;
   final int? overNightHikePercentage;
@@ -196,12 +196,12 @@ class JobCreated {
       assignedUserId: json["assignedUserId"],
       promotionId: json["promotionId"],
       txnId: json["txnId"],
-      price: json["price"],
+      price: GetIt.I<CommonUtil>().toDouble(json["price"]),
       convenienceFee: json["convenienceFee"],
       conveniencePercent: json["conveniencePercent"],
       advanceAmount: json["advanceAmount"],
       advancePercent: json["advancePercent"],
-      promotionAmount: json["promotionAmount"],
+      promotionAmount: GetIt.I<CommonUtil>().toDouble(json["promotionAmount"]),
       advStatus: json["advStatus"],
       goldenHoursCharge:
           GetIt.I<CommonUtil>().toDouble(json["goldenHoursCharge"]),

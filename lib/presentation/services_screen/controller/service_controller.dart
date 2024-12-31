@@ -398,7 +398,7 @@ class ServiceController extends BaseController {
             overNightHikePercentage:
                 double.tryParse(metaData.value.overNightHikePercentage ?? '0'),
             phoneNumber: sessionStorage.read(StorageKeys.mobile).toString(),
-            price: double.tryParse(selectedService.value.price ?? '0'),
+            price: grandTotal.value,
             promotionAmount: couponData.value.isEmpty
                 ? null
                 : double.tryParse(
@@ -437,7 +437,7 @@ class ServiceController extends BaseController {
             overNightHikePercentage:
                 double.tryParse(metaData.value.overNightHikePercentage ?? '0'),
             phoneNumber: phoneController.text.toString(),
-            price: double.tryParse(selectedService.value.price ?? '0'),
+            price: grandTotal.value,
             promotionAmount: couponData.value.isEmpty
                 ? null
                 : double.tryParse(

@@ -119,4 +119,5 @@ class StorageKeys {
   static const String mobile = 'mobile';
   static const String address = 'address';
   static const String selectedCity = 'city';
+  static const String from = 'from';
 }

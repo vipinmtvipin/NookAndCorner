@@ -31,7 +31,7 @@ class AddressScreen extends GetView<AddressController> {
           child: NookCornerButton(
             text: 'Add Address',
             onPressed: () {
-              navigateAndFetchAddress();
+              navigateAndFetchAddress('add');
             },
           ),
         ),
@@ -81,7 +81,7 @@ class AddressScreen extends GetView<AddressController> {
                                   double.tryParse(address.lat ?? '0.0') ?? 0.0,
                                   double.tryParse(address.lng ?? '0.0') ?? 0.0,
                                 );
-                                navigateAndFetchAddress();
+                                navigateAndFetchAddress('edit');
                               }
                             });
                       },
@@ -92,9 +92,11 @@ class AddressScreen extends GetView<AddressController> {
             ]));
   }
 
-  void navigateAndFetchAddress() async {
+  void navigateAndFetchAddress(String from) async {
+    if (from == 'add') {
+      controller.clearAddressInfo();
+    }
     var result = await Get.toNamed(AppRoutes.addAddressScreen);
-    controller.selectedAddress.value = AddressData.empty();
     controller.getAddress();
   }
 }

@@ -131,13 +131,13 @@ class JobCreated {
   final int? servicePriceId;
   final int? assignedUserId;
   final dynamic promotionId;
-  final int? price;
+  final double? price;
   final String? txnId;
   final double? convenienceFee;
   final String? conveniencePercent;
   final double? advanceAmount;
   final String? advancePercent;
-  final dynamic promotionAmount;
+  final double? promotionAmount;
   final String? advStatus;
   final bool? isGolderHour;
   final double? goldenHoursCharge;
@@ -179,13 +179,13 @@ class JobCreated {
       servicePriceId: json["servicePriceId"],
       assignedUserId: json["assignedUserId"],
       promotionId: json["promotionId"],
-      price: json["price"],
+      price: GetIt.I<CommonUtil>().toDouble(json["price"]),
       txnId: json["txnId"],
       convenienceFee: json["convenienceFee"],
       conveniencePercent: json["conveniencePercent"],
       advanceAmount: json["advanceAmount"],
       advancePercent: json["advancePercent"],
-      promotionAmount: json["promotionAmount"],
+      promotionAmount: GetIt.I<CommonUtil>().toDouble(json["promotionAmount"]),
       advStatus: json["advStatus"],
       isGolderHour: json["isGolderHour"],
       goldenHoursCharge:

@@ -1,9 +1,11 @@
+import 'package:customerapp/core/constants/constants.dart';
 import 'package:customerapp/core/theme/color_constant.dart';
 import 'package:customerapp/presentation/account_screen/account_screen.dart';
 import 'package:customerapp/presentation/common_widgets/title_bar_widget.dart';
 import 'package:customerapp/presentation/my_job_screen/controller/mybooking_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 
 import '../../core/routes/app_routes.dart';
 
@@ -16,7 +18,12 @@ class MyBookingScreen extends GetView<MyBookingController> {
       top: false,
       bottom: false,
       child: Scaffold(
-        body: mobileView(),
+        body: WillPopScope(
+            onWillPop: () async {
+              screenGoBack();
+              return true;
+            },
+            child: mobileView()),
       ),
     );
   }
@@ -30,7 +37,12 @@ class MyBookingScreen extends GetView<MyBookingController> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const TitleBarWidget(title: "My Booking"),
+              TitleBarWidget(
+                title: "My Booking",
+                onBack: () {
+                  screenGoBack();
+                },
+              ),
               const SizedBox(
                 height: 30,
               ),
@@ -90,5 +102,13 @@ class MyBookingScreen extends GetView<MyBookingController> {
             ]),
       ),
     );
+  }
+
+  void screenGoBack() {
+    var from = GetStorage().read(StorageKeys.from).toString();
+    if (from == 'payment') {
+      Get.offAllNamed(AppRoutes.mainScreen);
+    }
+    GetStorage().write(StorageKeys.from, '');
   }
 }

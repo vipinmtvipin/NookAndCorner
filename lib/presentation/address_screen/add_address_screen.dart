@@ -1,11 +1,14 @@
 import 'package:customerapp/core/extensions/string_extensions.dart';
+import 'package:customerapp/core/utils/common_util.dart';
 import 'package:customerapp/presentation/address_screen/controller/address_controller.dart';
+import 'package:customerapp/presentation/address_screen/google_place_service.dart';
 import 'package:customerapp/presentation/common_widgets/nookcorner_button.dart';
 import 'package:customerapp/presentation/common_widgets/nookcorner_text_field.dart';
 import 'package:customerapp/presentation/common_widgets/title_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_places_hoc081098/flutter_google_places_hoc081098.dart';
 import 'package:flutter_google_places_hoc081098/google_maps_webservice_places.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:geocoding/geocoding.dart' as geo;
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -119,9 +122,11 @@ class AddAddressScreen extends GetView<AddressController> {
                         right: 10,
                         child: InkWell(
                           onTap: () {
-                            getPlaceDetails(context);
+                            // getPlaceDetails(context);
                           },
-                          child: TextField(
+                          child: PlaceSearchScreen(),
+
+                          /*     TextField(
                             controller: controller.searchController,
                             decoration: InputDecoration(
                               hintText: 'Search for your location',
@@ -135,7 +140,7 @@ class AddAddressScreen extends GetView<AddressController> {
                             ),
                             readOnly: true,
                             enabled: false,
-                          ),
+                          ),*/
                         ),
                       ),
                     ],
@@ -312,5 +317,77 @@ class AddAddressScreen extends GetView<AddressController> {
         location.latitude <= bounds.northeast.latitude &&
         location.longitude >= bounds.southwest.longitude &&
         location.longitude <= bounds.northeast.longitude;
+  }
+}
+
+class PlaceSearchScreen extends StatefulWidget {
+  const PlaceSearchScreen({super.key});
+
+  @override
+  PlaceSearchScreenState createState() => PlaceSearchScreenState();
+}
+
+class PlaceSearchScreenState extends State<PlaceSearchScreen> {
+  final TextEditingController _typeAheadController = TextEditingController();
+  late GooglePlacesService _placesService;
+
+  AddressController controller = Get.find<AddressController>();
+
+  @override
+  void initState() {
+    super.initState();
+    _placesService =
+        GooglePlacesService('AIzaSyCEpnfYtpqPQ8oWZXBrMdRKJYC0cTn9mH0');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 1.0, vertical: 4),
+      child: TypeAheadField(
+        controller: _typeAheadController,
+        builder: (context, controller, focusNode) {
+          return TextField(
+              controller: controller,
+              focusNode: focusNode,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.white, // White background
+                hintText: 'Search Place',
+                hintStyle: TextStyle(color: Colors.grey),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(6.0), // Curved corners
+                  borderSide: BorderSide.none, // No outer border
+                ),
+              ));
+        },
+        itemBuilder: (context, suggestion) {
+          return ListTile(
+            title: Text(suggestion.address ?? ''),
+          );
+        },
+        suggestionsCallback: (pattern) async {
+          if (pattern.isEmpty) return [];
+
+          return await _placesService.fetchPlaceSuggestions(
+              pattern, controller.cityBounds);
+        },
+        onSelected: (suggestion) async {
+          CommonUtil().keyboardHide(Get.context!);
+
+          setState(() {
+            _typeAheadController.text = suggestion.address ?? '';
+            controller.cityController.text = suggestion.address ?? '';
+            LatLng location = LatLng(suggestion.latitude ?? '19.0760',
+                suggestion.longitude ?? '72.8777');
+            controller.selectedLocation.value = location;
+            controller.currentLocation.value = location;
+
+            controller.mapController
+                ?.animateCamera(CameraUpdate.newLatLngZoom(location, 15));
+          });
+        },
+      ),
+    );
   }
 }
