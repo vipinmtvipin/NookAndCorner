@@ -241,7 +241,7 @@ class RescheduleBookingDateBottomSheet extends GetView<MyBookingController> {
       context: context,
       initialDate: initialDate,
       firstDate: firstDate,
-      lastDate: DateTime.now().add(Duration(days: 15)),
+      lastDate: DateTime.now().add(Duration(days: controller.calenderDayCount)),
     );
     if (picked != null) {
       controller.dateSelected(service, picked);

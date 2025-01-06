@@ -153,13 +153,13 @@ class JobCreated {
   final String? txnId;
   final double? price;
   final double? convenienceFee;
-  final String? conveniencePercent;
+  final double? conveniencePercent;
   final double? advanceAmount;
-  final String? advancePercent;
+  final double? advancePercent;
   final double? promotionAmount;
   final String? advStatus;
   final double? goldenHoursCharge;
-  final int? overNightHikePercentage;
+  final double? overNightHikePercentage;
   final bool? isGolderHour;
   final int? serviceId;
   final DateTime? dateString;
@@ -180,7 +180,7 @@ class JobCreated {
   final dynamic refundStatus;
   final dynamic cancelledAt;
   final dynamic completedAt;
-  final dynamic refundAmount;
+  final double? refundAmount;
   final dynamic startOtp;
   final dynamic startTime;
   final dynamic endTime;
@@ -197,15 +197,17 @@ class JobCreated {
       promotionId: json["promotionId"],
       txnId: json["txnId"],
       price: GetIt.I<CommonUtil>().toDouble(json["price"]),
-      convenienceFee: json["convenienceFee"],
-      conveniencePercent: json["conveniencePercent"],
-      advanceAmount: json["advanceAmount"],
-      advancePercent: json["advancePercent"],
+      convenienceFee: GetIt.I<CommonUtil>().toDouble(json["convenienceFee"]),
+      conveniencePercent:
+          GetIt.I<CommonUtil>().toDouble(json["conveniencePercent"]),
+      advanceAmount: GetIt.I<CommonUtil>().toDouble(json["advanceAmount"]),
+      advancePercent: GetIt.I<CommonUtil>().toDouble(json["advancePercent"]),
       promotionAmount: GetIt.I<CommonUtil>().toDouble(json["promotionAmount"]),
       advStatus: json["advStatus"],
       goldenHoursCharge:
           GetIt.I<CommonUtil>().toDouble(json["goldenHoursCharge"]),
-      overNightHikePercentage: json["overNightHikePercentage"],
+      overNightHikePercentage:
+          GetIt.I<CommonUtil>().toDouble(json["overNightHikePercentage"]),
       isGolderHour: json["isGolderHour"],
       serviceId: json["serviceId"],
       dateString: DateTime.tryParse(json["dateString"] ?? ""),
@@ -226,7 +228,7 @@ class JobCreated {
       refundStatus: json["refundStatus"],
       cancelledAt: json["cancelledAt"],
       completedAt: json["completedAt"],
-      refundAmount: json["refundAmount"],
+      refundAmount: GetIt.I<CommonUtil>().toDouble(json["refundAmount"]),
       startOtp: json["startOtp"],
       startTime: json["startTime"],
       endTime: json["endTime"],

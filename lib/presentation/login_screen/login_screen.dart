@@ -55,7 +55,10 @@ class LoginScreen extends GetView<AuthController> {
                           height: 30,
                           width: 30,
                           onTap: () {
-                            if (controller.authStatus.value ==
+                            if (controller.navigateFrom ==
+                                AppRoutes.summeryScreen) {
+                              Get.offAndToNamed(AppRoutes.summeryScreen);
+                            } else if (controller.authStatus.value ==
                                     AuthStatus.validEmail ||
                                 controller.authStatus.value ==
                                     AuthStatus.validMobile) {

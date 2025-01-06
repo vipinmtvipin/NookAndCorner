@@ -647,7 +647,7 @@ class SummeryScreen extends GetView<ServiceController> {
                   context.showBottomSheet(
                     body: ForceLoginBottomSheet(
                       onLoggedIn: (login) {
-                        showAddOnConfirmation(context);
+                        controller.createJob();
                       },
                     ),
                   );

@@ -134,20 +134,20 @@ class JobCreated {
   final double? price;
   final String? txnId;
   final double? convenienceFee;
-  final String? conveniencePercent;
+  final double? conveniencePercent;
   final double? advanceAmount;
-  final String? advancePercent;
+  final double? advancePercent;
   final double? promotionAmount;
   final String? advStatus;
   final bool? isGolderHour;
   final double? goldenHoursCharge;
-  final int? overNightHikePercentage;
+  final double? overNightHikePercentage;
   final int? serviceId;
   final DateTime? dateString;
   final String? workerCount;
   final String? workHours;
   final String? slotInterval;
-  final int? aggCommissionPercent;
+  final double? aggCommissionPercent;
   final DateTime? updatedAt;
   final DateTime? createdAt;
   final dynamic bookingDate;
@@ -158,13 +158,13 @@ class JobCreated {
   final dynamic otp;
   final dynamic workDone;
   final dynamic addlPromotionId;
-  final dynamic addlPromotionAmount;
+  final double? addlPromotionAmount;
   final dynamic promotionStatus;
   final dynamic addonId;
   final dynamic refundStatus;
   final dynamic cancelledAt;
   final dynamic completedAt;
-  final dynamic refundAmount;
+  final double? refundAmount;
   final dynamic startOtp;
   final dynamic startTime;
   final dynamic endTime;
@@ -181,22 +181,25 @@ class JobCreated {
       promotionId: json["promotionId"],
       price: GetIt.I<CommonUtil>().toDouble(json["price"]),
       txnId: json["txnId"],
-      convenienceFee: json["convenienceFee"],
-      conveniencePercent: json["conveniencePercent"],
-      advanceAmount: json["advanceAmount"],
-      advancePercent: json["advancePercent"],
+      convenienceFee: GetIt.I<CommonUtil>().toDouble(json["convenienceFee"]),
+      conveniencePercent:
+          GetIt.I<CommonUtil>().toDouble(json["conveniencePercent"]),
+      advanceAmount: GetIt.I<CommonUtil>().toDouble(json["advanceAmount"]),
+      advancePercent: GetIt.I<CommonUtil>().toDouble(json["advancePercent"]),
       promotionAmount: GetIt.I<CommonUtil>().toDouble(json["promotionAmount"]),
       advStatus: json["advStatus"],
       isGolderHour: json["isGolderHour"],
       goldenHoursCharge:
           GetIt.I<CommonUtil>().toDouble(json["goldenHoursCharge"]),
-      overNightHikePercentage: json["overNightHikePercentage"],
+      overNightHikePercentage:
+          GetIt.I<CommonUtil>().toDouble(json["overNightHikePercentage"]),
       serviceId: json["serviceId"],
       dateString: DateTime.tryParse(json["dateString"] ?? ""),
       workerCount: json["workerCount"],
       workHours: json["workHours"],
       slotInterval: json["slotInterval"],
-      aggCommissionPercent: json["aggCommissionPercent"],
+      aggCommissionPercent:
+          GetIt.I<CommonUtil>().toDouble(json["aggCommissionPercent"]),
       updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
       createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
       bookingDate: json["bookingDate"],
@@ -207,13 +210,14 @@ class JobCreated {
       otp: json["otp"],
       workDone: json["workDone"],
       addlPromotionId: json["addlPromotionId"],
-      addlPromotionAmount: json["addlPromotionAmount"],
+      addlPromotionAmount:
+          GetIt.I<CommonUtil>().toDouble(json["addlPromotionAmount"]),
       promotionStatus: json["promotionStatus"],
       addonId: json["addonId"],
       refundStatus: json["refundStatus"],
       cancelledAt: json["cancelledAt"],
       completedAt: json["completedAt"],
-      refundAmount: json["refundAmount"],
+      refundAmount: GetIt.I<CommonUtil>().toDouble(json["refundAmount"]),
       startOtp: json["startOtp"],
       startTime: json["startTime"],
       endTime: json["endTime"],
@@ -299,22 +303,22 @@ class JobData {
   final int? userId;
   final int? servicePriceId;
   final int? assignedUserId;
-  final int? price;
+  final double? price;
   final String? txnId;
   final double? convenienceFee;
-  final int? conveniencePercent;
+  final double? conveniencePercent;
   final double? advanceAmount;
-  final int? advancePercent;
+  final double? advancePercent;
   final String? advStatus;
   final bool? isGolderHour;
   final double? goldenHoursCharge;
-  final int? overNightHikePercentage;
+  final double? overNightHikePercentage;
   final int? serviceId;
   final DateTime? dateString;
   final int? workerCount;
   final int? workHours;
   final String? slotInterval;
-  final int? aggCommissionPercent;
+  final double? aggCommissionPercent;
 
   factory JobData.fromJson(Map<String, dynamic> json) {
     return JobData(
@@ -323,23 +327,26 @@ class JobData {
       userId: json["userId"],
       servicePriceId: json["servicePriceId"],
       assignedUserId: json["assignedUserId"],
-      price: json["price"],
+      price: GetIt.I<CommonUtil>().toDouble(json["price"]),
       txnId: json["txnId"],
-      convenienceFee: json["convenienceFee"],
-      conveniencePercent: json["conveniencePercent"],
-      advanceAmount: json["advanceAmount"],
-      advancePercent: json["advancePercent"],
+      convenienceFee: GetIt.I<CommonUtil>().toDouble(json["convenienceFee"]),
+      conveniencePercent:
+          GetIt.I<CommonUtil>().toDouble(json["conveniencePercent"]),
+      advanceAmount: GetIt.I<CommonUtil>().toDouble(json["advanceAmount"]),
+      advancePercent: GetIt.I<CommonUtil>().toDouble(json["advancePercent"]),
       advStatus: json["advStatus"],
       isGolderHour: json["isGolderHour"],
       goldenHoursCharge:
           GetIt.I<CommonUtil>().toDouble(json["goldenHoursCharge"]),
-      overNightHikePercentage: json["overNightHikePercentage"],
+      overNightHikePercentage:
+          GetIt.I<CommonUtil>().toDouble(json["overNightHikePercentage"]),
       serviceId: json["serviceId"],
       dateString: DateTime.tryParse(json["dateString"] ?? ""),
       workerCount: json["workerCount"],
       workHours: json["workHours"],
       slotInterval: json["slotInterval"],
-      aggCommissionPercent: json["aggCommissionPercent"],
+      aggCommissionPercent:
+          GetIt.I<CommonUtil>().toDouble(json["aggCommissionPercent"]),
     );
   }
 

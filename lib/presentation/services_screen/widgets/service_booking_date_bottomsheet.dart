@@ -250,7 +250,7 @@ class ServiceBookingDateBottomSheet extends GetView<ServiceController> {
                             }
                             Get.back();
                             Get.toNamed(AppRoutes.summeryScreen);
-                            controller.getSummeryInfo();
+                            controller.getSummeryInfo(isLoader: true);
                           }
                         },
                       ),
@@ -270,7 +270,7 @@ class ServiceBookingDateBottomSheet extends GetView<ServiceController> {
       context: context,
       initialDate: controller.selectedDate.value,
       firstDate: DateTime.now().add(Duration(days: 1)),
-      lastDate: DateTime.now().add(Duration(days: 15)),
+      lastDate: DateTime.now().add(Duration(days: controller.calenderDayCount)),
     );
     if (picked != null) {
       controller.dateSelected(service, picked);

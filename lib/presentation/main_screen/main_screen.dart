@@ -127,6 +127,8 @@ class MainScreen extends GetView<MainScreenController> {
                       onTap: () {
                         Get.toNamed(AppRoutes.loginScreen, arguments: {
                           'from': AppRoutes.mainScreen,
+                          "email": '',
+                          "phone": '',
                         });
                       },
                       child: Container(

@@ -71,6 +71,22 @@ class AuthController extends BaseController {
       final arguments = Get.arguments as Map<String, dynamic>;
 
       navigateFrom = arguments['from'] ?? '';
+
+      if (navigateFrom == AppRoutes.summeryScreen) {
+        String phone = arguments['phone'] ?? '';
+        String email = arguments['email'] ?? '';
+        phoneController.text = phone ?? '';
+        emailController.text = email ?? '';
+
+        if (phone.isNotEmpty) {
+          isPhoneLogin.value = true;
+          loginMobile(false);
+          authStatus.value = AuthStatus.validMobile;
+        } else if (email.isNotEmpty) {
+          isPhoneLogin.value = false;
+          authStatus.value = AuthStatus.validEmail;
+        }
+      }
     } catch (e) {
       e.printInfo();
     }
@@ -79,10 +95,10 @@ class AuthController extends BaseController {
   @override
   void onClose() {
     super.onClose();
-    emailController.dispose();
+    /*  emailController.dispose();
     phoneController.dispose();
     passwordController.dispose();
-    otpController.value.dispose();
+    otpController.value.dispose();*/
   }
 
   callLogin() async {

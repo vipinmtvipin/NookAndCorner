@@ -82,6 +82,8 @@ class ServiceController extends BaseController {
   Rx<List<AddOnData>> addOnList = Rx([]);
   Rx<List<AddOnData>> addOns = Rx([]);
   Rx<MetasData> metaData = Rx(MetasData.empty());
+
+  int calenderDayCount = 10;
   Rx<JobResponds> jobData = Rx(JobResponds.empty());
   Rx<JobLoginResponds> jobLoginData = Rx(JobLoginResponds.empty());
   Rx<ServiceData> selectedService = Rx(ServiceData.empty());
@@ -155,6 +157,7 @@ class ServiceController extends BaseController {
   void initialApisCall() {
     getServiceDetails(categoryId.value.toString());
     getServiceTags(categoryId.value.toString());
+    getSummeryInfo();
   }
 
   Future<void> getServiceDetails(String categoryId,
@@ -260,10 +263,12 @@ class ServiceController extends BaseController {
   }
 
   ///Get basic summery info
-  getSummeryInfo() async {
+  getSummeryInfo({bool isLoader = false}) async {
     if (await _connectivityService.isConnected()) {
       try {
-        showLoadingDialog();
+        if (isLoader) {
+          showLoadingDialog();
+        }
 
         AddonRequest request = AddonRequest(
             status: 'active',
@@ -284,6 +289,8 @@ class ServiceController extends BaseController {
 
         double servicePercentage = servicePrice / 100;
 
+        calenderDayCount =
+            int.tryParse(metaData.value.calendarDays ?? '10') ?? 10;
         advancePercentage =
             double.tryParse(metaData.value.advancePercentage ?? '0') ?? 0;
         advanceAmount.value = servicePercentage * advancePercentage;
@@ -300,9 +307,13 @@ class ServiceController extends BaseController {
 
         checkGoldenHour();
 
-        hideLoadingDialog();
+        if (isLoader) {
+          hideLoadingDialog();
+        }
       } catch (e) {
-        hideLoadingDialog();
+        if (isLoader) {
+          hideLoadingDialog();
+        }
       }
     } else {
       showToast(LocalizationKeys.noNetwork.tr);
@@ -476,6 +487,8 @@ class ServiceController extends BaseController {
         if (e.toString().contains('User already exists')) {
           Get.toNamed(AppRoutes.loginScreen, arguments: {
             'from': AppRoutes.summeryScreen,
+            "email": emailController.text,
+            "phone": phoneController.text,
           });
         }
       }

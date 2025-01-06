@@ -81,7 +81,7 @@ class MyBookingController extends BaseController {
   Rx<List<MyJobData>> jobList = Rx([]);
   Rx<MyJobData> selectedJob = Rx(MyJobData.empty());
   final sessionStorage = GetStorage();
-
+  int calenderDayCount = 10;
   Rx<List<AddOnData>> addOnList = Rx([]);
   Rx<List<AddOnData>> addOns = Rx([]);
   Rx<MetasData> metaData = Rx(MetasData.empty());
@@ -178,6 +178,8 @@ class MyBookingController extends BaseController {
 
         double servicePercentage = servicePrice / 100;
 
+        calenderDayCount =
+            int.tryParse(metaData.value.calendarDays ?? '10') ?? 10;
         double advancePercentage =
             double.tryParse(metaData.value.advancePercentage ?? '0') ?? 0;
         advanceAmount.value = servicePercentage * advancePercentage;

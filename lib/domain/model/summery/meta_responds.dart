@@ -44,6 +44,7 @@ class MetasData {
     required this.androidUserVersion,
     required this.vendorTds,
     required this.nandcAppStore,
+    required this.calendarDays,
   });
 
   final String? advancePercentage;
@@ -59,6 +60,7 @@ class MetasData {
   final String? androidUserVersion;
   final String? vendorTds;
   final String? nandcAppStore;
+  final String? calendarDays;
 
   factory MetasData.fromJson(Map<String, dynamic> json) {
     return MetasData(
@@ -75,6 +77,7 @@ class MetasData {
       androidUserVersion: json["androidUserVersion"],
       vendorTds: json["vendorTds"],
       nandcAppStore: json["nandcAppStore"],
+      calendarDays: json["calendarDays"],
     );
   }
 
@@ -92,6 +95,7 @@ class MetasData {
         "androidUserVersion": androidUserVersion,
         "vendorTds": vendorTds,
         "nandcAppStore": nandcAppStore,
+        "calendarDays": calendarDays,
       };
 
   static MetasData empty() {
@@ -109,6 +113,7 @@ class MetasData {
       androidUserVersion: '',
       vendorTds: '0',
       nandcAppStore: '',
+      calendarDays: '15',
     );
   }
 }
