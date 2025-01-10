@@ -1,5 +1,8 @@
 import 'dart:convert';
 
+import 'package:customerapp/core/utils/common_util.dart';
+import 'package:get_it/get_it.dart';
+
 CuponResponds cuponRespondsFromJson(String str) =>
     CuponResponds.fromJson(json.decode(str));
 
@@ -61,7 +64,7 @@ class CouponData {
   final DateTime? startDate;
   final DateTime? endDate;
   final String? promotionType;
-  final String? discountOfferPrice;
+  final double? discountOfferPrice;
   final dynamic bannerImage;
   final dynamic thumbImage;
   final String? status;
@@ -82,7 +85,8 @@ class CouponData {
       startDate: DateTime.tryParse(json["startDate"] ?? ""),
       endDate: DateTime.tryParse(json["endDate"] ?? ""),
       promotionType: json["promotionType"],
-      discountOfferPrice: json["discountOfferPrice"],
+      discountOfferPrice:
+          GetIt.I<CommonUtil>().toDouble(json["discountOfferPrice"]),
       bannerImage: json["bannerImage"],
       thumbImage: json["thumbImage"],
       status: json["status"],

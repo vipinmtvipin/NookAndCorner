@@ -232,9 +232,7 @@ class MyBookingController extends BaseController {
             .toStringAsFixed(2));
 
     if (couponApplied.value.absolute && couponData.value.isNotNullOrEmpty) {
-      var discount =
-          double.tryParse(couponData.value.first.discountOfferPrice ?? '0') ??
-              0;
+      var discount = couponData.value.first.discountOfferPrice ?? 0.0;
       paymentAmount = paymentAmount - discount;
     }
 

@@ -323,8 +323,8 @@ class ServiceController extends BaseController {
   Future<void> applyCoupon(String code) async {
     if (couponApplied.value) {
       couponApplied.value = false;
-      grandTotal.value = grandTotal.value -
-          double.tryParse(couponData.value.first.discountOfferPrice ?? '0')!;
+      grandTotal.value =
+          grandTotal.value - couponData.value.first.discountOfferPrice!;
       couponData.value = [];
       promoCodeController.clear();
     } else {
@@ -412,8 +412,7 @@ class ServiceController extends BaseController {
             price: grandTotal.value,
             promotionAmount: couponData.value.isEmpty
                 ? null
-                : double.tryParse(
-                    couponData.value.first.discountOfferPrice ?? '0'),
+                : couponData.value.first.discountOfferPrice,
             promotionId: couponData.value.isEmpty
                 ? null
                 : couponData.value.first.promotionId,
@@ -451,8 +450,7 @@ class ServiceController extends BaseController {
             price: grandTotal.value,
             promotionAmount: couponData.value.isEmpty
                 ? null
-                : double.tryParse(
-                    couponData.value.first.discountOfferPrice ?? '0'),
+                : couponData.value.first.discountOfferPrice,
             promotionId: couponData.value.isEmpty
                 ? null
                 : couponData.value.first.promotionId,
@@ -485,11 +483,15 @@ class ServiceController extends BaseController {
         showSnackBar(
             "Warning", "${e.toString()}, Please login.", Colors.black54);
         if (e.toString().contains('User already exists')) {
-          Get.toNamed(AppRoutes.loginScreen, arguments: {
+          await Get.toNamed(AppRoutes.loginScreen, arguments: {
             'from': AppRoutes.summeryScreen,
             "email": emailController.text,
             "phone": phoneController.text,
           });
+
+          if (isLogin) {
+            createJob();
+          }
         }
       }
     } else {
@@ -666,9 +668,7 @@ class ServiceController extends BaseController {
   void calculateGrandTotal() {
     var couponAmount = 0.0;
     if (couponData.value.isNotEmpty) {
-      couponAmount =
-          double.tryParse(couponData.value.first.discountOfferPrice ?? '0') ??
-              0;
+      couponAmount = couponData.value.first.discountOfferPrice ?? 0.0;
     }
 
     convenienceFee.value = baseConvenienceFee + addOnConvenienceFee.value;
@@ -687,9 +687,7 @@ class ServiceController extends BaseController {
   void calculateRemoveGrandTotal() {
     var couponAmount = 0.0;
     if (couponData.value.isNotEmpty) {
-      couponAmount =
-          double.tryParse(couponData.value.first.discountOfferPrice ?? '0') ??
-              0;
+      couponAmount = couponData.value.first.discountOfferPrice ?? 0.0;
     }
 
     convenienceFee.value = baseConvenienceFee;
