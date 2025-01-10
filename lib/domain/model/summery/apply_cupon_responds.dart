@@ -71,7 +71,7 @@ class CouponData {
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final bool? singleUse;
-  final bool? expired;
+  final String? expired;
   final int? id;
   final int? promotionSubServiceId;
   final int? promoId;

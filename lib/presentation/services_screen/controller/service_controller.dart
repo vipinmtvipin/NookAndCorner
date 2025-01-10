@@ -323,8 +323,8 @@ class ServiceController extends BaseController {
   Future<void> applyCoupon(String code) async {
     if (couponApplied.value) {
       couponApplied.value = false;
-      grandTotal.value =
-          grandTotal.value - couponData.value.first.discountOfferPrice!;
+      var couponAmount = couponData.value.first.discountOfferPrice ?? 0.0;
+      grandTotal.value = grandTotal.value + couponAmount;
       couponData.value = [];
       promoCodeController.clear();
     } else {
