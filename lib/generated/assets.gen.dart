@@ -60,6 +60,10 @@ class $AssetsIconsGen {
 class $AssetsImagesGen {
   const $AssetsImagesGen();
 
+  /// File path: assets/images/booking_icon.png
+  AssetGenImage get bookingIcon =>
+      const AssetGenImage('assets/images/booking_icon.png');
+
   /// File path: assets/images/google.png
   AssetGenImage get google => const AssetGenImage('assets/images/google.png');
 
@@ -92,6 +96,7 @@ class $AssetsImagesGen {
 
   /// List of all assets
   List<dynamic> get values => [
+        bookingIcon,
         google,
         launcherBackground,
         nookCorner,

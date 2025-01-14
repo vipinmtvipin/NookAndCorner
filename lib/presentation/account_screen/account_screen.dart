@@ -292,6 +292,7 @@ class AccountScreen extends GetView<AccountController> {
 onTapLoginNavigation() {
   Get.offAndToNamed(AppRoutes.loginScreen, arguments: {
     'from': AppRoutes.accountScreen,
+    "flag": "",
     "email": '',
     "phone": '',
   });

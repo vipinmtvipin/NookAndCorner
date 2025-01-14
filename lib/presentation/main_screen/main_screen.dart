@@ -93,13 +93,13 @@ class MainScreen extends GetView<MainScreenController> {
         actions: [
           Obx(() {
             return controller.loggedIn.value == true
-                ? IconButton(
-                    icon: Icon(
-                      Icons.calendar_today_sharp,
-                      color: Colors.black,
-                      size: getSize(22),
+                ? InkWell(
+                    child: Assets.images.bookingIcon.image(
+                      color: AppColors.secondaryColor,
+                      width: getSize(26),
+                      height: getSize(26),
                     ),
-                    onPressed: () {
+                    onTap: () {
                       Get.toNamed(AppRoutes.myBookingScreen);
                     },
                   )
@@ -127,6 +127,7 @@ class MainScreen extends GetView<MainScreenController> {
                       onTap: () {
                         Get.toNamed(AppRoutes.loginScreen, arguments: {
                           'from': AppRoutes.mainScreen,
+                          "flag": "",
                           "email": '',
                           "phone": '',
                         });

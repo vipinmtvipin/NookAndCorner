@@ -54,20 +54,27 @@ class ServiceBookingDateBottomSheet extends GetView<ServiceController> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
-                      child: TextFormField(
-                        readOnly: true,
-                        decoration: InputDecoration(
-                          hintStyle: const TextStyle(color: AppColors.darkGray),
-                          hintText: controller.selectedDateValue.value,
-                          suffixIcon: IconButton(
-                            icon: const Icon(Icons.calendar_today),
-                            onPressed: () => _selectDate(context),
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12.0),
-                            borderSide: const BorderSide(
-                              color: AppColors.black,
-                              width: 2.0,
+                      child: InkWell(
+                        onTap: () {
+                          _selectDate(context);
+                        },
+                        child: TextFormField(
+                          readOnly: true,
+                          enabled: false,
+                          decoration: InputDecoration(
+                            hintStyle:
+                                const TextStyle(color: AppColors.darkGray),
+                            hintText: controller.selectedDateValue.value,
+                            suffixIcon: IconButton(
+                              icon: const Icon(Icons.calendar_today),
+                              onPressed: () => _selectDate(context),
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                              borderSide: const BorderSide(
+                                color: AppColors.primaryColor,
+                                width: 2.0,
+                              ),
                             ),
                           ),
                         ),
@@ -111,14 +118,15 @@ class ServiceBookingDateBottomSheet extends GetView<ServiceController> {
                   child: Column(
                     children: [
                       SizedBox(
-                        height: 210,
+                        height: 220,
                         child: GridView.builder(
+                            padding: const EdgeInsets.only(bottom: 5.0),
                             shrinkWrap: true,
                             gridDelegate:
                                 const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 4,
-                              crossAxisSpacing: 15,
-                              mainAxisSpacing: 15,
+                              crossAxisSpacing: 16,
+                              mainAxisSpacing: 16,
                               mainAxisExtent: 36,
                             ),
                             itemCount: controller.timeSlots.value.length,

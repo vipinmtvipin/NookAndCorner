@@ -64,6 +64,7 @@ class AuthController extends BaseController {
   var isPhoneLogin = true.obs;
 
   var navigateFrom = "";
+  var navigationFlag = 'mobile';
   @override
   void onInit() {
     super.onInit();
@@ -71,6 +72,7 @@ class AuthController extends BaseController {
       final arguments = Get.arguments as Map<String, dynamic>;
 
       navigateFrom = arguments['from'] ?? '';
+      navigationFlag = arguments['flag'] ?? 'mobile';
 
       if (navigateFrom == AppRoutes.summeryScreen) {
         String phone = arguments['phone'] ?? '';
@@ -78,12 +80,13 @@ class AuthController extends BaseController {
         phoneController.text = phone ?? '';
         emailController.text = email ?? '';
 
-        if (phone.isNotEmpty) {
+        if (navigationFlag == 'mobile') {
           isPhoneLogin.value = true;
           loginMobile(false);
           authStatus.value = AuthStatus.validMobile;
         } else if (email.isNotEmpty) {
           isPhoneLogin.value = false;
+          loginEmail();
           authStatus.value = AuthStatus.validEmail;
         }
       }

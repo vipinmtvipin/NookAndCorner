@@ -31,6 +31,8 @@ class AddressScreen extends GetView<AddressController> {
           child: NookCornerButton(
             text: 'Add Address',
             onPressed: () {
+              controller.cityController.text =
+                  controller.selectedCity.cityName.toCapitalized;
               navigateAndFetchAddress('add');
             },
           ),

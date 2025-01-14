@@ -63,24 +63,7 @@ class AddressController extends BaseController {
     super.onInit();
     getAddress();
 
-    final value = sessionStorage.read(StorageKeys.selectedCity);
-    if (value != null) {
-      selectedCity = CityData.fromJson(value);
-    }
-
-    cityBounds = LatLngBounds(
-      southwest: LatLng(
-        double.tryParse(selectedCity.south ?? '0.0') ?? 0.0,
-        double.tryParse(selectedCity.west ?? '0.0') ?? 0.0,
-      ),
-      northeast: LatLng(
-        double.tryParse(selectedCity.north ?? '0.0') ?? 0.0,
-        double.tryParse(selectedCity.east ?? '0.0') ?? 0.0,
-      ), // Southwest corner of the city
-    );
-
-    currentLocation.value = getCityCenter(cityBounds!);
-    selectedLocation.value = currentLocation.value;
+    settingSelectedCityInfo();
   }
 
   LatLng getCityCenter(LatLngBounds cityBounds) {
@@ -277,5 +260,26 @@ class AddressController extends BaseController {
     houseFlatController.clear();
     searchController.clear();
     selectedAddress.value = AddressData.empty();
+  }
+
+  void settingSelectedCityInfo() {
+    final value = sessionStorage.read(StorageKeys.selectedCity);
+    if (value != null) {
+      selectedCity = CityData.fromJson(value);
+    }
+
+    cityBounds = LatLngBounds(
+      southwest: LatLng(
+        double.tryParse(selectedCity.south ?? '0.0') ?? 0.0,
+        double.tryParse(selectedCity.west ?? '0.0') ?? 0.0,
+      ),
+      northeast: LatLng(
+        double.tryParse(selectedCity.north ?? '0.0') ?? 0.0,
+        double.tryParse(selectedCity.east ?? '0.0') ?? 0.0,
+      ), // Southwest corner of the city
+    );
+
+    currentLocation.value = getCityCenter(cityBounds!);
+    selectedLocation.value = currentLocation.value;
   }
 }

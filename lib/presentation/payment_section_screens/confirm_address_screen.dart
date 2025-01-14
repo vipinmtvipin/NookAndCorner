@@ -55,6 +55,8 @@ class ConfirmAddressScreen extends GetView<AddressController> {
     if (controller.addressList.value.isNullOrEmpty) {
       controller.getAddress();
     }
+    controller.settingSelectedCityInfo();
+
     return SafeArea(
       top: false,
       bottom: false,

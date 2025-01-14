@@ -6,6 +6,7 @@ import 'package:customerapp/core/extensions/list_extensions.dart';
 import 'package:customerapp/core/extensions/string_extensions.dart';
 import 'package:customerapp/core/routes/app_routes.dart';
 import 'package:customerapp/core/theme/color_constant.dart';
+import 'package:customerapp/core/utils/logger.dart';
 import 'package:customerapp/generated/assets.gen.dart';
 import 'package:customerapp/presentation/chat/message_data.dart';
 import 'package:customerapp/presentation/common_widgets/conditional_widget.dart';
@@ -92,10 +93,12 @@ class ChatScreenState extends State<ChatScreen> {
   Future<void> _pickFile() async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
+      allowMultiple: true,
       allowedExtensions: ['jpg', 'jpeg', 'png', 'mp4', 'mov', 'avi', '3gp'],
       allowCompression: true,
     );
     if (result != null) {
+      Logger.e("filesssssssss----", result.files.length);
       final file = result.files.first;
       await myBookingController.uploadFile(file, adminCommonMessage, name);
     }

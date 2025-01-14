@@ -138,6 +138,7 @@ class AccountController extends BaseController {
           mainController.loggedIn.value = false;
           Get.offAndToNamed(AppRoutes.loginScreen, arguments: {
             'from': AppRoutes.accountScreen,
+            "flag": "",
             "email": '',
             "phone": '',
           });

@@ -483,11 +483,21 @@ class ServiceController extends BaseController {
         showSnackBar(
             "Warning", "${e.toString()}, Please login.", Colors.black54);
         if (e.toString().contains('User already exists')) {
-          await Get.toNamed(AppRoutes.loginScreen, arguments: {
-            'from': AppRoutes.summeryScreen,
-            "email": emailController.text,
-            "phone": phoneController.text,
-          });
+          if (e.toString().contains('email address')) {
+            await Get.toNamed(AppRoutes.loginScreen, arguments: {
+              'from': AppRoutes.summeryScreen,
+              "flag": "email",
+              "email": emailController.text,
+              "phone": phoneController.text,
+            });
+          } else {
+            await Get.toNamed(AppRoutes.loginScreen, arguments: {
+              'from': AppRoutes.summeryScreen,
+              "flag": "mobile",
+              "email": emailController.text,
+              "phone": phoneController.text,
+            });
+          }
 
           if (isLogin) {
             createJob();
