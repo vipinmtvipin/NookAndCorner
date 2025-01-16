@@ -8,5 +8,6 @@ abstract class AuthRepository {
   Future<LoginResponds?> signupMobile(String username);
   Future<LoginResponds?> signupEmail(String username);
   Future<LoginResponds?> signup(LoginRequest request);
+  Future<LoginResponds?> jobCreateVerifyOtp(LoginRequest request);
   Future<LoginResponds?> forgetPassword(String request);
 }

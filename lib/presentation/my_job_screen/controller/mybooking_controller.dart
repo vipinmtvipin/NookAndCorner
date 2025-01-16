@@ -58,6 +58,8 @@ class MyBookingController extends BaseController {
   final RescheduleJobUseCase _rescheduleJobUseCase;
   final ReviewJobUseCase _reviewJobUseCase;
 
+  List<String> fileUrls = [];
+
   final FileUploadUseCase _fileUploadUseCase;
   final UpdateAddonUseCase _updateAddonUseCase;
   final AddCouponUseCase _applyCouponUseCase;
@@ -130,10 +132,12 @@ class MyBookingController extends BaseController {
     promoCodeController.clear();
   }
 
-  Future<void> getJobs() async {
+  Future<void> getJobs({bool isLoader = true}) async {
     if (await _connectivityService.isConnected()) {
       try {
-        showLoadingDialog();
+        if (isLoader) {
+          showLoadingDialog();
+        }
 
         var userId = sessionStorage.read(StorageKeys.userId);
         var request = MyJobRequest(
@@ -148,9 +152,13 @@ class MyBookingController extends BaseController {
           NotificationMsgUtil.cancelPeriodicNotification();
         }
 
-        hideLoadingDialog();
+        if (isLoader) {
+          hideLoadingDialog();
+        }
       } catch (e) {
-        hideLoadingDialog();
+        if (isLoader) {
+          hideLoadingDialog();
+        }
         e.printInfo();
       }
     } else {
@@ -243,10 +251,10 @@ class MyBookingController extends BaseController {
     });
 
     if (from == 'list') {
-      getJobs();
+      getJobs(isLoader: false);
     } else {
       Get.back();
-      getJobs();
+      getJobs(isLoader: false);
     }
   }
 
@@ -577,38 +585,54 @@ class MyBookingController extends BaseController {
   }
 
   Future<void> uploadFile(
-      PlatformFile file, String adminMessage, String userName) async {
+      List<PlatformFile> files, String adminMessage, String userName) async {
     if (await _connectivityService.isConnected()) {
       try {
         showLoadingDialog();
 
-        var fileType = 'image';
-        if (file.path!.contains('jpg') ||
-            file.path!.contains('jpeg') ||
-            file.path!.contains('png')) {
-          fileType = 'image';
-        } else {
-          fileType = 'video';
-        }
-
         List<FileUploadRequest> request = [];
 
-        request.add(FileUploadRequest(
-          fileName: file.path?.split('/').last,
-          fileType: fileType,
-        ));
+        for (var file in files) {
+          var fileType = 'image';
+          if (file.path!.contains('jpg') ||
+              file.path!.contains('jpeg') ||
+              file.path!.contains('png')) {
+            fileType = 'image';
+          } else {
+            fileType = 'video';
+          }
+          request.add(FileUploadRequest(
+            fileName: file.path?.split('/').last,
+            fileType: fileType,
+          ));
+        }
+
         var services = await _fileUploadUseCase.execute(request);
 
         if (services?.success == true) {
-          final fileData = File(file.path!);
+          for (int i = 0; i < files.length; i++) {
+            final fileData = File(files[i].path!);
 
-          _uploadToAws(
-            services?.data?.urls.first.preSignedUrl ?? '',
-            services?.data?.urls.first.filePath ?? '',
-            fileData,
-            adminMessage,
-            userName,
-          );
+            bool singleItem = true;
+            bool lastItem = false;
+            if (files.length > 1) {
+              singleItem = false;
+            }
+            if (i == files.length - 1) {
+              lastItem = true;
+            }
+
+            fileUrls.add(services?.data?.urls[i].filePath ?? '');
+
+            _uploadToAws(
+                services?.data?.urls[i].preSignedUrl ?? '',
+                services?.data?.urls[i].filePath ?? '',
+                fileData,
+                adminMessage,
+                userName,
+                singleItem,
+                lastItem);
+          }
         } else {
           showToast('File Uploaded failed');
         }
@@ -624,8 +648,15 @@ class MyBookingController extends BaseController {
     }
   }
 
-  Future<void> _uploadToAws(String preSignedUrl, String imageUrl, File file,
-      String adminMessage, String name) async {
+  Future<void> _uploadToAws(
+    String preSignedUrl,
+    String imageUrl,
+    File file,
+    String adminMessage,
+    String name,
+    bool singleItem,
+    bool lastItem,
+  ) async {
     try {
       showLoadingDialog();
 
@@ -689,13 +720,21 @@ class MyBookingController extends BaseController {
       );
 
       if (response.statusCode == 200) {
-        sendFileToFirebase(
-          imageUrl,
-          selectedJob.value.userId.toString(),
-          selectedJob.value.jobId.toString(),
-          adminMessage,
-          name,
-        );
+        if (singleItem) {
+          sendFileToFirebase(
+            selectedJob.value.userId.toString(),
+            selectedJob.value.jobId.toString(),
+            adminMessage,
+            name,
+          );
+        } else if (lastItem) {
+          sendFileToFirebase(
+            selectedJob.value.userId.toString(),
+            selectedJob.value.jobId.toString(),
+            adminMessage,
+            name,
+          );
+        }
       } else {
         showToast('File Uploaded failed');
       }
@@ -706,15 +745,19 @@ class MyBookingController extends BaseController {
     }
   }
 
-  void sendFileToFirebase(String fileUrl, String userId, String jobId,
-      String adminMessage, String name) {
+  void sendFileToFirebase(
+    String userId,
+    String jobId,
+    String adminMessage,
+    String name,
+  ) {
     final ChatService chatService = GetIt.I<ChatService>();
     final message = Message(
       from: 'user',
       message: '',
       timestamp: Timestamp.now(),
       userId: sessionStorage.read(StorageKeys.userId).toString(),
-      fileUrl: [fileUrl],
+      fileUrl: fileUrls,
       name: name,
     );
     chatService.sendMessage(
@@ -722,6 +765,7 @@ class MyBookingController extends BaseController {
       jobId,
       message,
     );
+
     final messageAdmin = Message(
       from: 'admin',
       message: adminMessage,
@@ -735,5 +779,8 @@ class MyBookingController extends BaseController {
       jobId,
       messageAdmin,
     );
+
+    fileUrls.clear();
+    fileUrls = [];
   }
 }

@@ -67,8 +67,9 @@ class AddressScreen extends GetView<AddressController> {
                             onTap: (type) {
                               controller.selectedAddress.value = address;
                               if (type == 'Edit') {
-                                controller.cityController.text =
-                                    address.location.toCapitalized;
+                                controller.cityController.text = controller
+                                    .selectedCity.cityName.toCapitalized;
+
                                 controller.streetController.text =
                                     address.addresslineOne.toCapitalized;
                                 controller.houseFlatController.text =
@@ -83,6 +84,7 @@ class AddressScreen extends GetView<AddressController> {
                                   double.tryParse(address.lat ?? '0.0') ?? 0.0,
                                   double.tryParse(address.lng ?? '0.0') ?? 0.0,
                                 );
+
                                 navigateAndFetchAddress('edit');
                               }
                             });

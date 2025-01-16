@@ -3,6 +3,8 @@ class TimeSlotRequest {
   String? jobDate;
   String? serviceId;
   String? tagId;
+  String? userId;
 
-  TimeSlotRequest({this.categoryId, this.jobDate, this.serviceId, this.tagId});
+  TimeSlotRequest(
+      {this.categoryId, this.jobDate, this.serviceId, this.tagId, this.userId});
 }

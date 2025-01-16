@@ -692,6 +692,7 @@ class SummeryScreen extends GetView<ServiceController> {
     controller.promoCodeController.clear();
     controller.phoneController.clear();
     controller.emailController.clear();
+    controller.isDateChoose = false;
   }
 }
 

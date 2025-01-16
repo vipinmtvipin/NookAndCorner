@@ -1,4 +1,5 @@
 import 'package:customerapp/core/constants/constants.dart';
+import 'package:customerapp/core/extensions/string_extensions.dart';
 import 'package:customerapp/core/localization/localization_keys.dart';
 import 'package:customerapp/core/network/connectivity_service.dart';
 import 'package:customerapp/core/routes/app_routes.dart';
@@ -90,6 +91,9 @@ class ServiceController extends BaseController {
   Rx<DateTime> selectedDate = Rx(
     DateTime.now().add(Duration(days: 1)),
   );
+
+  bool isDateChoose = false;
+
   // Rx<String> selectedDateValue = Rx('Select Date');
   var selectedDateValue = 'Select Date'.obs;
   var selectedTime = ''.obs;
@@ -136,6 +140,7 @@ class ServiceController extends BaseController {
     emailController.clear();
     scrollController.dispose();
     summeryScrollController.dispose();
+    isDateChoose = false;
   }
 
   @override
@@ -364,7 +369,6 @@ class ServiceController extends BaseController {
   Future<void> createJob() async {
     if (await _connectivityService.isConnected()) {
       try {
-        showLoadingDialog();
         JobRequest request;
         var selectedCity = CityData.empty();
         final value = sessionStorage.read(StorageKeys.selectedCity);
@@ -391,6 +395,7 @@ class ServiceController extends BaseController {
         }
 
         if (isLogin) {
+          showLoadingDialog();
           request = JobRequest(
             addOns: addOnList,
             advanceAmount: advanceAmount.value,
@@ -429,6 +434,16 @@ class ServiceController extends BaseController {
           jobID = job?.data?.jobCreated?.jobId.toString() ?? "";
           jobLoginData.value = job!;
         } else {
+          if (onPhoneChanged()) {
+            showToast('Please enter valid phone number');
+            return;
+          } else if (!onEmailChanged()) {
+            showToast('Please enter valid email address');
+            return;
+          }
+
+          showLoadingDialog();
+
           request = JobRequest(
             addOns: addOnList,
             advanceAmount: advanceAmount.value,
@@ -458,6 +473,7 @@ class ServiceController extends BaseController {
                 couponData.value.isEmpty ? null : couponData.value.first.status,
             serviceId: selectedService.value.servId.toString(),
             supervisors: selectedTimeSlot.supervisors ?? [],
+            otpVerified: false,
           );
           var job = await _createJobUseCase.execute(request);
 
@@ -498,9 +514,19 @@ class ServiceController extends BaseController {
               "phone": phoneController.text,
             });
           }
-
           if (isLogin) {
             createJob();
+          }
+        } else if (e.toString().contains('Verify phone number')) {
+          await Get.toNamed(AppRoutes.loginScreen, arguments: {
+            'from': AppRoutes.summeryScreen,
+            "flag": "mobileJob",
+            "email": emailController.text,
+            "phone": phoneController.text,
+          });
+
+          if (isLogin) {
+            createJobVerifyOtp();
           }
         }
       }
@@ -509,15 +535,127 @@ class ServiceController extends BaseController {
     }
   }
 
+  Future<void> createJobVerifyOtp() async {
+    if (await _connectivityService.isConnected()) {
+      try {
+        JobRequest request;
+        var selectedCity = CityData.empty();
+        final value = sessionStorage.read(StorageKeys.selectedCity);
+        if (value != null) {
+          selectedCity = CityData.fromJson(value);
+        }
+
+        var selectedTimeSlot = timeSlots.value.firstWhere((element) {
+          return DateFormat('hh:mm aa').format(element.slotStart!) ==
+              selectedTime.value;
+        }, orElse: () => TimeSlotData.empty());
+
+        var isGoldenHour = isAfter6PM(selectedTimeSlot.slotStart);
+
+        List<AddOnAdd> addOnList = [];
+        for (var e in addOns.value) {
+          addOnList.add(
+            AddOnAdd(
+                addonId: e.addonId,
+                addonPrice: double.tryParse(e.price ?? '0'),
+                quantity: e.quantity,
+                serviceId: selectedService.value.servId),
+          );
+        }
+
+        if (onPhoneChanged()) {
+          showToast('Please enter valid phone number');
+          return;
+        } else if (!onEmailChanged()) {
+          showToast('Please enter valid email address');
+          return;
+        }
+
+        showLoadingDialog();
+
+        request = JobRequest(
+          addOns: addOnList,
+          advanceAmount: advanceAmount.value,
+          advancePercent:
+              double.tryParse(metaData.value.advancePercentage ?? '0'),
+          cityId: selectedCity.cityId,
+          convenienceFee: convenienceFee.value,
+          conveniencePercent:
+              double.tryParse(metaData.value.conveniencePercentage ?? '0'),
+          email: emailController.text.toString(),
+          goldenHoursCharge: isGoldenHour ? goldenHourAmount.value : 0.0,
+          isGolderHour: isGoldenHour,
+          jobDate: selectedDate.value,
+          jobDateOnly: selectedDate.value,
+          name: sessionStorage.read(StorageKeys.username) ?? '',
+          overNightHikePercentage:
+              double.tryParse(metaData.value.overNightHikePercentage ?? '0'),
+          phoneNumber: phoneController.text.toString(),
+          price: grandTotal.value,
+          promotionAmount: couponData.value.isEmpty
+              ? null
+              : couponData.value.first.discountOfferPrice,
+          promotionId: couponData.value.isEmpty
+              ? null
+              : couponData.value.first.promotionId,
+          promotionStatus:
+              couponData.value.isEmpty ? null : couponData.value.first.status,
+          serviceId: selectedService.value.servId.toString(),
+          supervisors: selectedTimeSlot.supervisors ?? [],
+          otpVerified: true,
+        );
+        var job = await _createJobUseCase.execute(request);
+
+        orderID.value = job?.data?.jobCreated?.txnId ?? "";
+        jobID = job?.data?.jobCreated?.jobId.toString() ?? "";
+        jobData.value = job!;
+
+        saveJobUserData();
+        Get.back();
+
+        hideLoadingDialog();
+
+        paymentType.value == "Advance";
+        Get.toNamed(AppRoutes.paymentScreen, arguments: {
+          'orderID': orderID.value,
+          'paymentAmount': advanceAmount.value,
+          'paymentType': "Advance",
+        });
+      } catch (e) {
+        hideLoadingDialog();
+        Get.back();
+        showSnackBar("Warning", "Something went wrong, please try again!",
+            Colors.black54);
+      }
+    } else {
+      showToast(LocalizationKeys.noNetwork.tr);
+    }
+  }
+
+  bool onPhoneChanged() {
+    return GetUtils.isNullOrBlank(phoneController.text)! ||
+        phoneController.text.length < 10;
+  }
+
+  bool onEmailChanged() {
+    return GetUtils.isEmail(emailController.text);
+  }
+
   void dateSelected(ServiceData service, DateTime date) {
+    isDateChoose = true;
     selectedDate.value = date;
     selectedDateValue.value = DateFormat('dd/MM/yyyy').format(date);
 
+    var userId = sessionStorage.read(StorageKeys.userId).toString();
+    if (userId.isNullOrEmpty) {
+      userId = '';
+    }
     TimeSlotRequest request = TimeSlotRequest(
       categoryId: categoryId.value,
       tagId: service.tags.first.id.toString(),
       jobDate: DateFormat('yyyy-MM-dd').format(selectedDate.value),
       serviceId: service.servId.toString(),
+      userId: userId,
     );
 
     getTimeSlots(request);
@@ -714,19 +852,21 @@ class ServiceController extends BaseController {
   }
 
   void saveJobUserData() {
-    sessionStorage.write(StorageKeys.loggedIn, true);
-    sessionStorage.write(
-        StorageKeys.token, jobData.value.data?.accessToken ?? "");
-    sessionStorage.write(
-        StorageKeys.userId, jobData.value.data?.jobData?.userId ?? "");
-    sessionStorage.write(StorageKeys.email, emailController.text);
-    sessionStorage.write(StorageKeys.mobile, phoneController.text);
+    if (jobData.value.data != null) {
+      sessionStorage.write(StorageKeys.loggedIn, true);
+      sessionStorage.write(
+          StorageKeys.token, jobData.value.data?.accessToken ?? "");
+      sessionStorage.write(
+          StorageKeys.userId, jobData.value.data?.jobData?.userId ?? "");
+      sessionStorage.write(StorageKeys.email, emailController.text);
+      sessionStorage.write(StorageKeys.mobile, phoneController.text);
 
-    try {
-      Get.find<MainScreenController>().loggedIn.value = true;
-      Get.find<MainScreenController>().updatePushToken();
-    } catch (e) {
-      Logger.e("Error in controller", e);
+      try {
+        Get.find<MainScreenController>().loggedIn.value = true;
+        Get.find<MainScreenController>().updatePushToken();
+      } catch (e) {
+        Logger.e("Error in controller", e);
+      }
     }
   }
 

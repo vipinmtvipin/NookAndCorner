@@ -1,4 +1,5 @@
 import 'package:customerapp/core/constants/constants.dart';
+import 'package:customerapp/core/extensions/string_extensions.dart';
 import 'package:customerapp/core/network/api_service.dart';
 import 'package:customerapp/core/network/dio_exception.dart';
 import 'package:customerapp/domain/model/service/service_details_responds.dart';
@@ -84,13 +85,24 @@ class ServiceRepositoryIml extends ServiceRepository {
   @override
   Future<TimeSlotResponds?> getTimeSlotes(TimeSlotRequest request) async {
     try {
+      var requestData = {};
+      if (request.userId.isNotNullOrEmpty && request.userId != "null") {
+        requestData = {
+          "categoryId": request.categoryId,
+          "jobDate": request.jobDate,
+          "serviceId": request.serviceId,
+          "userId": request.userId,
+        };
+      } else {
+        requestData = {
+          "categoryId": request.categoryId,
+          "jobDate": request.jobDate,
+          "serviceId": request.serviceId,
+        };
+      }
       Response response =
           await GetIt.I.get<ApiService>().post(NetworkKeys.timeSlot,
-              data: {
-                "categoryId": request.categoryId,
-                "jobDate": request.jobDate,
-                "serviceId": request.serviceId
-              },
+              data: requestData,
               options: Options(
                 contentType: 'application/json',
               ));

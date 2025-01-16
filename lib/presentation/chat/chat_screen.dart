@@ -1,12 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:customerapp/core/constants/constants.dart';
-import 'package:customerapp/core/extensions/bool_extension.dart';
 import 'package:customerapp/core/extensions/date_time_extensions.dart';
 import 'package:customerapp/core/extensions/list_extensions.dart';
 import 'package:customerapp/core/extensions/string_extensions.dart';
 import 'package:customerapp/core/routes/app_routes.dart';
 import 'package:customerapp/core/theme/color_constant.dart';
-import 'package:customerapp/core/utils/logger.dart';
 import 'package:customerapp/generated/assets.gen.dart';
 import 'package:customerapp/presentation/chat/message_data.dart';
 import 'package:customerapp/presentation/common_widgets/conditional_widget.dart';
@@ -98,8 +96,7 @@ class ChatScreenState extends State<ChatScreen> {
       allowCompression: true,
     );
     if (result != null) {
-      Logger.e("filesssssssss----", result.files.length);
-      final file = result.files.first;
+      final file = result.files;
       await myBookingController.uploadFile(file, adminCommonMessage, name);
     }
   }
@@ -200,16 +197,6 @@ class ChatScreenState extends State<ChatScreen> {
                       final isCurrentUser = messageData.from == currentUserType;
                       final isFile =
                           messageData.fileUrl?.isNotNullOrEmpty ?? false;
-                      var fileType = 'image';
-                      if (isFile.absolute) {
-                        if (messageData.fileUrl!.first.contains('jpg') ||
-                            messageData.fileUrl!.first.contains('jpeg') ||
-                            messageData.fileUrl!.first.contains('png')) {
-                          fileType = 'image';
-                        } else {
-                          fileType = 'video';
-                        }
-                      }
                       return Align(
                         alignment: isCurrentUser
                             ? Alignment.centerRight
@@ -219,68 +206,78 @@ class ChatScreenState extends State<ChatScreen> {
                           onFalse: Padding(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 15.0, vertical: 10),
-                            child: Hero(
-                              tag: messageData.fileUrl?.isNotEmpty == true
-                                  ? messageData.fileUrl!.first
-                                  : '',
-                              child: ConditionalWidget(
-                                condition: fileType == 'image',
-                                onFalse: GestureDetector(
-                                  onTap: () {
-                                    Get.toNamed(AppRoutes.videoPlayerScreen,
-                                        arguments: {
-                                          'videoUrl':
-                                              messageData.fileUrl?.isNotEmpty ==
-                                                      true
-                                                  ? messageData.fileUrl?.first
-                                                  : ''
-                                        });
-                                  },
-                                  child: ClipRRect(
+                            child: GridView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                crossAxisSpacing: 10,
+                                mainAxisSpacing: 10,
+                              ),
+                              itemCount: messageData.fileUrl!.length,
+                              itemBuilder: (context, index) {
+                                var fileUrl = messageData.fileUrl![index];
+                                var fileType = 'image';
+                                if (fileUrl.contains('jpg') ||
+                                    fileUrl.contains('jpeg') ||
+                                    fileUrl.contains('png')) {
+                                  fileType = 'image';
+                                } else {
+                                  fileType = 'video';
+                                }
+
+                                return Hero(
+                                  tag: fileUrl,
+                                  child: ConditionalWidget(
+                                    condition: fileType == 'image',
+                                    onFalse: GestureDetector(
+                                      onTap: () {
+                                        Get.toNamed(AppRoutes.videoPlayerScreen,
+                                            arguments: {'videoUrl': fileUrl});
+                                      },
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(20),
+                                        clipBehavior: Clip.antiAlias,
+                                        child: Stack(
+                                          children: [
+                                            Assets.images.videoThum.image(
+                                              height: 180,
+                                              width: 250,
+                                              fit: BoxFit.fill,
+                                            ),
+                                            Positioned(
+                                              top: 0,
+                                              left: 0,
+                                              bottom: 0,
+                                              right: 0,
+                                              child: Icon(Icons.play_circle,
+                                                  color: Colors.black,
+                                                  size: 50),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    child: ClipRRect(
                                       borderRadius: BorderRadius.circular(20),
                                       clipBehavior: Clip.antiAlias,
-                                      child: Stack(
-                                        children: [
-                                          Assets.images.videoThum.image(
-                                            height: 180,
-                                            width: 250,
-                                            fit: BoxFit.fill,
-                                          ),
-                                          Positioned(
-                                            top: 0,
-                                            left: 0,
-                                            bottom: 0,
-                                            right: 0,
-                                            child: Icon(Icons.play_circle,
-                                                color: Colors.black, size: 50),
-                                          )
-                                        ],
-                                      )),
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(20),
-                                  clipBehavior: Clip.antiAlias,
-                                  child: NetworkImageView(
-                                    onTap: () {
-                                      Get.toNamed(AppRoutes.fullScreenImageView,
-                                          arguments: {
-                                            'imageUrl': messageData
-                                                        .fileUrl?.isNotEmpty ==
-                                                    true
-                                                ? messageData.fileUrl?.first
-                                                : ''
-                                          });
-                                    },
-                                    borderRadius: 20,
-                                    url: messageData.fileUrl?.isNotEmpty == true
-                                        ? messageData.fileUrl?.first
-                                        : '',
-                                    height: 250,
-                                    width: 200,
-                                    fit: BoxFit.contain,
+                                      child: NetworkImageView(
+                                        onTap: () {
+                                          Get.toNamed(
+                                              AppRoutes.fullScreenImageView,
+                                              arguments: {'imageUrl': fileUrl});
+                                        },
+                                        borderRadius: 20,
+                                        url: fileUrl,
+                                        height: 250,
+                                        width: 200,
+                                        fit: BoxFit.contain,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
+                                );
+                              },
                             ),
                           ),
                           child: Container(

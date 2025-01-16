@@ -138,6 +138,28 @@ class AuthRepositoryIml extends AuthRepository {
   }
 
   @override
+  Future<LoginResponds?> jobCreateVerifyOtp(LoginRequest request) async {
+    try {
+      Response response =
+          await GetIt.I.get<ApiService>().post(NetworkKeys.jobOtpVerify,
+              data: {
+                'phone': request.username,
+                'otp': request.password,
+              },
+              options: Options(
+                contentType: 'application/json',
+              ));
+
+      final LoginResponds data = loginRespondsFromJson(response.toString());
+
+      return data;
+    } on DioException catch (e) {
+      var error = DioExceptionData.fromDioError(e);
+      throw error.errorMessage;
+    }
+  }
+
+  @override
   Future<LoginResponds?> forgetPassword(String request) async {
     try {
       Response response =

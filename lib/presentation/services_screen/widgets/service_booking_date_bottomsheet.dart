@@ -87,10 +87,12 @@ class ServiceBookingDateBottomSheet extends GetView<ServiceController> {
                         height: 40,
                         width: 40,
                         onTap: () {
-                          controller.selectedDate.value = DateTime.now();
-                          controller.selectedDateValue.value = 'Select Date';
                           controller.selectedTime.value = '';
                           controller.timeSlots.value = [];
+                          if (controller.isDateChoose) {
+                            controller.dateSelected(
+                                service, controller.selectedDate.value);
+                          }
                         },
                         alignment: Alignment.topLeft,
                         shape: IconButtonShape.CircleBorder35,

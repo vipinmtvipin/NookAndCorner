@@ -61,6 +61,8 @@ class NetworkKeys {
   static const String signupEmail = '/auth/register/email';
   static const String signup = '/auth/register/verify-otp';
 
+  static const String jobOtpVerify = '/auth/register/job/verify-otp';
+
   static const String forgetPassword = '/auth/forgot-password';
 
   static const String city = '/cities';

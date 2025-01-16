@@ -136,12 +136,7 @@ class AccountController extends BaseController {
           MainScreenController mainController =
               Get.find<MainScreenController>();
           mainController.loggedIn.value = false;
-          Get.offAndToNamed(AppRoutes.loginScreen, arguments: {
-            'from': AppRoutes.accountScreen,
-            "flag": "",
-            "email": '',
-            "phone": '',
-          });
+          Get.offAndToNamed(AppRoutes.mainScreen);
         }
 
         hideLoadingDialog();

@@ -4,6 +4,7 @@ import 'package:customerapp/domain/usecases/forget_password/forget_password_use_
 import 'package:customerapp/domain/usecases/login/email_login_use_case.dart';
 import 'package:customerapp/domain/usecases/login/mobile_login_use_case.dart';
 import 'package:customerapp/domain/usecases/signup/email_signup_use_case.dart';
+import 'package:customerapp/domain/usecases/signup/job_signup_use_case.dart';
 import 'package:customerapp/domain/usecases/signup/mobile_signup_use_case.dart';
 import 'package:customerapp/domain/usecases/signup/signup_use_case.dart';
 import 'package:customerapp/presentation/login_screen/controller/auth_controller.dart';
@@ -21,12 +22,16 @@ class AuthBinding extends Bindings {
     Get.lazyPut(() => EmailLoginUseCase(Get.find()));
 
     Get.lazyPut(() => SignupUseCase(Get.find()));
+
+    Get.lazyPut(() => JobSignupUseCase(Get.find()));
+
     Get.lazyPut(() => MobileSignupUseCase(Get.find()));
     Get.lazyPut(() => EmailSignupUseCase(Get.find()));
 
     Get.lazyPut(() => ForgetPasswordUseCase(Get.find()));
 
     Get.lazyPut(() => AuthController(
+          Get.find(),
           Get.find(),
           Get.find(),
           Get.find(),

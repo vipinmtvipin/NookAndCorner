@@ -10,6 +10,7 @@ import 'package:customerapp/domain/usecases/login/email_login_use_case.dart';
 import 'package:customerapp/domain/usecases/login/login_use_case.dart';
 import 'package:customerapp/domain/usecases/login/mobile_login_use_case.dart';
 import 'package:customerapp/domain/usecases/signup/email_signup_use_case.dart';
+import 'package:customerapp/domain/usecases/signup/job_signup_use_case.dart';
 import 'package:customerapp/domain/usecases/signup/mobile_signup_use_case.dart';
 import 'package:customerapp/domain/usecases/signup/signup_use_case.dart';
 import 'package:customerapp/presentation/base_controller.dart';
@@ -33,20 +34,20 @@ class AuthController extends BaseController {
   final EmailLoginUseCase _emailLoginUseCase;
 
   final SignupUseCase _signupUseCase;
+  final JobSignupUseCase _jobSignupUseCase;
   final MobileSignupUseCase _mobileSignupUseCase;
   final EmailSignupUseCase _emailSignupUseCase;
-
   final ForgetPasswordUseCase _forgetPasswordUseCase;
 
   AuthController(
-    this._loginUseCase,
-    this._mobileLoginUseCase,
-    this._emailLoginUseCase,
-    this._signupUseCase,
-    this._mobileSignupUseCase,
-    this._emailSignupUseCase,
-    this._forgetPasswordUseCase,
-  );
+      this._loginUseCase,
+      this._mobileLoginUseCase,
+      this._emailLoginUseCase,
+      this._signupUseCase,
+      this._mobileSignupUseCase,
+      this._emailSignupUseCase,
+      this._forgetPasswordUseCase,
+      this._jobSignupUseCase);
 
   var authStatus = AuthStatus.unknown.obs;
   late final _connectivityService = getIt<ConnectivityService>();
@@ -80,9 +81,13 @@ class AuthController extends BaseController {
         phoneController.text = phone ?? '';
         emailController.text = email ?? '';
 
-        if (navigationFlag == 'mobile') {
+        if (navigationFlag == 'mobile' || navigationFlag == 'mobileJob') {
           isPhoneLogin.value = true;
-          loginMobile(false);
+          if (navigationFlag == 'mobileJob') {
+            signupMobile(false);
+          } else {
+            loginMobile(false);
+          }
           authStatus.value = AuthStatus.validMobile;
         } else if (email.isNotEmpty) {
           isPhoneLogin.value = false;
@@ -109,7 +114,11 @@ class AuthController extends BaseController {
       if (authStatus.value == AuthStatus.validMobile ||
           authStatus.value == AuthStatus.validEmail) {
         showLoadingDialog();
-        login();
+        if (navigationFlag == 'mobileJob') {
+          jobSignup();
+        } else {
+          login();
+        }
       } else {
         if (isPhoneLogin.value) {
           if (onPhoneChanged()) {
@@ -323,6 +332,35 @@ class AuthController extends BaseController {
           _onOnTapLogInSuccess(responds.data);
         } else {
           showToast(responds.message ?? "Invalid signup");
+        }
+      }
+    } catch (e) {
+      hideLoadingDialog();
+      showSnackBar("Error", e.toString(), Colors.black54);
+    }
+  }
+
+  jobSignup() async {
+    var username =
+        isPhoneLogin.value ? phoneController.text : emailController.text;
+    var password =
+        isPhoneLogin.value ? otpController.value.text : passwordController.text;
+    LoginRequest postLoginRequest =
+        LoginRequest(username: username, password: password);
+
+    try {
+      var responds = await _jobSignupUseCase.execute(postLoginRequest);
+
+      if (responds != null) {
+        hideLoadingDialog();
+        if (responds.success == true) {
+          if (navigateFrom == AppRoutes.summeryScreen) {
+            Get.offAndToNamed(AppRoutes.summeryScreen);
+          } else {
+            Get.offAndToNamed(AppRoutes.mainScreen);
+          }
+        } else {
+          showToast(responds.message ?? "Invalid attempt");
         }
       }
     } catch (e) {

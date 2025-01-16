@@ -21,6 +21,7 @@ class JobRequest {
     required this.serviceId,
     required this.supervisors,
     this.userId,
+    this.otpVerified = false,
   });
 
   final List<AddOnAdd> addOns;
@@ -44,6 +45,7 @@ class JobRequest {
   final String? serviceId;
   final List<int> supervisors;
   final String? userId;
+  final bool otpVerified;
 
   JobRequest copyWith({
     List<AddOnAdd>? addOns,
@@ -67,6 +69,7 @@ class JobRequest {
     String? serviceId,
     List<int>? supervisors,
     String? userId,
+    bool? otpVerified,
   }) {
     return JobRequest(
       addOns: addOns ?? this.addOns,
@@ -91,6 +94,7 @@ class JobRequest {
       serviceId: serviceId ?? this.serviceId,
       supervisors: supervisors ?? this.supervisors,
       userId: userId ?? this.userId,
+      otpVerified: otpVerified ?? this.otpVerified,
     );
   }
 
@@ -122,6 +126,7 @@ class JobRequest {
           ? []
           : List<int>.from(json["supervisors"]!.map((x) => x)),
       userId: json["userId"],
+      otpVerified: json["otpVerified"] ?? false,
     );
   }
 
@@ -147,11 +152,12 @@ class JobRequest {
         "serviceId": serviceId,
         "supervisors": supervisors.map((x) => x).toList(),
         "userId": userId,
+        "otpVerified": otpVerified,
       };
 
   @override
   String toString() {
-    return "$addOns, $advanceAmount, $advancePercent, $cityId, $convenienceFee, $conveniencePercent, $email, $goldenHoursCharge, $isGolderHour, $jobDate, $jobDateOnly, $name, $overNightHikePercentage, $phoneNumber, $price, $promotionAmount, $promotionId, $promotionStatus, $serviceId, $supervisors, $userId, ";
+    return "$addOns, $advanceAmount, $advancePercent, $cityId, $convenienceFee, $conveniencePercent, $email, $goldenHoursCharge, $isGolderHour, $jobDate, $jobDateOnly, $name, $overNightHikePercentage, $phoneNumber, $price, $promotionAmount, $promotionId, $promotionStatus, $serviceId, $supervisors, $userId,$otpVerified, ";
   }
 }
 

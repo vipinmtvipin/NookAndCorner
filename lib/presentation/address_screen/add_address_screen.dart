@@ -61,21 +61,21 @@ class AddAddressScreen extends GetView<AddressController> {
                           zoomGesturesEnabled: true,
                           initialCameraPosition: CameraPosition(
                             target: controller.currentLocation.value,
-                            zoom: 16.0,
+                            zoom: 13.0,
                           ),
                           onMapCreated: (mController) {
                             controller.mapController = mController;
                             // Move the camera to fit the city bounds
-                            if (controller
+                            /*     if (controller
                                 .selectedAddress.value.location.isNullOrEmpty) {
                               controller.mapController?.moveCamera(
                                   CameraUpdate.newLatLngBounds(
                                       controller.cityBounds!, 0));
-                            } else {
-                              controller.mapController?.animateCamera(
-                                  CameraUpdate.newLatLngZoom(
-                                      controller.currentLocation.value, 15));
-                            }
+                            } else {*/
+                            controller.mapController?.animateCamera(
+                                CameraUpdate.newLatLngZoom(
+                                    controller.currentLocation.value, 13));
+                            //   }
                           },
                           // Restrict the camera movement to the city bounds
                           cameraTargetBounds:
@@ -253,15 +253,17 @@ class AddAddressScreen extends GetView<AddressController> {
     );
   }
 
+  void setMarker(LatLng location) {
+    controller.mapController
+        ?.animateCamera(CameraUpdate.newLatLngZoom(location, 15));
+  }
+
   void _updateLocation(LatLng newPosition) async {
     controller.currentLocation.value = newPosition;
     controller.selectedLocation.value = newPosition;
     // Get the new address based on the location
     List<geo.Placemark> placeMarks = await geo.placemarkFromCoordinates(
         newPosition.latitude, newPosition.longitude);
-    if (placeMarks.isNotEmpty) {
-      controller.cityController.text = placeMarks.first.locality ?? "";
-    }
   }
 
   Future<void> getPlaceDetails(BuildContext context) async {
@@ -293,7 +295,6 @@ class AddAddressScreen extends GetView<AddressController> {
         controller.searchController.selection = TextSelection.fromPosition(
             TextPosition(offset: prediction.description!.length));
 
-        controller.cityController.text = prediction.description!;
         controller.selectedLocation.value = location;
         controller.currentLocation.value = location;
 
@@ -377,7 +378,6 @@ class PlaceSearchScreenState extends State<PlaceSearchScreen> {
 
           setState(() {
             _typeAheadController.text = suggestion.address ?? '';
-            controller.cityController.text = suggestion.address ?? '';
             LatLng location = LatLng(suggestion.latitude ?? '19.0760',
                 suggestion.longitude ?? '72.8777');
             controller.selectedLocation.value = location;
