@@ -454,6 +454,8 @@ class ServiceController extends BaseController {
           orderID.value = job?.data?.jobCreated?.txnId ?? "";
           jobID = job?.data?.jobCreated?.jobId.toString() ?? "";
           jobLoginData.value = job!;
+          sessionStorage.write(StorageKeys.email, email);
+          sessionStorage.write(StorageKeys.mobile, mobile);
         } else {
           showLoadingDialog();
 
