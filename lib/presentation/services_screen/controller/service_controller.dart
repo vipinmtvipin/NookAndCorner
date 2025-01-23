@@ -133,6 +133,9 @@ class ServiceController extends BaseController {
   var isLogin = false;
   var userVerified = false;
 
+  var mobile = "";
+  var email = "";
+
   @override
   void onClose() {
     super.onClose();
@@ -147,6 +150,9 @@ class ServiceController extends BaseController {
   @override
   void onInit() {
     super.onInit();
+
+    mobile = sessionStorage.read(StorageKeys.mobile) ?? "";
+    email = sessionStorage.read(StorageKeys.email) ?? "";
 
     isLogin = sessionStorage.read(StorageKeys.loggedIn) ?? false;
 
@@ -396,6 +402,20 @@ class ServiceController extends BaseController {
         }
 
         if (isLogin) {
+          var email = sessionStorage.read(StorageKeys.email) ?? '';
+          var mobile = sessionStorage.read(StorageKeys.mobile) ?? '';
+
+          if (email == null ||
+              email.toString().isNullOrEmpty ||
+              email.toString() == 'null') {
+            email = emailController.text;
+          }
+          if (mobile == null ||
+              mobile.toString().isNullOrEmpty ||
+              mobile.toString() == 'null') {
+            mobile = phoneController.text;
+          }
+
           showLoadingDialog();
           request = JobRequest(
             addOns: addOnList,
@@ -406,7 +426,7 @@ class ServiceController extends BaseController {
             convenienceFee: convenienceFee.value,
             conveniencePercent:
                 double.tryParse(metaData.value.conveniencePercentage ?? '0'),
-            email: sessionStorage.read(StorageKeys.email).toString(),
+            email: email,
             goldenHoursCharge: isGoldenHour ? goldenHourAmount.value : 0.0,
             isGolderHour: isGoldenHour,
             jobDate: selectedDate.value,
@@ -414,7 +434,7 @@ class ServiceController extends BaseController {
             name: sessionStorage.read(StorageKeys.username).toString(),
             overNightHikePercentage:
                 double.tryParse(metaData.value.overNightHikePercentage ?? '0'),
-            phoneNumber: sessionStorage.read(StorageKeys.mobile).toString(),
+            phoneNumber: mobile,
             price: grandTotal.value,
             promotionAmount: couponData.value.isEmpty
                 ? null
@@ -435,14 +455,6 @@ class ServiceController extends BaseController {
           jobID = job?.data?.jobCreated?.jobId.toString() ?? "";
           jobLoginData.value = job!;
         } else {
-          if (onPhoneChanged()) {
-            showToast('Please enter valid phone number');
-            return;
-          } else if (!onEmailChanged()) {
-            showToast('Please enter valid email address');
-            return;
-          }
-
           showLoadingDialog();
 
           request = JobRequest(
@@ -609,7 +621,6 @@ class ServiceController extends BaseController {
 
         hideLoadingDialog();
 
-        Logger.e("Orderplacement", "3333333333333");
         paymentType.value == "Advance";
         Get.toNamed(AppRoutes.paymentScreen, arguments: {
           'orderID': orderID.value,

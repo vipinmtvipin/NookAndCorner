@@ -650,10 +650,31 @@ class SummeryScreen extends GetView<ServiceController> {
             onPressed: () {
               if (controller.termsAndConditionApply.value) {
                 if (controller.isLogin) {
-                  showAddOnConfirmation(context);
+                  if (controller.email.isNullOrEmpty) {
+                    context.showBottomSheet(
+                      body: ForceLoginBottomSheet(
+                        from: 'email',
+                        onLoggedIn: (login) {
+                          controller.createJob();
+                        },
+                      ),
+                    );
+                  } else if (controller.mobile.isNullOrEmpty) {
+                    context.showBottomSheet(
+                      body: ForceLoginBottomSheet(
+                        from: 'mobile',
+                        onLoggedIn: (login) {
+                          controller.createJob();
+                        },
+                      ),
+                    );
+                  } else {
+                    showAddOnConfirmation(context);
+                  }
                 } else {
                   context.showBottomSheet(
                     body: ForceLoginBottomSheet(
+                      from: "forceLogin",
                       onLoggedIn: (login) {
                         controller.createJob();
                       },

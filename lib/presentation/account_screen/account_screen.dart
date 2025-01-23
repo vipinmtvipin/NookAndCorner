@@ -215,13 +215,12 @@ class AccountScreen extends GetView<AccountController> {
                         iconData: Icons.edit_location,
                         label: "Edit Profile",
                         onTap: () {
-                          Get.toNamed(AppRoutes.editAccountScreen);
-                          /*   Get.toNamed(AppRoutes.verifyAccountScreen,
+                          Get.toNamed(AppRoutes.verifyAccountScreen,
                               arguments: {
                                 'from': "initial",
                               });
 
-                          controller.verifyAccount(false, 'initial');*/
+                          controller.verifyAccount(false, 'initial');
                         },
                       ),
                       const Divider(
