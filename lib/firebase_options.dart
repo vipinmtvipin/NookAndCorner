@@ -67,4 +67,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'nookandcorner.firebasestorage.app',
     iosBundleId: 'org.nookandcorner.customerapp',
   );
+
 }

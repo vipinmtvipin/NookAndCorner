@@ -1,8 +1,11 @@
+import 'package:customerapp/core/extensions/bool_extension.dart';
 import 'package:customerapp/core/extensions/string_extensions.dart';
 import 'package:customerapp/core/theme/color_constant.dart';
 import 'package:customerapp/presentation/account_screen/controller/account_controller.dart';
+import 'package:customerapp/presentation/common_widgets/conditional_widget.dart';
 import 'package:customerapp/presentation/common_widgets/nookcorner_button.dart';
 import 'package:customerapp/presentation/common_widgets/nookcorner_text_field.dart';
+import 'package:customerapp/presentation/common_widgets/responsive_text.dart';
 import 'package:customerapp/presentation/common_widgets/title_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -43,7 +46,12 @@ class EditAccountScreen extends GetView<AccountController> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const TitleBarWidget(title: "Edit Account"),
+                      TitleBarWidget(
+                        title: "Edit Account",
+                        onBack: () {
+                          controller.clearStateData();
+                        },
+                      ),
                       const SizedBox(
                         height: 30,
                       ),
@@ -67,37 +75,156 @@ class EditAccountScreen extends GetView<AccountController> {
                               autoValidate: true,
                             ),
                             const SizedBox(height: 5),
-                            NookCornerTextField(
-                              textInputAction: TextInputAction.next,
-                              controller: controller.phoneController,
-                              title: 'Mobile Number',
-                              textStyle: AppTextStyle.txt14,
-                              type: NookCornerTextFieldType.mobile,
-                              isFormField: true,
-                              validator: (value) {
-                                return null;
-                              },
-                              autoValidate: true,
-                            ),
-                            const SizedBox(height: 5),
-                            NookCornerTextField(
-                              textInputAction: TextInputAction.done,
-                              controller: controller.emailController,
-                              title: 'Email',
-                              textStyle: AppTextStyle.txt14,
-                              type: NookCornerTextFieldType.email,
-                              isFormField: true,
-                              validator: (value) {
-                                return null;
-                              },
-                              autoValidate: true,
+                            Obx(
+                              () => NookCornerTextField(
+                                textInputAction: TextInputAction.next,
+                                controller: controller.phoneController,
+                                title: 'Mobile Number',
+                                textStyle: AppTextStyle.txt14,
+                                type: NookCornerTextFieldType.mobile,
+                                isFormField: true,
+                                validator: (value) {
+                                  return null;
+                                },
+                                onChanged: (value) {
+                                  if (value.length == 10) {
+                                    if (controller.mobile.value != value) {
+                                      controller.mobileStatus.value =
+                                          AccountStatus.mobileChanged;
+                                    } else {
+                                      controller.mobileStatus.value =
+                                          AccountStatus.unknown;
+                                    }
+                                  }
+                                },
+                                autoValidate: true,
+                                suffix: ConditionalWidget(
+                                  condition: controller.mobileStatus.value ==
+                                          AccountStatus.mobileChanged &&
+                                      controller.mobileStatus.value !=
+                                          AccountStatus.validMobile,
+                                  onFalse: ConditionalWidget(
+                                      condition:
+                                          controller.mobileStatus.value ==
+                                              AccountStatus.validMobile,
+                                      onFalse: SizedBox.shrink(),
+                                      child: Icon(
+                                        Icons.check_circle,
+                                        size: 25,
+                                        color: Colors.green,
+                                      )),
+                                  child: NookCornerButton(
+                                    expandedWidth: false,
+                                    type: NookCornerButtonType.text,
+                                    textStyle: AppTextStyle.txt14Secondary,
+                                    text: 'Verify',
+                                    backGroundColor: AppColors.primaryColor,
+                                    onPressed: () {
+                                      Get.toNamed(AppRoutes.verifyAccountScreen,
+                                          arguments: {
+                                            'from': "mobile",
+                                          });
+
+                                      controller.verifyAccount(false, 'mobile');
+                                    },
+                                  ),
+                                ),
+                              ),
                             ),
                             const SizedBox(height: 5),
                             Obx(
-                              () => Visibility(
-                                visible:
+                              () => NookCornerTextField(
+                                textInputAction: TextInputAction.done,
+                                controller: controller.emailController,
+                                title: 'Email',
+                                textStyle: AppTextStyle.txt14,
+                                type: NookCornerTextFieldType.email,
+                                isFormField: true,
+                                validator: (value) {
+                                  return null;
+                                },
+                                onChanged: (value) {
+                                  if (value.isNotNullOrEmpty) {
+                                    if (GetUtils.isEmail(value.trim())
+                                        .absolute) {
+                                      if (controller.email.value.trim() !=
+                                          value) {
+                                        controller.emailStatus.value =
+                                            AccountStatus.emailChanged;
+                                      } else {
+                                        controller.emailStatus.value =
+                                            AccountStatus.unknown;
+                                      }
+                                    }
+                                  }
+                                },
+                                autoValidate: true,
+                                suffix: ConditionalWidget(
+                                  condition: controller.emailStatus.value ==
+                                          AccountStatus.emailChanged &&
+                                      controller.emailStatus.value !=
+                                          AccountStatus.validEmail,
+                                  onFalse: ConditionalWidget(
+                                      condition: controller.emailStatus.value ==
+                                          AccountStatus.validEmail,
+                                      onFalse: SizedBox.shrink(),
+                                      child: Icon(
+                                        Icons.check_circle,
+                                        size: 25,
+                                        color: Colors.green,
+                                      )),
+                                  child: NookCornerButton(
+                                    expandedWidth: false,
+                                    type: NookCornerButtonType.text,
+                                    textStyle: AppTextStyle.txt14Secondary,
+                                    text: 'Verify',
+                                    backGroundColor: AppColors.primaryColor,
+                                    onPressed: () {
+                                      Get.toNamed(AppRoutes.verifyAccountScreen,
+                                          arguments: {
+                                            'from': "email",
+                                          });
+
+                                      controller.verifyAccount(false, 'email');
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 25),
+                            Obx(
+                              () => ConditionalWidget(
+                                condition:
                                     controller.primaryAddress.value.addressId !=
                                         0,
+                                onFalse: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Flexible(
+                                        child: ResponsiveText(
+                                            text: 'Add primary address')),
+                                    NookCornerButton(
+                                        expandedWidth: false,
+                                        width: 80,
+                                        height: 40,
+                                        padding: EdgeInsets.zero,
+                                        type: NookCornerButtonType.outlined,
+                                        outlinedColor: AppColors.secondaryColor,
+                                        textStyle: AppTextStyle.txtBold14,
+                                        text: 'Add',
+                                        backGroundColor: AppColors.primaryColor,
+                                        onPressed: () {
+                                          Get.toNamed(
+                                              AppRoutes.confirmAddressScreen,
+                                              arguments: {
+                                                'jobId': '0',
+                                                'from': 'profile'
+                                              });
+                                        }),
+                                  ],
+                                ),
                                 child: Card(
                                   elevation: 65,
                                   color: Colors.white,

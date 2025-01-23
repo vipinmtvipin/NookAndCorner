@@ -13,14 +13,22 @@ import 'package:customerapp/presentation/common_widgets/responsive_text.dart';
 import 'package:customerapp/presentation/main_screen/main_screen.dart';
 import 'package:customerapp/presentation/services_screen/controller/service_controller.dart';
 import 'package:customerapp/presentation/services_screen/widgets/service_booking_date_bottomsheet.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ServiceScreen extends GetView<ServiceController> {
   const ServiceScreen({super.key});
 
+  Future<void> _logEvent() async {
+    await FirebaseAnalytics.instance.logEvent(
+      name: 'visit_service_details',
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    _logEvent();
     return SafeArea(
       top: false,
       bottom: false,

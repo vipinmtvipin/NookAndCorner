@@ -1,6 +1,7 @@
 import 'package:customerapp/presentation/account_screen/account_screen.dart';
 import 'package:customerapp/presentation/account_screen/binding/account_binding.dart';
 import 'package:customerapp/presentation/account_screen/edit_account_screen.dart';
+import 'package:customerapp/presentation/account_screen/verify_account/verify_account_screen.dart';
 import 'package:customerapp/presentation/address_screen/add_address_screen.dart';
 import 'package:customerapp/presentation/address_screen/address_screen.dart';
 import 'package:customerapp/presentation/address_screen/binding/address_binding.dart';
@@ -40,6 +41,7 @@ class AppRoutes {
   static const String mainScreen = '/main-screen';
   static const String forgotPasswordScreen = '/forgot_password_screen';
   static const String accountScreen = '/account-screen';
+  static const String verifyAccountScreen = '/verify-account-screen';
   static const String settingsScreen = '/settings-screen';
   static const String serviceScreen = '/service-screen';
   static const String summeryScreen = '/summery-screen';
@@ -101,6 +103,11 @@ class AppRoutes {
       bindings: [
         AccountBinding(),
       ],
+    ),
+    GetPage(
+      name: verifyAccountScreen,
+      page: () => const VerifyAccountScreen(),
+      bindings: [],
     ),
     GetPage(
       name: editAccountScreen,

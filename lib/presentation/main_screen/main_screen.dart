@@ -15,6 +15,7 @@ import 'package:customerapp/presentation/main_screen/controller/main_controller.
 import 'package:customerapp/presentation/main_screen/widgets/city_bottomsheet.dart';
 import 'package:customerapp/presentation/main_screen/widgets/map_screen_shimmer.dart';
 import 'package:customerapp/presentation/settings_screen/reviews_screen.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
@@ -22,8 +23,15 @@ import 'package:lottie/lottie.dart';
 class MainScreen extends GetView<MainScreenController> {
   const MainScreen({super.key});
 
+  Future<void> _logEvent() async {
+    await FirebaseAnalytics.instance.logEvent(
+      name: 'visit_homepage',
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    _logEvent();
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: getSize(70),

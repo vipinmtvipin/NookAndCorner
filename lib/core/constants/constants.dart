@@ -63,6 +63,10 @@ class NetworkKeys {
 
   static const String jobOtpVerify = '/auth/register/job/verify-otp';
 
+  static const String accountVerification = '/auth/profile/update';
+  static const String accountEmailMobileVerification =
+      '/auth/profile/verify-otp';
+
   static const String forgetPassword = '/auth/forgot-password';
 
   static const String city = '/cities';

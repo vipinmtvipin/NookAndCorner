@@ -17,14 +17,22 @@ import 'package:customerapp/presentation/services_screen/controller/service_cont
 import 'package:customerapp/presentation/services_screen/widgets/service_booking_date_bottomsheet.dart';
 import 'package:customerapp/presentation/summery_screen/addon_confirm_bottomsheet.dart';
 import 'package:customerapp/presentation/summery_screen/force_login_bottomsheet.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class SummeryScreen extends GetView<ServiceController> {
   const SummeryScreen({super.key});
 
+  Future<void> _logEvent() async {
+    await FirebaseAnalytics.instance.logEvent(
+      name: 'visit_order_summary',
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    _logEvent();
     return SafeArea(
       top: false,
       bottom: false,

@@ -131,6 +131,7 @@ class ServiceController extends BaseController {
   TextEditingController emailController = TextEditingController();
 
   var isLogin = false;
+  var userVerified = false;
 
   @override
   void onClose() {
@@ -514,6 +515,7 @@ class ServiceController extends BaseController {
               "phone": phoneController.text,
             });
           }
+
           if (isLogin) {
             createJob();
           }
@@ -525,7 +527,7 @@ class ServiceController extends BaseController {
             "phone": phoneController.text,
           });
 
-          if (isLogin) {
+          if (userVerified) {
             createJobVerifyOtp();
           }
         }
@@ -561,14 +563,6 @@ class ServiceController extends BaseController {
                 quantity: e.quantity,
                 serviceId: selectedService.value.servId),
           );
-        }
-
-        if (onPhoneChanged()) {
-          showToast('Please enter valid phone number');
-          return;
-        } else if (!onEmailChanged()) {
-          showToast('Please enter valid email address');
-          return;
         }
 
         showLoadingDialog();
@@ -615,6 +609,7 @@ class ServiceController extends BaseController {
 
         hideLoadingDialog();
 
+        Logger.e("Orderplacement", "3333333333333");
         paymentType.value == "Advance";
         Get.toNamed(AppRoutes.paymentScreen, arguments: {
           'orderID': orderID.value,

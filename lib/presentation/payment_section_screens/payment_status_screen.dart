@@ -6,6 +6,7 @@ import 'package:customerapp/presentation/common_widgets/nookcorner_button.dart';
 import 'package:customerapp/presentation/common_widgets/title_bar_widget.dart';
 import 'package:customerapp/presentation/services_screen/controller/service_controller.dart';
 import 'package:customerapp/presentation/summery_screen/summery_screen.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
@@ -16,8 +17,15 @@ import '../../core/utils/size_utils.dart';
 class PaymentStatusScreen extends GetView<ServiceController> {
   const PaymentStatusScreen({super.key});
 
+  Future<void> _logEvent() async {
+    await FirebaseAnalytics.instance.logEvent(
+      name: 'visit_payment_response',
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    _logEvent();
     return SafeArea(
       top: false,
       bottom: false,

@@ -16,6 +16,7 @@ import 'package:customerapp/domain/usecases/signup/signup_use_case.dart';
 import 'package:customerapp/presentation/base_controller.dart';
 import 'package:customerapp/presentation/main_screen/controller/main_controller.dart';
 import 'package:customerapp/presentation/services_screen/controller/service_controller.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -232,7 +233,14 @@ class AuthController extends BaseController {
     return isValidEmail.value = GetUtils.isEmail(emailController.text);
   }
 
+  Future<void> _logEvent() async {
+    await FirebaseAnalytics.instance.logEvent(
+      name: 'session_start',
+    );
+  }
+
   void _handleLoginSuccessData(String? token) {
+    _logEvent();
     sessionStorage.write(StorageKeys.loggedIn, true);
     sessionStorage.write(StorageKeys.token, token);
 
@@ -354,6 +362,7 @@ class AuthController extends BaseController {
       if (responds != null) {
         hideLoadingDialog();
         if (responds.success == true) {
+          Get.find<ServiceController>().userVerified = true;
           if (navigateFrom == AppRoutes.summeryScreen) {
             Get.offAndToNamed(AppRoutes.summeryScreen);
           } else {

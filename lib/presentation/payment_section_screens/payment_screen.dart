@@ -7,6 +7,7 @@ import 'package:customerapp/core/theme/color_constant.dart';
 import 'package:customerapp/core/utils/logger.dart';
 import 'package:customerapp/presentation/services_screen/controller/service_controller.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -30,10 +31,17 @@ class PaymentScreenState extends State<PaymentScreen> {
   String oderId = "";
 
   bool showLoader = true;
+
+  Future<void> _logEvent() async {
+    await FirebaseAnalytics.instance.logEvent(
+      name: 'visit_order_summary_proceed_to_checkout',
+    );
+  }
+
   @override
   void initState() {
     super.initState();
-
+    _logEvent();
     final arguments = Get.arguments as Map<String, dynamic>;
     amount = arguments['paymentAmount'] ?? 0.0;
     oderId = arguments['orderID'] ?? '';

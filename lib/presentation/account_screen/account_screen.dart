@@ -5,6 +5,7 @@ import 'package:customerapp/presentation/common_widgets/nookcorner_button.dart';
 import 'package:customerapp/presentation/common_widgets/responsive_text.dart';
 import 'package:customerapp/presentation/common_widgets/title_bar_widget.dart';
 import 'package:customerapp/presentation/main_screen/controller/main_controller.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -17,8 +18,15 @@ import '../common_widgets/custom_image_view.dart';
 class AccountScreen extends GetView<AccountController> {
   const AccountScreen({super.key});
 
+  Future<void> _logEvent() async {
+    await FirebaseAnalytics.instance.logEvent(
+      name: 'visit_profile',
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    _logEvent();
     return SafeArea(
       top: false,
       bottom: false,
@@ -208,6 +216,12 @@ class AccountScreen extends GetView<AccountController> {
                         label: "Edit Profile",
                         onTap: () {
                           Get.toNamed(AppRoutes.editAccountScreen);
+                          /*   Get.toNamed(AppRoutes.verifyAccountScreen,
+                              arguments: {
+                                'from': "initial",
+                              });
+
+                          controller.verifyAccount(false, 'initial');*/
                         },
                       ),
                       const Divider(

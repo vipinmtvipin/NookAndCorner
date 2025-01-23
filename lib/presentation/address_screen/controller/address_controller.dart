@@ -266,6 +266,8 @@ class AddressController extends BaseController {
     final value = sessionStorage.read(StorageKeys.selectedCity);
     if (value != null) {
       selectedCity = CityData.fromJson(value);
+
+      cityController.text = selectedCity.cityName ?? '';
     }
 
     cityBounds = LatLngBounds(
