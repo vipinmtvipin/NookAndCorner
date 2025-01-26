@@ -412,6 +412,7 @@ class SummeryScreen extends GetView<ServiceController> {
                                   children: [
                                     Expanded(
                                       child: TextFormField(
+                                        focusNode: controller.cuponFocusNode,
                                         controller:
                                             controller.promoCodeController,
                                         decoration: InputDecoration(
@@ -438,6 +439,9 @@ class SummeryScreen extends GetView<ServiceController> {
                                         } else {
                                           controller.applyCoupon(controller
                                               .promoCodeController.text);
+                                          try {
+                                            controller.cuponFocusNode.unfocus();
+                                          } catch (_) {}
                                         }
                                       },
                                       child: Padding(
@@ -495,7 +499,7 @@ class SummeryScreen extends GetView<ServiceController> {
                           () => PaymentSummaryRow(
                               title: 'Coupon Discount',
                               value: controller.couponApplied.value
-                                  ? '- ${controller.couponData.value.first.discountOfferPrice}' ??
+                                  ? '- ${controller.promotionAmount.value}' ??
                                       '0'
                                   : 'NOT APPLIED'),
                         ),
@@ -655,7 +659,7 @@ class SummeryScreen extends GetView<ServiceController> {
                       body: ForceLoginBottomSheet(
                         from: 'email',
                         onLoggedIn: (login) {
-                          controller.createJob();
+                          showAddOnConfirmation(context);
                         },
                       ),
                     );
@@ -664,7 +668,7 @@ class SummeryScreen extends GetView<ServiceController> {
                       body: ForceLoginBottomSheet(
                         from: 'mobile',
                         onLoggedIn: (login) {
-                          controller.createJob();
+                          showAddOnConfirmation(context);
                         },
                       ),
                     );
@@ -676,7 +680,7 @@ class SummeryScreen extends GetView<ServiceController> {
                     body: ForceLoginBottomSheet(
                       from: "forceLogin",
                       onLoggedIn: (login) {
-                        controller.createJob();
+                        showAddOnConfirmation(context);
                       },
                     ),
                   );
@@ -722,6 +726,7 @@ class SummeryScreen extends GetView<ServiceController> {
     controller.phoneController.clear();
     controller.emailController.clear();
     controller.isDateChoose = false;
+    controller.promotionAmount.value = 0.0;
   }
 }
 

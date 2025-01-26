@@ -29,7 +29,6 @@ class ReviewsScreen extends GetView<SettingsController> {
             backgroundColor: Colors.white,
             strokeWidth: 2,
             onRefresh: () {
-              controller.reviewList.value = [];
               controller.getReviews('10', '0', '');
               return Future<void>.value();
             },

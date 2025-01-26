@@ -240,15 +240,29 @@ class MyBookingController extends BaseController {
             .toStringAsFixed(2));
 
     if (couponApplied.value.absolute && couponData.value.isNotNullOrEmpty) {
-      var discount = couponData.value.first.discountOfferPrice ?? 0.0;
-      paymentAmount = paymentAmount - discount;
+      if (couponData.value.first.promotionType == 'percent') {
+        double servicePercentage = paymentAmount / 100;
+        var couponPercentage = couponData.value.first.discountOfferPrice ?? 0.0;
+        var couponAmount = servicePercentage * couponPercentage;
+        couponAmount = double.parse(couponAmount.toStringAsFixed(2));
+        paymentAmount = couponAmount;
+      } else if (couponData.value.first.promotionType == 'free') {
+        paymentAmount = 0.0;
+      } else {
+        var couponAmount = couponData.value.first.discountOfferPrice ?? 0.0;
+        paymentAmount = paymentAmount - couponAmount;
+      }
     }
 
-    var result = await Get.toNamed(AppRoutes.paymentScreen, arguments: {
-      'orderID': selectedJob.value.txnId,
-      'paymentAmount': paymentAmount,
-      'paymentType': "Complete",
-    });
+    if (paymentAmount == 0.0) {
+      //
+    } else {
+      var result = await Get.toNamed(AppRoutes.paymentScreen, arguments: {
+        'orderID': selectedJob.value.txnId,
+        'paymentAmount': paymentAmount,
+        'paymentType': "Complete",
+      });
+    }
 
     if (from == 'list') {
       getJobs(isLoader: false);

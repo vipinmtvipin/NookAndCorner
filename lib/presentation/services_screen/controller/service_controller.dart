@@ -1,8 +1,10 @@
 import 'package:customerapp/core/constants/constants.dart';
+import 'package:customerapp/core/extensions/list_extensions.dart';
 import 'package:customerapp/core/extensions/string_extensions.dart';
 import 'package:customerapp/core/localization/localization_keys.dart';
 import 'package:customerapp/core/network/connectivity_service.dart';
 import 'package:customerapp/core/routes/app_routes.dart';
+import 'package:customerapp/core/utils/common_util.dart';
 import 'package:customerapp/core/utils/logger.dart';
 import 'package:customerapp/domain/model/home/city_responds.dart';
 import 'package:customerapp/domain/model/service/service_details_responds.dart';
@@ -75,6 +77,8 @@ class ServiceController extends BaseController {
     this._summeryUseCase,
   );
 
+  var cuponFocusNode = FocusNode();
+
   late final _connectivityService = getIt<ConnectivityService>();
   Rx<List<ServiceData>> serviceInfo = Rx([]);
   Rx<List<TimeSlotData>> timeSlots = Rx([]);
@@ -113,6 +117,7 @@ class ServiceController extends BaseController {
   var advanceAmount = 0.0.obs;
   var goldenHourAmount = 0.0.obs;
   var grandTotal = 0.0.obs;
+  var promotionAmount = 0.0.obs;
   var addOnsTotal = 0.0.obs;
   var serviceTotal = 0.0.obs;
   var advancePercentage = 0.0;
@@ -139,6 +144,7 @@ class ServiceController extends BaseController {
   @override
   void onClose() {
     super.onClose();
+    cuponFocusNode.dispose();
     promoCodeController.clear();
     phoneController.clear();
     emailController.clear();
@@ -297,8 +303,6 @@ class ServiceController extends BaseController {
             double.tryParse(selectedService.value.price ?? '0') ?? 0;
         serviceTotal.value = servicePrice;
 
-        grandTotal.value = servicePrice;
-
         double servicePercentage = servicePrice / 100;
 
         calenderDayCount =
@@ -318,6 +322,7 @@ class ServiceController extends BaseController {
         baseConvenienceFee = convenienceFee.value;
 
         checkGoldenHour();
+        calculateGrandTotal();
 
         if (isLoader) {
           hideLoadingDialog();
@@ -335,10 +340,15 @@ class ServiceController extends BaseController {
   Future<void> applyCoupon(String code) async {
     if (couponApplied.value) {
       couponApplied.value = false;
-      var couponAmount = couponData.value.first.discountOfferPrice ?? 0.0;
-      grandTotal.value = grandTotal.value + couponAmount;
+      grandTotal.value = grandTotal.value + promotionAmount.value;
       couponData.value = [];
+      promotionAmount.value = 0.0;
       promoCodeController.clear();
+
+      double servicePercentage = grandTotal.value / 100;
+      advanceAmount.value = servicePercentage * advancePercentage;
+      advanceAmount.value =
+          double.parse(advanceAmount.value.toStringAsFixed(2));
     } else {
       if (await _connectivityService.isConnected()) {
         try {
@@ -358,6 +368,11 @@ class ServiceController extends BaseController {
             calculateGrandTotal();
 
             showToast(coupon?.message ?? 'Promo code applied successfully');
+            try {
+              CommonUtil().keyboardHide(Get.context!);
+            } catch (e) {
+              e.printError();
+            }
           } else {
             couponApplied.value = false;
           }
@@ -436,9 +451,8 @@ class ServiceController extends BaseController {
                 double.tryParse(metaData.value.overNightHikePercentage ?? '0'),
             phoneNumber: mobile,
             price: grandTotal.value,
-            promotionAmount: couponData.value.isEmpty
-                ? null
-                : couponData.value.first.discountOfferPrice,
+            promotionAmount:
+                couponData.value.isEmpty ? null : promotionAmount.value,
             promotionId: couponData.value.isEmpty
                 ? null
                 : couponData.value.first.promotionId,
@@ -478,9 +492,8 @@ class ServiceController extends BaseController {
                 double.tryParse(metaData.value.overNightHikePercentage ?? '0'),
             phoneNumber: phoneController.text.toString(),
             price: grandTotal.value,
-            promotionAmount: couponData.value.isEmpty
-                ? null
-                : couponData.value.first.discountOfferPrice,
+            promotionAmount:
+                couponData.value.isEmpty ? null : promotionAmount.value,
             promotionId: couponData.value.isEmpty
                 ? null
                 : couponData.value.first.promotionId,
@@ -502,12 +515,18 @@ class ServiceController extends BaseController {
 
         hideLoadingDialog();
 
-        paymentType.value == "Advance";
-        Get.toNamed(AppRoutes.paymentScreen, arguments: {
-          'orderID': orderID.value,
-          'paymentAmount': advanceAmount.value,
-          'paymentType': "Advance",
-        });
+        if (couponData.value.isNotNullOrEmpty &&
+            couponData.value.first.promotionType == 'free') {
+          Get.toNamed(AppRoutes.confirmAddressScreen,
+              arguments: {'jobId': jobID, 'from': 'payment'});
+        } else {
+          paymentType.value == "Advance";
+          Get.toNamed(AppRoutes.paymentScreen, arguments: {
+            'orderID': orderID.value,
+            'paymentAmount': advanceAmount.value,
+            'paymentType': "Advance",
+          });
+        }
       } catch (e) {
         hideLoadingDialog();
         Get.back();
@@ -600,9 +619,8 @@ class ServiceController extends BaseController {
               double.tryParse(metaData.value.overNightHikePercentage ?? '0'),
           phoneNumber: phoneController.text.toString(),
           price: grandTotal.value,
-          promotionAmount: couponData.value.isEmpty
-              ? null
-              : couponData.value.first.discountOfferPrice,
+          promotionAmount:
+              couponData.value.isEmpty ? null : promotionAmount.value,
           promotionId: couponData.value.isEmpty
               ? null
               : couponData.value.first.promotionId,
@@ -623,12 +641,18 @@ class ServiceController extends BaseController {
 
         hideLoadingDialog();
 
-        paymentType.value == "Advance";
-        Get.toNamed(AppRoutes.paymentScreen, arguments: {
-          'orderID': orderID.value,
-          'paymentAmount': advanceAmount.value,
-          'paymentType': "Advance",
-        });
+        if (couponData.value.isNotNullOrEmpty &&
+            couponData.value.first.promotionType == 'free') {
+          Get.toNamed(AppRoutes.confirmAddressScreen,
+              arguments: {'jobId': jobID, 'from': 'payment'});
+        } else {
+          paymentType.value == "Advance";
+          Get.toNamed(AppRoutes.paymentScreen, arguments: {
+            'orderID': orderID.value,
+            'paymentAmount': advanceAmount.value,
+            'paymentType': "Advance",
+          });
+        }
       } catch (e) {
         hideLoadingDialog();
         Get.back();
@@ -823,40 +847,78 @@ class ServiceController extends BaseController {
 
   void calculateGrandTotal() {
     var couponAmount = 0.0;
-    if (couponData.value.isNotEmpty) {
-      couponAmount = couponData.value.first.discountOfferPrice ?? 0.0;
-    }
 
     convenienceFee.value = baseConvenienceFee + addOnConvenienceFee.value;
     var servicePrice = double.tryParse(selectedService.value.price ?? '0') ?? 0;
     serviceTotal.value = servicePrice + addOnsTotal.value;
 
-    grandTotal.value =
-        ((serviceTotal.value + convenienceFee.value + goldenHourAmount.value) -
-            couponAmount);
+    var orderTotal =
+        serviceTotal.value + convenienceFee.value + goldenHourAmount.value;
 
-    double servicePercentage = grandTotal.value / 100;
-    advanceAmount.value = servicePercentage * advancePercentage;
-    advanceAmount.value = double.parse(advanceAmount.value.toStringAsFixed(2));
+    if (couponData.value.isNotEmpty) {
+      if (couponData.value.first.promotionType == 'percent') {
+        double servicePercentage = orderTotal / 100;
+        var couponPercentage = couponData.value.first.discountOfferPrice ?? 0.0;
+        couponAmount = servicePercentage * couponPercentage;
+        couponAmount = double.parse(couponAmount.toStringAsFixed(2));
+        promotionAmount.value = couponAmount;
+      } else if (couponData.value.first.promotionType == 'free') {
+        couponAmount = orderTotal;
+        promotionAmount.value = couponAmount;
+      } else {
+        couponAmount = couponData.value.first.discountOfferPrice ?? 0.0;
+        promotionAmount.value = couponAmount;
+      }
+    }
+
+    grandTotal.value = orderTotal - couponAmount;
+
+    if (grandTotal.value == 0.0) {
+      advanceAmount.value = 0.0;
+    } else {
+      double servicePercentage = grandTotal.value / 100;
+      advanceAmount.value = servicePercentage * advancePercentage;
+      advanceAmount.value =
+          double.parse(advanceAmount.value.toStringAsFixed(2));
+    }
   }
 
   void calculateRemoveGrandTotal() {
     var couponAmount = 0.0;
-    if (couponData.value.isNotEmpty) {
-      couponAmount = couponData.value.first.discountOfferPrice ?? 0.0;
-    }
 
     convenienceFee.value = baseConvenienceFee;
     var servicePrice = double.tryParse(selectedService.value.price ?? '0') ?? 0;
     serviceTotal.value = servicePrice;
 
-    grandTotal.value =
-        ((serviceTotal.value + convenienceFee.value + goldenHourAmount.value) -
-            couponAmount);
+    var orderTotal =
+        serviceTotal.value + convenienceFee.value + goldenHourAmount.value;
 
-    double servicePercentage = grandTotal.value / 100;
-    advanceAmount.value = servicePercentage * advancePercentage;
-    advanceAmount.value = double.parse(advanceAmount.value.toStringAsFixed(2));
+    if (couponData.value.isNotEmpty) {
+      if (couponData.value.first.promotionType == 'percent') {
+        double servicePercentage = orderTotal / 100;
+        var couponPercentage = couponData.value.first.discountOfferPrice ?? 0.0;
+        couponAmount = servicePercentage * couponPercentage;
+        couponAmount = double.parse(couponAmount.toStringAsFixed(2));
+        promotionAmount.value = couponAmount;
+      } else if (couponData.value.first.promotionType == 'free') {
+        couponAmount = orderTotal;
+        promotionAmount.value = couponAmount;
+      } else {
+        couponAmount = couponData.value.first.discountOfferPrice ?? 0.0;
+        promotionAmount.value = couponAmount;
+      }
+    }
+
+    grandTotal.value = orderTotal - couponAmount;
+
+    if (grandTotal.value == 0.0) {
+      advanceAmount.value = 0.0;
+    } else {
+      double servicePercentage = grandTotal.value / 100;
+      advanceAmount.value = servicePercentage * advancePercentage;
+      advanceAmount.value =
+          double.parse(advanceAmount.value.toStringAsFixed(2));
+    }
   }
 
   void saveJobUserData() {
