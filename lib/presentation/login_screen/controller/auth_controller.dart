@@ -357,6 +357,7 @@ class AuthController extends BaseController {
         LoginRequest(username: username, password: password);
 
     try {
+      showLoadingDialog();
       var responds = await _jobSignupUseCase.execute(postLoginRequest);
 
       if (responds != null) {

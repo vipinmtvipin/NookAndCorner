@@ -1,4 +1,5 @@
 import 'package:customerapp/core/constants/constants.dart';
+import 'package:customerapp/core/extensions/string_extensions.dart';
 import 'package:customerapp/core/network/api_service.dart';
 import 'package:customerapp/core/network/dio_exception.dart';
 import 'package:customerapp/domain/model/address/address_request.dart';
@@ -187,13 +188,24 @@ class MyJobRepositoryIml extends MyJobRepository {
   @override
   Future<CuponResponds?> applyCoupon(CouponRequest request) async {
     try {
+      var requestData = {};
+      if (request.type != null && request.type.isNotNullOrEmpty) {
+        requestData = {
+          "slot": request.slot,
+          "promotionName": request.promotionName,
+          "serviceId": request.serviceId,
+          'type': request.type,
+        };
+      } else {
+        requestData = {
+          "slot": request.slot,
+          "promotionName": request.promotionName,
+          "serviceId": request.serviceId,
+        };
+      }
       Response response =
           await GetIt.I.get<ApiService>().post(NetworkKeys.applyCoupon,
-              data: {
-                "slot": request.slot,
-                "promotionName": request.promotionName,
-                "serviceId": request.serviceId
-              },
+              data: requestData,
               options: Options(
                 contentType: 'application/json',
               ));

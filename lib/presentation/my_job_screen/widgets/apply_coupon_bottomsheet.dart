@@ -63,8 +63,8 @@ class ApplyCouponBottomSheet extends StatelessWidget {
                       'Please enter promo code'.showToast();
                     } else {
                       Get.back();
-                      controller
-                          .applyCoupon(controller.promoCodeController.text);
+                      controller.applyCoupon(
+                          controller.promoCodeController.text, from);
                     }
                   },
                 ),

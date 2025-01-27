@@ -254,15 +254,16 @@ class MyBookingController extends BaseController {
       }
     }
 
-    if (paymentAmount == 0.0) {
-      //
-    } else {
-      var result = await Get.toNamed(AppRoutes.paymentScreen, arguments: {
-        'orderID': selectedJob.value.txnId,
-        'paymentAmount': paymentAmount,
-        'paymentType': "Complete",
-      });
-    }
+    paymentAmount = double.parse(paymentAmount.toStringAsFixed(2));
+
+    couponApplied.value = false;
+    couponData.value = [];
+
+    await Get.toNamed(AppRoutes.paymentScreen, arguments: {
+      'orderID': selectedJob.value.txnId,
+      'paymentAmount': paymentAmount,
+      'paymentType': "Complete",
+    });
 
     if (from == 'list') {
       getJobs(isLoader: false);
@@ -438,7 +439,7 @@ class MyBookingController extends BaseController {
     }
   }
 
-  Future<void> applyCoupon(String code) async {
+  Future<void> applyCoupon(String code, String from) async {
     if (await _connectivityService.isConnected()) {
       try {
         showLoadingDialog();
@@ -447,6 +448,7 @@ class MyBookingController extends BaseController {
           slot: selectedDate.value.toString(),
           promotionName: code,
           serviceId: selectedJob.value.serviceId.toString(),
+          type: 'final',
         );
 
         var coupon = await _applyCouponUseCase.execute(request);
@@ -455,12 +457,13 @@ class MyBookingController extends BaseController {
           couponApplied.value = true;
 
           showToast(coupon?.message ?? 'Promo code applied successfully');
-
-          completeJob('details');
+          promoCodeController.clear();
+          hideLoadingDialog();
+          completeJob(from);
         } else {
+          hideLoadingDialog();
           couponApplied.value = false;
         }
-        hideLoadingDialog();
       } catch (e) {
         couponApplied.value = false;
         hideLoadingDialog();
