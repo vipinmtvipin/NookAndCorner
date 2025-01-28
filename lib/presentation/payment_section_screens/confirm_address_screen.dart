@@ -47,8 +47,7 @@ class ConfirmAddressScreen extends GetView<AddressController> {
       serviceName =
           mController.selectedJob.value.servicePrice?.service?.category?.name ??
               '';
-      advanceAmount = mController.advanceAmount.value ?? 0.0;
-      advanceAmount = mController.advanceAmount.value ?? 0.0;
+      advanceAmount = mController.selectedJob.value.advanceAmount ?? 0.0;
       serviceDate =
           mController.selectedJob.value.jobDate?.convertUtcToIst() ?? '';
     }

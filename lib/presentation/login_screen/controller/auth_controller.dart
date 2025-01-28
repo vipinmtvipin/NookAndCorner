@@ -1,4 +1,5 @@
 import 'package:customerapp/core/constants/constants.dart';
+import 'package:customerapp/core/extensions/string_extensions.dart';
 import 'package:customerapp/core/localization/localization_keys.dart';
 import 'package:customerapp/core/network/connectivity_service.dart';
 import 'package:customerapp/core/routes/app_routes.dart';
@@ -221,6 +222,17 @@ class AuthController extends BaseController {
       Get.offAndToNamed(AppRoutes.summeryScreen);
     } else {
       Get.offAndToNamed(AppRoutes.mainScreen);
+      try {
+        if (Get.find<MainScreenController>()
+            .selectedCity
+            .value
+            .cityName
+            .isNullOrEmpty) {
+          Get.find<MainScreenController>().forceCitySelection.value = true;
+        }
+      } catch (e) {
+        Logger.e("Error in controller", e);
+      }
     }
   }
 

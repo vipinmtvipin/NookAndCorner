@@ -1,4 +1,5 @@
 import 'package:customerapp/core/theme/color_constant.dart';
+import 'package:customerapp/domain/model/home/city_responds.dart';
 import 'package:customerapp/generated/assets.gen.dart';
 import 'package:customerapp/presentation/account_screen/controller/account_controller.dart';
 import 'package:customerapp/presentation/common_widgets/nookcorner_button.dart';
@@ -58,6 +59,7 @@ class AccountScreen extends GetView<AccountController> {
                         MainScreenController mainController =
                             Get.find<MainScreenController>();
                         mainController.loggedIn.value = false;
+                        mainController.selectedCity.value = CityData();
                         onTapLoginNavigation();
                       },
                       child: const Text('Logout'),

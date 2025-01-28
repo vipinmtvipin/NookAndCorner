@@ -52,7 +52,8 @@ class MainScreen extends GetView<MainScreenController> {
               );
             },
             child: Obx(() {
-              return controller.selectedCity.value.cityId != null
+              return (controller.selectedCity.value.cityId != null &&
+                      controller.selectedCity.value.cityId != 0)
                   ? Card(
                       elevation: 1,
                       color: Colors.white,
@@ -78,7 +79,8 @@ class MainScreen extends GetView<MainScreenController> {
                               width: 80,
                               child: ResponsiveText(
                                 textAlign: TextAlign.center,
-                                text: controller.selectedCity.value.cityName!,
+                                text: controller.selectedCity.value.cityName ??
+                                    '',
                                 style: AppTextStyle.txt12,
                                 maxLines: 1,
                               ),

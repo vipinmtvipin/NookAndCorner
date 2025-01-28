@@ -52,6 +52,7 @@ class MainScreenController extends BaseController {
   Rx<List<CityServiceData>> cityServices = Rx([]);
   Rx<bool> loggedIn = Rx(false);
   Rx<int> reviewCount = Rx(0);
+  Rx<bool> forceCitySelection = Rx(false);
 
   Rx<List<ReviewData>> reviewList = Rx<List<ReviewData>>([]);
   final ScrollController scrollController = ScrollController();
@@ -63,6 +64,12 @@ class MainScreenController extends BaseController {
       selectedCity.value = CityData.fromJson(value);
     }
     super.onInit();
+
+    ever(forceCitySelection, (value) {
+      if (value) {
+        getCity();
+      }
+    });
   }
 
   @override

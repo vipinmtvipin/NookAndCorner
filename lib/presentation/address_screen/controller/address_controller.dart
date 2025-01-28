@@ -61,9 +61,8 @@ class AddressController extends BaseController {
   @override
   void onInit() {
     super.onInit();
-    getAddress();
-
     settingSelectedCityInfo();
+    getAddress();
   }
 
   LatLng getCityCenter(LatLngBounds cityBounds) {
@@ -88,6 +87,10 @@ class AddressController extends BaseController {
     if (await _connectivityService.isConnected()) {
       try {
         showLoadingDialog();
+        final value = sessionStorage.read(StorageKeys.selectedCity);
+        if (value != null) {
+          selectedCity = CityData.fromJson(value);
+        }
 
         GetAddressRequest request = GetAddressRequest(
           userId: sessionStorage.read(StorageKeys.userId).toString(),
@@ -127,7 +130,6 @@ class AddressController extends BaseController {
       try {
         showLoadingDialog();
 
-        CityData selectedCity = CityData();
         final value = sessionStorage.read(StorageKeys.selectedCity);
         if (value != null) {
           selectedCity = CityData.fromJson(value);
@@ -196,7 +198,6 @@ class AddressController extends BaseController {
       try {
         showLoadingDialog();
 
-        CityData selectedCity = CityData();
         final value = sessionStorage.read(StorageKeys.selectedCity);
         if (value != null) {
           selectedCity = CityData.fromJson(value);
