@@ -51,6 +51,7 @@ class ProfileData {
     required this.createdAt,
     required this.updatedAt,
     required this.primaryAddress,
+    this.accessToken = '',
   });
 
   final int? userId;
@@ -73,6 +74,7 @@ class ProfileData {
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final PrimaryAddress? primaryAddress;
+  String accessToken;
 
   factory ProfileData.fromJson(Map<String, dynamic> json) {
     return ProfileData(
@@ -85,7 +87,9 @@ class ProfileData {
       delete: json["delete"],
       status: json["status"],
       userGroupId: json["userGroupId"],
-      primaryAddressId: json["primaryAddressId"],
+      primaryAddressId: json["primaryAddressId"] is String
+          ? int.tryParse(json["primaryAddressId"])
+          : json["primaryAddressId"],
       otp: json["otp"],
       panCardNum: json["panCardNum"],
       ifscCode: json["ifscCode"],
@@ -98,6 +102,7 @@ class ProfileData {
       primaryAddress: json["primaryAddress"] == null
           ? null
           : PrimaryAddress.fromJson(json["primaryAddress"]),
+      accessToken: json["accessToken"] ?? '',
     );
   }
 
@@ -122,6 +127,7 @@ class ProfileData {
         "createdAt": createdAt?.toIso8601String(),
         "updatedAt": updatedAt?.toIso8601String(),
         "primaryAddress": primaryAddress?.toJson(),
+        "accessToken": accessToken,
       };
 
   static ProfileData empty() {
@@ -146,6 +152,7 @@ class ProfileData {
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
       primaryAddress: null,
+      accessToken: "",
     );
   }
 }

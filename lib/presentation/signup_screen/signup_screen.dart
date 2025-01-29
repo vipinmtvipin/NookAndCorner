@@ -242,7 +242,7 @@ class SignupScreen extends GetView<AuthController> {
         Center(
           child: TextButton(
               onPressed: () {
-                controller.loginMobile(true);
+                controller.signupMobile(true);
               },
               child: Text(LocalizationKeys.resendOtp.tr,
                   style:

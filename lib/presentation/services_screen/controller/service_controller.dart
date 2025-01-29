@@ -141,6 +141,9 @@ class ServiceController extends BaseController {
   var mobile = "";
   var email = "";
 
+  var updateMobile = "";
+  var updateEmail = "";
+
   @override
   void onClose() {
     super.onClose();
@@ -159,6 +162,8 @@ class ServiceController extends BaseController {
 
     mobile = sessionStorage.read(StorageKeys.mobile) ?? "";
     email = sessionStorage.read(StorageKeys.email) ?? "";
+    updateMobile = mobile;
+    updateEmail = email;
 
     isLogin = sessionStorage.read(StorageKeys.loggedIn) ?? false;
 
@@ -537,15 +542,15 @@ class ServiceController extends BaseController {
             await Get.toNamed(AppRoutes.loginScreen, arguments: {
               'from': AppRoutes.summeryScreen,
               "flag": "email",
-              "email": emailController.text,
-              "phone": phoneController.text,
+              "email": updateEmail,
+              "phone": updateMobile,
             });
           } else {
             await Get.toNamed(AppRoutes.loginScreen, arguments: {
               'from': AppRoutes.summeryScreen,
               "flag": "mobile",
-              "email": emailController.text,
-              "phone": phoneController.text,
+              "email": updateEmail,
+              "phone": updateMobile,
             });
           }
 
@@ -556,8 +561,8 @@ class ServiceController extends BaseController {
           await Get.toNamed(AppRoutes.loginScreen, arguments: {
             'from': AppRoutes.summeryScreen,
             "flag": "mobileJob",
-            "email": emailController.text,
-            "phone": phoneController.text,
+            "email": updateEmail,
+            "phone": updateMobile,
           });
 
           if (userVerified) {
@@ -609,7 +614,7 @@ class ServiceController extends BaseController {
           convenienceFee: convenienceFee.value,
           conveniencePercent:
               double.tryParse(metaData.value.conveniencePercentage ?? '0'),
-          email: emailController.text.toString(),
+          email: updateEmail,
           goldenHoursCharge: isGoldenHour ? goldenHourAmount.value : 0.0,
           isGolderHour: isGoldenHour,
           jobDate: selectedDate.value,
@@ -617,7 +622,7 @@ class ServiceController extends BaseController {
           name: sessionStorage.read(StorageKeys.username) ?? '',
           overNightHikePercentage:
               double.tryParse(metaData.value.overNightHikePercentage ?? '0'),
-          phoneNumber: phoneController.text.toString(),
+          phoneNumber: updateMobile,
           price: grandTotal.value,
           promotionAmount:
               couponData.value.isEmpty ? null : promotionAmount.value,
@@ -637,7 +642,6 @@ class ServiceController extends BaseController {
         jobData.value = job!;
 
         saveJobUserData();
-        Get.back();
 
         hideLoadingDialog();
 
@@ -655,9 +659,7 @@ class ServiceController extends BaseController {
         }
       } catch (e) {
         hideLoadingDialog();
-        Get.back();
-        showSnackBar("Warning", "Something went wrong, please try again!",
-            Colors.black54);
+        showSnackBar("Warning", "${e.toString()}.", Colors.black54);
       }
     } else {
       showToast(LocalizationKeys.noNetwork.tr);
@@ -964,5 +966,27 @@ class ServiceController extends BaseController {
     }
 
     calculateGrandTotal();
+  }
+
+  void clearAllControllerData() {
+    addOns.value = [];
+    addOnList.value = [];
+    addOnsTotal.value = 0;
+    serviceTotal.value = 0;
+    termsAndConditionApply.value = false;
+    addOnConvenienceFee.value = 0;
+    selectedDateValue.value = '';
+    couponApplied.value = false;
+    advanceAmount.value = 0;
+    convenienceFee.value = 0;
+    grandTotal.value = 0;
+    goldenHourAmount.value = 0;
+    couponData.value = [];
+    promoCodeController.clear();
+    phoneController.clear();
+    emailController.clear();
+    isDateChoose = false;
+    promotionAmount.value = 0.0;
+    userVerified = false;
   }
 }

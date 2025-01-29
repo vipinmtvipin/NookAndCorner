@@ -1,3 +1,4 @@
+import 'package:customerapp/core/extensions/string_extensions.dart';
 import 'package:customerapp/core/localization/localization_keys.dart';
 import 'package:customerapp/core/routes/app_routes.dart';
 import 'package:customerapp/core/theme/app_text_style.dart';
@@ -7,6 +8,7 @@ import 'package:customerapp/presentation/common_widgets/custom_pin_code_text_fie
 import 'package:customerapp/presentation/common_widgets/nookcorner_button.dart';
 import 'package:customerapp/presentation/common_widgets/nookcorner_text_field.dart';
 import 'package:customerapp/presentation/login_screen/controller/auth_controller.dart';
+import 'package:customerapp/presentation/main_screen/controller/main_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_toggle_tab/flutter_toggle_tab.dart';
 import 'package:get/get.dart';
@@ -20,6 +22,7 @@ class LoginScreen extends GetView<AuthController> {
 
   @override
   Widget build(BuildContext context) {
+    controller.checkBundle();
     return SafeArea(
       top: false,
       bottom: false,
@@ -57,7 +60,7 @@ class LoginScreen extends GetView<AuthController> {
                           onTap: () {
                             if (controller.navigateFrom ==
                                 AppRoutes.summeryScreen) {
-                              Get.offAndToNamed(AppRoutes.summeryScreen);
+                              Get.offNamed(AppRoutes.summeryScreen);
                             } else if (controller.authStatus.value ==
                                     AuthStatus.validEmail ||
                                 controller.authStatus.value ==
@@ -65,6 +68,17 @@ class LoginScreen extends GetView<AuthController> {
                               controller.clearState();
                             } else {
                               Get.back();
+                              try {
+                                if (Get.find<MainScreenController>()
+                                    .selectedCity
+                                    .value
+                                    .cityName
+                                    .isNullOrEmpty) {
+                                  Get.find<MainScreenController>()
+                                      .forceCitySelection
+                                      .value = true;
+                                }
+                              } catch (_) {}
                             }
                           },
                           alignment: Alignment.topLeft,
@@ -301,7 +315,11 @@ class _OTPWidgetState extends State<OTPWidget> {
         Center(
           child: TextButton(
               onPressed: () {
-                authController.loginMobile(true);
+                if (authController.navigationFlag == 'mobileJob') {
+                  authController.signupMobile(true);
+                } else {
+                  authController.loginMobile(true);
+                }
               },
               child: Text(LocalizationKeys.resendOtp.tr,
                   style:

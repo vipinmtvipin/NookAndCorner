@@ -646,8 +646,10 @@ class BookingDetailsScreen extends GetView<MyBookingController> {
                                                     .toString() ??
                                                 ''),
                                         Visibility(
-                                          visible: controller.screenType !=
-                                              MyBookingStatus.cancelled,
+                                          visible: (controller.screenType !=
+                                                  MyBookingStatus.cancelled &&
+                                              selectedJob.paymentStatus !=
+                                                  'completed'),
                                           child: PaymentSummaryRow(
                                             title: 'Balance Payable',
                                             value:

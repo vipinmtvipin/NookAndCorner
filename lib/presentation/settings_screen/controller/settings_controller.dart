@@ -127,7 +127,10 @@ class SettingsController extends BaseController {
         if (responds?.success == true) {
           var list = reviewList.value;
           list.addAll(responds?.data?.rows ?? []);
-          reviewList.value = list;
+          reviewList.value = [
+            ...reviewList.value,
+            ...responds?.data?.rows ?? []
+          ];
         }
         hideLoadingDialog();
       } catch (e) {

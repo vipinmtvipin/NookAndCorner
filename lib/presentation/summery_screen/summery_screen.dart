@@ -62,7 +62,7 @@ class SummeryScreen extends GetView<ServiceController> {
               width: 30,
               onTap: () {
                 Get.back();
-                clearAllControllerData();
+                controller.clearAllControllerData();
               },
               alignment: Alignment.topLeft,
               shape: IconButtonShape.CircleBorder35,
@@ -80,7 +80,7 @@ class SummeryScreen extends GetView<ServiceController> {
         body: PopScope(
           canPop: true,
           onPopInvokedWithResult: (_, __) {
-            clearAllControllerData();
+            controller.clearAllControllerData();
           },
           child: GestureDetector(
             onTap: () {
@@ -653,38 +653,7 @@ class SummeryScreen extends GetView<ServiceController> {
             text: 'Proceed to Pay Advance',
             onPressed: () {
               if (controller.termsAndConditionApply.value) {
-                if (controller.isLogin) {
-                  if (controller.email.isNullOrEmpty) {
-                    context.showBottomSheet(
-                      body: ForceLoginBottomSheet(
-                        from: 'email',
-                        onLoggedIn: (login) {
-                          showAddOnConfirmation(context);
-                        },
-                      ),
-                    );
-                  } else if (controller.mobile.isNullOrEmpty) {
-                    context.showBottomSheet(
-                      body: ForceLoginBottomSheet(
-                        from: 'mobile',
-                        onLoggedIn: (login) {
-                          showAddOnConfirmation(context);
-                        },
-                      ),
-                    );
-                  } else {
-                    showAddOnConfirmation(context);
-                  }
-                } else {
-                  context.showBottomSheet(
-                    body: ForceLoginBottomSheet(
-                      from: "forceLogin",
-                      onLoggedIn: (login) {
-                        showAddOnConfirmation(context);
-                      },
-                    ),
-                  );
-                }
+                showAddOnConfirmation(context);
               } else {
                 'Please agree to the terms and conditions'.showToast();
               }
@@ -693,40 +662,54 @@ class SummeryScreen extends GetView<ServiceController> {
     );
   }
 
+  void showForceLoginBottomSheet(BuildContext context) {
+    if (controller.isLogin) {
+      if (controller.email.isNullOrEmpty) {
+        context.showBottomSheet(
+          body: ForceLoginBottomSheet(
+            from: 'email',
+            onLoggedIn: (login) {
+              controller.createJob();
+            },
+          ),
+        );
+      } else if (controller.mobile.isNullOrEmpty) {
+        context.showBottomSheet(
+          body: ForceLoginBottomSheet(
+            from: 'mobile',
+            onLoggedIn: (login) {
+              controller.createJob();
+            },
+          ),
+        );
+      } else {
+        controller.createJob();
+      }
+    } else {
+      context.showBottomSheet(
+        body: ForceLoginBottomSheet(
+          from: "forceLogin",
+          onLoggedIn: (login) {
+            controller.createJob();
+          },
+        ),
+      );
+    }
+  }
+
   void showAddOnConfirmation(BuildContext context) {
     if (controller.addOns.value.isNotNullOrEmpty) {
       context.showBottomSheet(
         body: AddonConfirmBottomSheet(
           addOns: controller.addOns.value,
           onConfirm: () {
-            controller.createJob();
+            showForceLoginBottomSheet(context);
           },
         ),
       );
     } else {
-      controller.createJob();
+      showForceLoginBottomSheet(context);
     }
-  }
-
-  void clearAllControllerData() {
-    controller.addOns.value = [];
-    controller.addOnList.value = [];
-    controller.addOnsTotal.value = 0;
-    controller.serviceTotal.value = 0;
-    controller.termsAndConditionApply.value = false;
-    controller.addOnConvenienceFee.value = 0;
-    controller.selectedDateValue.value = '';
-    controller.couponApplied.value = false;
-    controller.advanceAmount.value = 0;
-    controller.convenienceFee.value = 0;
-    controller.grandTotal.value = 0;
-    controller.goldenHourAmount.value = 0;
-    controller.couponData.value = [];
-    controller.promoCodeController.clear();
-    controller.phoneController.clear();
-    controller.emailController.clear();
-    controller.isDateChoose = false;
-    controller.promotionAmount.value = 0.0;
   }
 }
 

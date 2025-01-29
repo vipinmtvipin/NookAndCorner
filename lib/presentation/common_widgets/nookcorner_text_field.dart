@@ -102,7 +102,7 @@ class _DalTextFieldState extends State<NookCornerTextField> {
   ];
 
   final emailInputFormatters = [
-    LengthLimitingTextInputFormatter(30),
+    LengthLimitingTextInputFormatter(50),
   ];
 
   final otpInputFormatters = [

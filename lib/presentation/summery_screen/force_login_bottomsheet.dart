@@ -50,6 +50,9 @@ class ForceLoginBottomSheet extends GetView<ServiceController> {
                 validator: (value) {
                   return null;
                 },
+                onChanged: (value) {
+                  controller.updateMobile = value.trim();
+                },
                 autoValidate: true,
               ),
               const SizedBox(height: 10),
@@ -69,6 +72,9 @@ class ForceLoginBottomSheet extends GetView<ServiceController> {
                 isFormField: true,
                 validator: (value) {
                   return null;
+                },
+                onChanged: (value) {
+                  controller.updateEmail = value.trim();
                 },
                 autoValidate: true,
               ),

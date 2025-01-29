@@ -169,6 +169,8 @@ class AccountController extends BaseController {
           sessionStorage.write(StorageKeys.username, nameController.text);
           sessionStorage.write(StorageKeys.mobile, phoneController.text);
           sessionStorage.write(StorageKeys.email, emailController.text);
+          sessionStorage.write(
+              StorageKeys.token, account.data?.accessToken ?? '');
 
           name.value = nameController.text.trim();
           mobile.value = phoneController.text.trim();

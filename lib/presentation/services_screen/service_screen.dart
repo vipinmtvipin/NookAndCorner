@@ -341,6 +341,7 @@ class ServiceCardWidget extends StatelessWidget {
                 height: 46,
                 backGroundColor: AppColors.primaryColor,
                 onPressed: () {
+                  controller.clearAllControllerData();
                   controller.timeSlots.value = [];
                   controller.selectedService.value = serviceData;
                   context.showBottomSheet(

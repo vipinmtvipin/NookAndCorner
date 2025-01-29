@@ -112,7 +112,9 @@ class MyBookingCard extends GetView<MyBookingController> {
                       Visibility(
                         visible: (controller.screenType !=
                                 MyBookingStatus.cancelled &&
-                            item.paymentStatus != 'completed'),
+                            (controller.screenType !=
+                                    MyBookingStatus.completed ||
+                                item.paymentStatus != 'completed')),
                         child: Flexible(
                           flex: 1,
                           fit: FlexFit.tight,

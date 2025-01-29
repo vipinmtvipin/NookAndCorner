@@ -59,8 +59,8 @@ class AuthController extends BaseController {
   TextEditingController passwordController = TextEditingController();
   Rx<OTPTextEditController> otpController =
       OTPTextEditController(codeLength: 4).obs;
-  Rx<String> phone = "".obs;
-  Rx<String> email = Rx("");
+  String phone = "";
+  String email = "";
 
   var isValidEmail = false.obs;
   var isValidPhone = false.obs;
@@ -68,38 +68,11 @@ class AuthController extends BaseController {
 
   var navigateFrom = "";
   var navigationFlag = 'mobile';
+  int lastCheckBundleTime = 0;
   @override
   void onInit() {
     super.onInit();
-    try {
-      final arguments = Get.arguments as Map<String, dynamic>;
-
-      navigateFrom = arguments['from'] ?? '';
-      navigationFlag = arguments['flag'] ?? 'mobile';
-
-      if (navigateFrom == AppRoutes.summeryScreen) {
-        String phone = arguments['phone'] ?? '';
-        String email = arguments['email'] ?? '';
-        phoneController.text = phone ?? '';
-        emailController.text = email ?? '';
-
-        if (navigationFlag == 'mobile' || navigationFlag == 'mobileJob') {
-          isPhoneLogin.value = true;
-          if (navigationFlag == 'mobileJob') {
-            signupMobile(false);
-          } else {
-            loginMobile(false);
-          }
-          authStatus.value = AuthStatus.validMobile;
-        } else if (email.isNotEmpty) {
-          isPhoneLogin.value = false;
-          loginEmail();
-          authStatus.value = AuthStatus.validEmail;
-        }
-      }
-    } catch (e) {
-      e.printInfo();
-    }
+    checkBundle();
   }
 
   @override
@@ -148,7 +121,10 @@ class AuthController extends BaseController {
       if (isResendOTP) {
         showLoadingDialog();
       }
-      var responds = await _mobileLoginUseCase.execute(phoneController.text);
+      var responds = await _mobileLoginUseCase.execute(
+          phoneController.text.trim().isNotNullOrEmpty
+              ? phoneController.text
+              : phone);
       if (responds != null) {
         hideLoadingDialog();
         if (responds.success == true) {
@@ -169,7 +145,10 @@ class AuthController extends BaseController {
 
   loginEmail() async {
     try {
-      var responds = await _emailLoginUseCase.execute(emailController.text);
+      var responds = await _emailLoginUseCase.execute(
+          emailController.text.trim().isNotNullOrEmpty
+              ? emailController.text
+              : email);
       if (responds != null) {
         hideLoadingDialog();
         if (responds.success == true) {
@@ -185,8 +164,13 @@ class AuthController extends BaseController {
   }
 
   login() async {
-    var username =
-        isPhoneLogin.value ? phoneController.text : emailController.text;
+    var username = isPhoneLogin.value
+        ? (phoneController.text.trim().isNotNullOrEmpty
+            ? phoneController.text
+            : phone)
+        : (emailController.text.trim().isNotNullOrEmpty
+            ? emailController.text
+            : email);
     var password =
         isPhoneLogin.value ? otpController.value.text : passwordController.text;
     LoginRequest postLoginRequest =
@@ -246,9 +230,13 @@ class AuthController extends BaseController {
   }
 
   Future<void> _logEvent() async {
-    await FirebaseAnalytics.instance.logEvent(
-      name: 'session_start',
-    );
+    try {
+      await FirebaseAnalytics.instance.logEvent(
+        name: 'session_start',
+      );
+    } catch (e) {
+      Logger.e("Error in logging event", e);
+    }
   }
 
   void _handleLoginSuccessData(String? token) {
@@ -297,7 +285,10 @@ class AuthController extends BaseController {
       if (isResendOTP) {
         showLoadingDialog();
       }
-      var responds = await _mobileSignupUseCase.execute(phoneController.text);
+      var responds = await _mobileSignupUseCase.execute(
+          phoneController.text.trim().isNotNullOrEmpty
+              ? phoneController.text
+              : phone);
       if (responds != null) {
         hideLoadingDialog();
         if (responds.success == true) {
@@ -318,7 +309,10 @@ class AuthController extends BaseController {
 
   signupEmail() async {
     try {
-      var responds = await _emailSignupUseCase.execute(emailController.text);
+      var responds = await _emailSignupUseCase.execute(
+          emailController.text.trim().isNotNullOrEmpty
+              ? emailController.text
+              : email);
       if (responds != null) {
         hideLoadingDialog();
         if (responds.success == true) {
@@ -361,8 +355,13 @@ class AuthController extends BaseController {
   }
 
   jobSignup() async {
-    var username =
-        isPhoneLogin.value ? phoneController.text : emailController.text;
+    var username = isPhoneLogin.value
+        ? (phoneController.text.trim().isNotNullOrEmpty
+            ? phoneController.text
+            : phone)
+        : (emailController.text.trim().isNotNullOrEmpty
+            ? emailController.text
+            : email);
     var password =
         isPhoneLogin.value ? otpController.value.text : passwordController.text;
     LoginRequest postLoginRequest =
@@ -427,5 +426,37 @@ class AuthController extends BaseController {
     emailController.clear();
     passwordController.clear();
     otpController.value.clear();
+  }
+
+  void checkBundle() {
+    try {
+      int currentTime = DateTime.now().millisecondsSinceEpoch;
+      if (currentTime - lastCheckBundleTime < 1000) return;
+      lastCheckBundleTime = currentTime;
+
+      final arguments = Get.arguments as Map<String, dynamic>;
+
+      navigateFrom = arguments['from'] ?? '';
+      navigationFlag = arguments['flag'] ?? 'mobile';
+      if (navigateFrom == AppRoutes.summeryScreen) {
+        phone = arguments['phone'] ?? '';
+        email = arguments['email'] ?? '';
+        if (navigationFlag == 'mobile' || navigationFlag == 'mobileJob') {
+          isPhoneLogin.value = true;
+          if (navigationFlag == 'mobileJob') {
+            signupMobile(false);
+          } else {
+            loginMobile(false);
+          }
+          authStatus.value = AuthStatus.validMobile;
+        } else if (email.isNotEmpty) {
+          isPhoneLogin.value = false;
+          loginEmail();
+          authStatus.value = AuthStatus.validEmail;
+        }
+      }
+    } catch (e) {
+      e.printInfo();
+    }
   }
 }
