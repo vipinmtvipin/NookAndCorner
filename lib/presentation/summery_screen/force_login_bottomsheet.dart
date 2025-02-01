@@ -88,7 +88,15 @@ class ForceLoginBottomSheet extends GetView<ServiceController> {
             text: 'Continue',
             backGroundColor: AppColors.primaryColor,
             onPressed: () {
-              if (from == 'forceLogin' || from == 'mobile') {
+              if (from == 'forceLogin') {
+                if (controller.onPhoneChanged()) {
+                  controller.showToast('Please enter valid phone number');
+                  return;
+                } else if (!controller.onEmailChanged()) {
+                  controller.showToast('Please enter valid email address');
+                  return;
+                }
+              } else if (from == 'forceLogin' || from == 'mobile') {
                 if (controller.onPhoneChanged()) {
                   controller.showToast('Please enter valid phone number');
                   return;

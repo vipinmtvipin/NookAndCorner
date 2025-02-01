@@ -366,7 +366,6 @@ class AuthController extends BaseController {
         isPhoneLogin.value ? otpController.value.text : passwordController.text;
     LoginRequest postLoginRequest =
         LoginRequest(username: username, password: password);
-
     try {
       showLoadingDialog();
       var responds = await _jobSignupUseCase.execute(postLoginRequest);

@@ -513,9 +513,11 @@ class ServiceController extends BaseController {
           orderID.value = job?.data?.jobCreated?.txnId ?? "";
           jobID = job?.data?.jobCreated?.jobId.toString() ?? "";
           jobData.value = job!;
-
+          sessionStorage.write(
+              StorageKeys.email, emailController.text.toString());
+          sessionStorage.write(
+              StorageKeys.mobile, phoneController.text.toString());
           saveJobUserData();
-          Get.back();
         }
 
         hideLoadingDialog();
@@ -605,43 +607,102 @@ class ServiceController extends BaseController {
 
         showLoadingDialog();
 
-        request = JobRequest(
-          addOns: addOnList,
-          advanceAmount: advanceAmount.value,
-          advancePercent:
-              double.tryParse(metaData.value.advancePercentage ?? '0'),
-          cityId: selectedCity.cityId,
-          convenienceFee: convenienceFee.value,
-          conveniencePercent:
-              double.tryParse(metaData.value.conveniencePercentage ?? '0'),
-          email: updateEmail,
-          goldenHoursCharge: isGoldenHour ? goldenHourAmount.value : 0.0,
-          isGolderHour: isGoldenHour,
-          jobDate: selectedDate.value,
-          jobDateOnly: selectedDate.value,
-          name: sessionStorage.read(StorageKeys.username) ?? '',
-          overNightHikePercentage:
-              double.tryParse(metaData.value.overNightHikePercentage ?? '0'),
-          phoneNumber: updateMobile,
-          price: grandTotal.value,
-          promotionAmount:
-              couponData.value.isEmpty ? null : promotionAmount.value,
-          promotionId: couponData.value.isEmpty
-              ? null
-              : couponData.value.first.promotionId,
-          promotionStatus:
-              couponData.value.isEmpty ? null : couponData.value.first.status,
-          serviceId: selectedService.value.servId.toString(),
-          supervisors: selectedTimeSlot.supervisors ?? [],
-          otpVerified: true,
-        );
-        var job = await _createJobUseCase.execute(request);
+        if (isLogin) {
+          var email = sessionStorage.read(StorageKeys.email) ?? '';
+          var mobile = sessionStorage.read(StorageKeys.mobile) ?? '';
 
-        orderID.value = job?.data?.jobCreated?.txnId ?? "";
-        jobID = job?.data?.jobCreated?.jobId.toString() ?? "";
-        jobData.value = job!;
+          if (email == null ||
+              email.toString().isNullOrEmpty ||
+              email.toString() == 'null') {
+            email = emailController.text;
+          }
+          if (mobile == null ||
+              mobile.toString().isNullOrEmpty ||
+              mobile.toString() == 'null') {
+            mobile = phoneController.text;
+          }
 
-        saveJobUserData();
+          request = JobRequest(
+            addOns: addOnList,
+            advanceAmount: advanceAmount.value,
+            advancePercent:
+                double.tryParse(metaData.value.advancePercentage ?? '0'),
+            cityId: selectedCity.cityId,
+            convenienceFee: convenienceFee.value,
+            conveniencePercent:
+                double.tryParse(metaData.value.conveniencePercentage ?? '0'),
+            email: email,
+            goldenHoursCharge: isGoldenHour ? goldenHourAmount.value : 0.0,
+            isGolderHour: isGoldenHour,
+            jobDate: selectedDate.value,
+            jobDateOnly: selectedDate.value,
+            name: sessionStorage.read(StorageKeys.username).toString(),
+            overNightHikePercentage:
+                double.tryParse(metaData.value.overNightHikePercentage ?? '0'),
+            phoneNumber: mobile,
+            price: grandTotal.value,
+            promotionAmount:
+                couponData.value.isEmpty ? null : promotionAmount.value,
+            promotionId: couponData.value.isEmpty
+                ? null
+                : couponData.value.first.promotionId,
+            promotionStatus:
+                couponData.value.isEmpty ? null : couponData.value.first.status,
+            serviceId: selectedService.value.servId.toString(),
+            supervisors: selectedTimeSlot.supervisors ?? [],
+            userId: sessionStorage.read(StorageKeys.userId).toString(),
+            otpVerified: true,
+          );
+
+          var job = await _createLoginJobUseCase.execute(request);
+
+          orderID.value = job?.data?.jobCreated?.txnId ?? "";
+          jobID = job?.data?.jobCreated?.jobId.toString() ?? "";
+          jobLoginData.value = job!;
+          sessionStorage.write(StorageKeys.email, email);
+          sessionStorage.write(StorageKeys.mobile, mobile);
+        } else {
+          request = JobRequest(
+            addOns: addOnList,
+            advanceAmount: advanceAmount.value,
+            advancePercent:
+                double.tryParse(metaData.value.advancePercentage ?? '0'),
+            cityId: selectedCity.cityId,
+            convenienceFee: convenienceFee.value,
+            conveniencePercent:
+                double.tryParse(metaData.value.conveniencePercentage ?? '0'),
+            email: updateEmail,
+            goldenHoursCharge: isGoldenHour ? goldenHourAmount.value : 0.0,
+            isGolderHour: isGoldenHour,
+            jobDate: selectedDate.value,
+            jobDateOnly: selectedDate.value,
+            name: sessionStorage.read(StorageKeys.username) ?? '',
+            overNightHikePercentage:
+                double.tryParse(metaData.value.overNightHikePercentage ?? '0'),
+            phoneNumber: updateMobile,
+            price: grandTotal.value,
+            promotionAmount:
+                couponData.value.isEmpty ? null : promotionAmount.value,
+            promotionId: couponData.value.isEmpty
+                ? null
+                : couponData.value.first.promotionId,
+            promotionStatus:
+                couponData.value.isEmpty ? null : couponData.value.first.status,
+            serviceId: selectedService.value.servId.toString(),
+            supervisors: selectedTimeSlot.supervisors ?? [],
+            otpVerified: true,
+          );
+          var job = await _createJobUseCase.execute(request);
+
+          orderID.value = job?.data?.jobCreated?.txnId ?? "";
+          jobID = job?.data?.jobCreated?.jobId.toString() ?? "";
+          jobData.value = job!;
+
+          sessionStorage.write(StorageKeys.email, updateMobile);
+          sessionStorage.write(StorageKeys.mobile, updateMobile);
+
+          saveJobUserData();
+        }
 
         hideLoadingDialog();
 
@@ -930,8 +991,6 @@ class ServiceController extends BaseController {
           StorageKeys.token, jobData.value.data?.accessToken ?? "");
       sessionStorage.write(
           StorageKeys.userId, jobData.value.data?.jobData?.userId ?? "");
-      sessionStorage.write(StorageKeys.email, emailController.text);
-      sessionStorage.write(StorageKeys.mobile, phoneController.text);
 
       try {
         Get.find<MainScreenController>().loggedIn.value = true;
