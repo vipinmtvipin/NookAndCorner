@@ -11,6 +11,7 @@ import 'package:customerapp/presentation/common_widgets/conditional_widget.dart'
 import 'package:customerapp/presentation/common_widgets/nookcorner_button.dart';
 import 'package:customerapp/presentation/common_widgets/responsive_text.dart';
 import 'package:customerapp/presentation/common_widgets/title_bar_widget.dart';
+import 'package:customerapp/presentation/main_screen/controller/main_controller.dart';
 import 'package:customerapp/presentation/main_screen/main_screen.dart';
 import 'package:customerapp/presentation/my_job_screen/controller/mybooking_controller.dart';
 import 'package:customerapp/presentation/services_screen/controller/service_controller.dart';
@@ -69,6 +70,9 @@ class ConfirmAddressScreen extends GetView<AddressController> {
                   TitleBarWidget(
                       onBack: () {
                         if (controller.confirmFrom.value == 'payment') {
+                          try {
+                            Get.find<MainScreenController>().pendingJobs = true;
+                          } catch (_) {}
                           Get.offAndToNamed(AppRoutes.mainScreen);
                         }
                       },

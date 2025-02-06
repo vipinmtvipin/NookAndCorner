@@ -35,6 +35,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 enum ServiceStatus {
   unknown,
@@ -181,6 +182,16 @@ class ServiceController extends BaseController {
     getServiceDetails(categoryId.value.toString());
     getServiceTags(categoryId.value.toString());
     getSummeryInfo();
+    _requestPermissions();
+  }
+
+  Future<void> _requestPermissions() async {
+    try {
+      // List of permissions to request
+      final Map<Permission, PermissionStatus> statuses = await [
+        Permission.scheduleExactAlarm,
+      ].request();
+    } catch (_) {}
   }
 
   Future<void> getServiceDetails(String categoryId,
@@ -273,7 +284,24 @@ class ServiceController extends BaseController {
       try {
         showLoadingDialog();
         var services = await _serviceSlotsUseCase.execute(request);
-        timeSlots.value = services?.data ?? [];
+
+        if (services?.data != null) {
+          List<TimeSlotData> timeSlotData = [];
+          for (var i = 0; i < services!.data.length; i++) {
+            var slotStart = services.data[i].slotStart;
+            var slotStartLocal = slotStart?.toLocal();
+            var timeSlot = TimeSlotData(
+              slotStart: slotStartLocal,
+              isSelected: services.data[i].isSelected,
+              supervisors: services.data[i].supervisors,
+            );
+            timeSlotData.add(timeSlot);
+          }
+          timeSlots.value = timeSlotData;
+        } else {
+          timeSlots.value = services?.data ?? [];
+        }
+
         serviceStatus.value = ServiceStatus.dateDataLoaded;
         hideLoadingDialog();
       } catch (e) {
@@ -466,15 +494,17 @@ class ServiceController extends BaseController {
             serviceId: selectedService.value.servId.toString(),
             supervisors: selectedTimeSlot.supervisors ?? [],
             userId: sessionStorage.read(StorageKeys.userId).toString(),
+            otpVerified: false,
           );
 
           var job = await _createLoginJobUseCase.execute(request);
 
+          sessionStorage.write(StorageKeys.email, email);
+          sessionStorage.write(StorageKeys.mobile, mobile);
+
           orderID.value = job?.data?.jobCreated?.txnId ?? "";
           jobID = job?.data?.jobCreated?.jobId.toString() ?? "";
           jobLoginData.value = job!;
-          sessionStorage.write(StorageKeys.email, email);
-          sessionStorage.write(StorageKeys.mobile, mobile);
         } else {
           showLoadingDialog();
 
@@ -487,7 +517,7 @@ class ServiceController extends BaseController {
             convenienceFee: convenienceFee.value,
             conveniencePercent:
                 double.tryParse(metaData.value.conveniencePercentage ?? '0'),
-            email: emailController.text.toString(),
+            email: updateEmail,
             goldenHoursCharge: isGoldenHour ? goldenHourAmount.value : 0.0,
             isGolderHour: isGoldenHour,
             jobDate: selectedDate.value,
@@ -495,7 +525,7 @@ class ServiceController extends BaseController {
             name: sessionStorage.read(StorageKeys.username) ?? '',
             overNightHikePercentage:
                 double.tryParse(metaData.value.overNightHikePercentage ?? '0'),
-            phoneNumber: phoneController.text.toString(),
+            phoneNumber: updateMobile,
             price: grandTotal.value,
             promotionAmount:
                 couponData.value.isEmpty ? null : promotionAmount.value,
@@ -510,13 +540,12 @@ class ServiceController extends BaseController {
           );
           var job = await _createJobUseCase.execute(request);
 
+          sessionStorage.write(StorageKeys.email, updateEmail);
+          sessionStorage.write(StorageKeys.mobile, updateMobile);
           orderID.value = job?.data?.jobCreated?.txnId ?? "";
           jobID = job?.data?.jobCreated?.jobId.toString() ?? "";
           jobData.value = job!;
-          sessionStorage.write(
-              StorageKeys.email, emailController.text.toString());
-          sessionStorage.write(
-              StorageKeys.mobile, phoneController.text.toString());
+
           saveJobUserData();
         }
 
@@ -614,12 +643,12 @@ class ServiceController extends BaseController {
           if (email == null ||
               email.toString().isNullOrEmpty ||
               email.toString() == 'null') {
-            email = emailController.text;
+            email = updateEmail;
           }
           if (mobile == null ||
               mobile.toString().isNullOrEmpty ||
               mobile.toString() == 'null') {
-            mobile = phoneController.text;
+            mobile = updateMobile;
           }
 
           request = JobRequest(
@@ -656,11 +685,12 @@ class ServiceController extends BaseController {
 
           var job = await _createLoginJobUseCase.execute(request);
 
+          sessionStorage.write(StorageKeys.email, email);
+          sessionStorage.write(StorageKeys.mobile, mobile);
+
           orderID.value = job?.data?.jobCreated?.txnId ?? "";
           jobID = job?.data?.jobCreated?.jobId.toString() ?? "";
           jobLoginData.value = job!;
-          sessionStorage.write(StorageKeys.email, email);
-          sessionStorage.write(StorageKeys.mobile, mobile);
         } else {
           request = JobRequest(
             addOns: addOnList,
@@ -694,12 +724,12 @@ class ServiceController extends BaseController {
           );
           var job = await _createJobUseCase.execute(request);
 
+          sessionStorage.write(StorageKeys.email, updateMobile);
+          sessionStorage.write(StorageKeys.mobile, updateMobile);
+
           orderID.value = job?.data?.jobCreated?.txnId ?? "";
           jobID = job?.data?.jobCreated?.jobId.toString() ?? "";
           jobData.value = job!;
-
-          sessionStorage.write(StorageKeys.email, updateMobile);
-          sessionStorage.write(StorageKeys.mobile, updateMobile);
 
           saveJobUserData();
         }
@@ -748,7 +778,8 @@ class ServiceController extends BaseController {
     TimeSlotRequest request = TimeSlotRequest(
       categoryId: categoryId.value,
       tagId: service.tags.first.id.toString(),
-      jobDate: DateFormat('yyyy-MM-dd').format(selectedDate.value),
+      jobDate:
+          '${DateFormat('yyyy-MM-dd').format(selectedDate.value)} 00:00:00.000+0530',
       serviceId: service.servId.toString(),
       userId: userId,
     );

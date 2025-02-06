@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -35,6 +36,7 @@ import 'package:customerapp/domain/usecases/summery/summery_use_case.dart';
 import 'package:customerapp/presentation/base_controller.dart';
 import 'package:customerapp/presentation/chat/chat_service.dart';
 import 'package:customerapp/presentation/chat/message_data.dart';
+import 'package:customerapp/presentation/main_screen/controller/main_controller.dart';
 import 'package:customerapp/presentation/services_screen/controller/service_controller.dart';
 import 'package:dio/dio.dart';
 import 'package:file_picker/src/platform_file.dart';
@@ -147,8 +149,16 @@ class MyBookingController extends BaseController {
 
         if (request.bookingStatus == MyBookingStatus.pending.name &&
             jobList.value.isNotEmpty) {
-          NotificationMsgUtil.showPeriodicNotification();
+          try {
+            if (jobList.value.isNotNullOrEmpty) {
+              Get.find<MainScreenController>().pendingJobs = true;
+            } else {
+              Get.find<MainScreenController>().pendingJobs = false;
+            }
+          } catch (_) {}
+          await NotificationMsgUtil.scheduleRepeatingNotification();
         } else {
+          Get.find<MainScreenController>().pendingJobs = false;
           NotificationMsgUtil.cancelPeriodicNotification();
         }
 
@@ -209,8 +219,8 @@ class MyBookingController extends BaseController {
 
     TimeSlotRequest request = TimeSlotRequest(
       categoryId: selectedJob.value.serviceId.toString(),
-      //   tagId: service.t.first.id.toString(),
-      jobDate: DateFormat('yyyy-MM-dd').format(selectedDate.value),
+      jobDate:
+          '${DateFormat('yyyy-MM-dd').format(selectedDate.value)} 00:00:00.000+0530',
       serviceId: service.serviceId.toString(),
     );
 
@@ -222,7 +232,24 @@ class MyBookingController extends BaseController {
       try {
         showLoadingDialog();
         var services = await _serviceSlotsUseCase.execute(request);
-        timeSlots.value = services?.data ?? [];
+
+        if (services?.data != null) {
+          List<TimeSlotData> timeSlotData = [];
+          for (var i = 0; i < services!.data.length; i++) {
+            var slotStart = services.data[i].slotStart;
+            var slotStartLocal = slotStart?.toLocal();
+            var timeSlot = TimeSlotData(
+              slotStart: slotStartLocal,
+              isSelected: services.data[i].isSelected,
+              supervisors: services.data[i].supervisors,
+            );
+            timeSlotData.add(timeSlot);
+          }
+          timeSlots.value = timeSlotData;
+        } else {
+          timeSlots.value = services?.data ?? [];
+        }
+
         serviceStatus.value = ServiceStatus.dateDataLoaded;
         hideLoadingDialog();
       } catch (e) {

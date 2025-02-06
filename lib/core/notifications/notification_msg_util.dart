@@ -57,6 +57,30 @@ class NotificationMsgUtil {
     }
   }
 
+  static Future<void> scheduleRepeatingNotification() async {
+    await GetIt.I<FlutterLocalNotificationsPlugin>().periodicallyShow(
+      11,
+      'Remainder: Pending Job',
+      'You have a pending job, please confirm the address.',
+      RepeatInterval.everyMinute,
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'periodic_channel',
+          'Periodic Notifications',
+          channelDescription: 'Shows notifications every minutes',
+          importance: Importance.high,
+          priority: Priority.high,
+          showWhen: false,
+          enableLights: true,
+          enableVibration: true,
+          playSound: true,
+          icon: '@mipmap/ic_launcher',
+        ),
+      ),
+      androidScheduleMode: AndroidScheduleMode.exact,
+    );
+  }
+
   static Future<void> showPeriodicNotification() async {
     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
         GetIt.I<FlutterLocalNotificationsPlugin>();
@@ -69,7 +93,7 @@ class NotificationMsgUtil {
       'nook_corner_ids',
       'nook_corner_channels',
       channelDescription: 'Nook and Corner',
-      importance: Importance.max,
+      importance: Importance.high,
       priority: Priority.high,
       showWhen: false,
       enableLights: true,
@@ -87,7 +111,7 @@ class NotificationMsgUtil {
       'You have a pending job, please confirm the address.',
       _nextInstanceIn30Minutes(),
       platformChannelSpecifics,
-      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      androidScheduleMode: AndroidScheduleMode.exact,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
@@ -96,13 +120,13 @@ class NotificationMsgUtil {
 
   static tz.TZDateTime _nextInstanceIn30Minutes() {
     final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
-    return now.add(const Duration(minutes: 30));
+    return now.add(const Duration(seconds: 5));
   }
 
   static cancelPeriodicNotification() async {
     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
         GetIt.I<FlutterLocalNotificationsPlugin>();
 
-    await flutterLocalNotificationsPlugin.cancel(501);
+    await flutterLocalNotificationsPlugin.cancel(11);
   }
 }

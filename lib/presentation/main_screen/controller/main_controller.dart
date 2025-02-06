@@ -1,21 +1,28 @@
+import 'dart:async';
+
 import 'package:customerapp/core/constants/constants.dart';
 import 'package:customerapp/core/extensions/bool_extension.dart';
 import 'package:customerapp/core/extensions/list_extensions.dart';
 import 'package:customerapp/core/localization/localization_keys.dart';
 import 'package:customerapp/core/network/connectivity_service.dart';
+import 'package:customerapp/core/notifications/notification_msg_util.dart';
 import 'package:customerapp/domain/model/home/active_banner_responds.dart';
 import 'package:customerapp/domain/model/home/city_responds.dart';
 import 'package:customerapp/domain/model/home/city_service_responds.dart';
 import 'package:customerapp/domain/model/home/mid_banner_responds.dart';
 import 'package:customerapp/domain/model/home/push_request.dart';
+import 'package:customerapp/domain/model/my_jobs/myjob_request.dart';
 import 'package:customerapp/domain/model/settings/review_request.dart';
 import 'package:customerapp/domain/model/settings/reviews_responds.dart';
 import 'package:customerapp/domain/usecases/home/city_service_use_case.dart';
 import 'package:customerapp/domain/usecases/home/home_use_case.dart';
 import 'package:customerapp/domain/usecases/home/push_token_use_case.dart';
 import 'package:customerapp/domain/usecases/home/reviews_list_use_case.dart';
+import 'package:customerapp/domain/usecases/my_job/my_job_use_case.dart';
 import 'package:customerapp/presentation/base_controller.dart';
 import 'package:customerapp/presentation/main_screen/widgets/city_bottomsheet.dart';
+import 'package:customerapp/presentation/my_job_screen/controller/mybooking_controller.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -33,19 +40,20 @@ class MainScreenController extends BaseController {
   final PushTokenUseCase _pushTokenUseCase;
 
   final ReviewsListUseCase _reviewsUseCase;
-
+  final MyJobUseCase _myJobUseCase;
   MainScreenController(
     this._homeUseCase,
     this._cityServiceUseCase,
     this._pushTokenUseCase,
     this._reviewsUseCase,
+    this._myJobUseCase,
   );
   final sessionStorage = GetStorage();
   late final _connectivityService = getIt<ConnectivityService>();
 
   var homeStatus = HomeStatus.unknown.obs;
   Rx<List<CityData>> cityInfo = Rx([]);
-
+  Timer? _jobTimer;
   Rx<CityData> selectedCity = Rx(CityData());
   Rx<List<ActiveBannerData>> activeBanners = Rx([]);
   Rx<List<MidBannerData>> midBanners = Rx([]);
@@ -53,6 +61,7 @@ class MainScreenController extends BaseController {
   Rx<bool> loggedIn = Rx(false);
   Rx<int> reviewCount = Rx(0);
   Rx<bool> forceCitySelection = Rx(false);
+  bool pendingJobs = false;
 
   Rx<List<ReviewData>> reviewList = Rx<List<ReviewData>>([]);
   final ScrollController scrollController = ScrollController();
@@ -75,18 +84,51 @@ class MainScreenController extends BaseController {
   @override
   void onReady() {
     super.onReady();
-
     _requestMultiplePermissions();
 
     getCity();
     getReviews('5', '0', "", false);
     updatePushToken();
+    getPendingJobs();
+    startPendingJobTimer();
+  }
+
+  showPendingNotification() async {
+    if (pendingJobs.absolute) {
+      await NotificationMsgUtil.parse(
+        RemoteNotification(
+          title: 'Remainder: Pending Job',
+          body: 'You have a pending job, please confirm the address.',
+        ),
+      );
+    }
   }
 
   @override
   void onClose() {
     super.onClose();
     scrollController.dispose();
+    _jobTimer?.cancel();
+  }
+
+  Future<void> getPendingJobs({bool isLoader = true}) async {
+    if (await _connectivityService.isConnected()) {
+      try {
+        var userId = sessionStorage.read(StorageKeys.userId);
+        var request = MyJobRequest(
+            userId: userId.toString(),
+            bookingStatus: MyBookingStatus.pending.name);
+        var jobData = await _myJobUseCase.execute(request);
+        if (jobData?.data.isNotEmpty ?? false) {
+          pendingJobs = true;
+        } else {
+          pendingJobs = false;
+        }
+      } catch (e) {
+        e.printInfo();
+        pendingJobs = false;
+      }
+    }
   }
 
   getCity() async {
@@ -193,11 +235,14 @@ class MainScreenController extends BaseController {
         ReviewListResponds? responds = await _reviewsUseCase.execute(request);
 
         if (responds?.success == true) {
-          reviewCount.value = responds?.data?.count ?? 0;
-          var list = reviewList.value;
-          list.addAll(responds?.data?.rows ?? []);
-          reviewList.value = List<ReviewData>.from(
-              list); // Update the list using the Rx setter
+          if (search == 'refresh') {
+            reviewList.value = responds?.data?.rows ?? [];
+          } else {
+            reviewCount.value = responds?.data?.count ?? 0;
+            var list = reviewList.value;
+            list.addAll(responds?.data?.rows ?? []);
+            reviewList.value = List<ReviewData>.from(list);
+          }
         }
         if (loadMore.absolute) {
           hideLoadingDialog();
@@ -248,5 +293,16 @@ class MainScreenController extends BaseController {
         ],
       ),
     );
+  }
+
+  void startPendingJobTimer() {
+    try {
+      _jobTimer ??= Timer.periodic(
+        const Duration(minutes: 15),
+        (_) async {
+          showPendingNotification();
+        },
+      );
+    } catch (_) {}
   }
 }

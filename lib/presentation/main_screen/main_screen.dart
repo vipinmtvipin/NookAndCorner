@@ -4,7 +4,6 @@ import 'package:customerapp/core/routes/app_routes.dart';
 import 'package:customerapp/core/theme/app_text_style.dart';
 import 'package:customerapp/core/theme/color_constant.dart';
 import 'package:customerapp/core/utils/size_utils.dart';
-import 'package:customerapp/domain/model/settings/reviews_responds.dart';
 import 'package:customerapp/generated/assets.gen.dart';
 import 'package:customerapp/presentation/common_widgets/carousel_with_indicator.dart';
 import 'package:customerapp/presentation/common_widgets/conditional_widget.dart';
@@ -193,14 +192,8 @@ Widget _buildMainScreen() {
     strokeWidth: 2,
     onRefresh: () {
       controller.getCity();
-      if (controller.reviewList.value.isNotNullOrEmpty) {
-        var list = controller.reviewList.value.length > 5
-            ? controller.reviewList.value.take(5).toList()
-            : controller.reviewList.value;
-        controller.reviewList.value = List<ReviewData>.from(list);
-      } else {
-        controller.getReviews('5', '0', "", false);
-      }
+
+      controller.getReviews('5', '0', "refresh", false);
 
       return Future<void>.value();
     },

@@ -49,20 +49,27 @@ class RescheduleBookingDateBottomSheet extends GetView<MyBookingController> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
-                      child: TextFormField(
-                        readOnly: true,
-                        decoration: InputDecoration(
-                          hintStyle: const TextStyle(color: AppColors.darkGray),
-                          hintText: controller.selectedDateValue.value,
-                          suffixIcon: IconButton(
-                            icon: const Icon(Icons.calendar_today),
-                            onPressed: () => _selectDate(context),
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12.0),
-                            borderSide: const BorderSide(
-                              color: AppColors.black,
-                              width: 2.0,
+                      child: InkWell(
+                        onTap: () {
+                          _selectDate(context);
+                        },
+                        child: TextFormField(
+                          readOnly: true,
+                          enabled: false,
+                          decoration: InputDecoration(
+                            hintStyle:
+                                const TextStyle(color: AppColors.darkGray),
+                            hintText: controller.selectedDateValue.value,
+                            suffixIcon: IconButton(
+                              icon: const Icon(Icons.calendar_today),
+                              onPressed: () => _selectDate(context),
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                              borderSide: const BorderSide(
+                                color: AppColors.black,
+                                width: 2.0,
+                              ),
                             ),
                           ),
                         ),

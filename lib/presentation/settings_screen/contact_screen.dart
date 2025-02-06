@@ -6,6 +6,7 @@ import 'package:customerapp/presentation/common_widgets/title_bar_widget.dart';
 import 'package:customerapp/presentation/settings_screen/controller/settings_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/theme/app_text_style.dart';
 import '../../core/utils/common_util.dart';
@@ -116,10 +117,68 @@ class ContactScreen extends GetView<SettingsController> {
                                   controller.postContactInfo();
                                 },
                               ),
+                              const SizedBox(height: 10),
                             ],
                           ),
                         ),
-                      )
+                      ),
+                      const SizedBox(height: 10),
+                      Card(
+                        color: Colors.white,
+                        elevation: 8,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        margin: const EdgeInsets.all(2),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20.0, vertical: 10),
+                          child: Column(
+                            children: [
+                              const SizedBox(height: 10),
+                              Text('Stay Connected with Us',
+                                  style: AppTextStyle.txtBold16
+                                      .copyWith(color: AppColors.black)),
+                              const SizedBox(height: 10),
+                              Text(
+                                  'Follow us on social media for updates, offers, and tips to make your home shine. We’re here to inspire and engage with you every step of the way!',
+                                  style: AppTextStyle.txt14
+                                      .copyWith(color: AppColors.darkGray)),
+                              const SizedBox(height: 20),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  GestureDetector(
+                                    onTap: () async {
+                                      final Uri url = Uri.parse(
+                                          'https://www.instagram.com/nookandcorner_real/');
+
+                                      await launchUrl(url,
+                                          mode: LaunchMode.externalApplication);
+                                    },
+                                    child: Assets.images.insta
+                                        .image(width: 20, height: 20),
+                                  ),
+                                  const SizedBox(width: 30),
+                                  GestureDetector(
+                                    onTap: () async {
+                                      final Uri url = Uri.parse(
+                                          'https://www.facebook.com/people/Nook-And-Corner/61563969806129/');
+
+                                      await launchUrl(url,
+                                          mode: LaunchMode.externalApplication);
+                                    },
+                                    child: Assets.images.fb
+                                        .image(width: 22, height: 22),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
                     ])),
           ),
         );

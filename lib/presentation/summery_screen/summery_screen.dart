@@ -1,3 +1,4 @@
+import 'package:customerapp/core/constants/constants.dart';
 import 'package:customerapp/core/extensions/list_extensions.dart';
 import 'package:customerapp/core/extensions/sheet_extension.dart';
 import 'package:customerapp/core/extensions/string_extensions.dart';
@@ -664,6 +665,10 @@ class SummeryScreen extends GetView<ServiceController> {
 
   void showForceLoginBottomSheet(BuildContext context) {
     if (controller.isLogin) {
+      controller.mobile =
+          controller.sessionStorage.read(StorageKeys.mobile) ?? "";
+      controller.email =
+          controller.sessionStorage.read(StorageKeys.email) ?? "";
       if (controller.email.isNullOrEmpty) {
         context.showBottomSheet(
           body: ForceLoginBottomSheet(
