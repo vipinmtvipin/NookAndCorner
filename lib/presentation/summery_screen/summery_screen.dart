@@ -81,7 +81,7 @@ class SummeryScreen extends GetView<ServiceController> {
         body: PopScope(
           canPop: true,
           onPopInvokedWithResult: (_, __) {
-            controller.clearAllControllerData();
+            //  controller.clearAllControllerData();
           },
           child: GestureDetector(
             onTap: () {

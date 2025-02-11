@@ -207,13 +207,7 @@ class AuthController extends BaseController {
     } else {
       Get.offAndToNamed(AppRoutes.mainScreen);
       try {
-        if (Get.find<MainScreenController>()
-            .selectedCity
-            .value
-            .cityName
-            .isNullOrEmpty) {
-          Get.find<MainScreenController>().forceCitySelection.value = true;
-        }
+        Get.find<MainScreenController>().forceCitySelection.value = true;
       } catch (e) {
         Logger.e("Error in controller", e);
       }

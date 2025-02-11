@@ -56,10 +56,13 @@ class AccountScreen extends GetView<AccountController> {
                       onPressed: () {
                         Get.back();
                         controller.sessionStorage.erase();
-                        MainScreenController mainController =
-                            Get.find<MainScreenController>();
-                        mainController.loggedIn.value = false;
-                        mainController.selectedCity.value = CityData();
+                        try {
+                          MainScreenController mainController =
+                              Get.find<MainScreenController>();
+                          mainController.loggedIn.value = false;
+                          mainController.selectedCity.value = CityData();
+                          mainController.cityServices.value = [];
+                        } catch (_) {}
                         onTapLoginNavigation();
                       },
                       child: const Text('Logout'),

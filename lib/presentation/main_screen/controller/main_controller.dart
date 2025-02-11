@@ -75,9 +75,10 @@ class MainScreenController extends BaseController {
     super.onInit();
 
     ever(forceCitySelection, (value) {
-      if (value) {
-        getCity();
+      if (value == true) {
+        showCityPopup();
       }
+      forceCitySelection.value = false;
     });
   }
 
@@ -142,6 +143,7 @@ class MainScreenController extends BaseController {
         midBanners.value = responds.item3.data ?? [];
 
         if (selectedCity.value.cityId != null &&
+            selectedCity.value.cityId != 0 &&
             selectedCity.value.cityId.toString().isNotEmpty) {
           var services = await _cityServiceUseCase
               .execute(selectedCity.value.cityId.toString());
@@ -175,6 +177,33 @@ class MainScreenController extends BaseController {
       }
     } else {
       showToast(LocalizationKeys.noNetwork.tr);
+    }
+  }
+
+  void showCityPopup() async {
+    if (cityInfo.value.isNotNullOrEmpty) {
+      await Get.bottomSheet(
+        isDismissible: false,
+        backgroundColor: Colors.white,
+        elevation: 6,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+        ),
+        CityBottomSheet(
+          city: cityInfo.value,
+          height: cityInfo.value.length > 3
+              ? (cityInfo.value.length > 6 ? 800 : 500)
+              : 280,
+          padding:
+              const EdgeInsets.only(top: 40, left: 12, right: 12, bottom: 5),
+          onCitySelected: (city) {
+            Get.back();
+            onCitySelected(city);
+          },
+        ),
+      );
+    } else {
+      getCity();
     }
   }
 

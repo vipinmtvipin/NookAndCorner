@@ -110,7 +110,15 @@ class MainScreen extends GetView<MainScreenController> {
                       height: getSize(26),
                     ),
                     onTap: () {
-                      Get.toNamed(AppRoutes.myBookingScreen);
+                      if (controller.selectedCity.value.cityId != null &&
+                          controller.selectedCity.value.cityId != 0 &&
+                          controller.selectedCity.value.cityId
+                              .toString()
+                              .isNotEmpty) {
+                        Get.toNamed(AppRoutes.myBookingScreen);
+                      } else {
+                        controller.showCityPopup();
+                      }
                     },
                   )
                 : SizedBox.shrink();
@@ -126,7 +134,15 @@ class MainScreen extends GetView<MainScreenController> {
                         size: getSize(26),
                       ),
                       onPressed: () {
-                        Get.toNamed(AppRoutes.accountScreen);
+                        if (controller.selectedCity.value.cityId != null &&
+                            controller.selectedCity.value.cityId != 0 &&
+                            controller.selectedCity.value.cityId
+                                .toString()
+                                .isNotEmpty) {
+                          Get.toNamed(AppRoutes.accountScreen);
+                        } else {
+                          controller.showCityPopup();
+                        }
                       },
                     ),
                   )
@@ -271,15 +287,23 @@ Widget _buildMainScreen() {
                     final item = controller.cityServices.value[index];
                     return GestureDetector(
                       onTap: () {
-                        Get.toNamed(
-                          AppRoutes.serviceScreen,
-                          arguments: {
-                            'categoryId': item.catid.toString(),
-                            'categoryName': item.name,
-                            'categoryDescription': item.description,
-                            'categoryImage': item.descriptionImageHorizontal,
-                          },
-                        );
+                        if (controller.selectedCity.value.cityId != null &&
+                            controller.selectedCity.value.cityId != 0 &&
+                            controller.selectedCity.value.cityId
+                                .toString()
+                                .isNotEmpty) {
+                          Get.toNamed(
+                            AppRoutes.serviceScreen,
+                            arguments: {
+                              'categoryId': item.catid.toString(),
+                              'categoryName': item.name,
+                              'categoryDescription': item.description,
+                              'categoryImage': item.descriptionImageHorizontal,
+                            },
+                          );
+                        } else {
+                          controller.showCityPopup();
+                        }
                       },
                       child: ServiceCard(
                         image: item.logo,

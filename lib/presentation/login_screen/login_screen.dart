@@ -1,4 +1,3 @@
-import 'package:customerapp/core/extensions/string_extensions.dart';
 import 'package:customerapp/core/localization/localization_keys.dart';
 import 'package:customerapp/core/routes/app_routes.dart';
 import 'package:customerapp/core/theme/app_text_style.dart';
@@ -70,10 +69,21 @@ class LoginScreen extends GetView<AuthController> {
                               Get.back();
                               try {
                                 if (Get.find<MainScreenController>()
-                                    .selectedCity
-                                    .value
-                                    .cityName
-                                    .isNullOrEmpty) {
+                                            .selectedCity
+                                            .value
+                                            .cityId ==
+                                        null ||
+                                    Get.find<MainScreenController>()
+                                            .selectedCity
+                                            .value
+                                            .cityId ==
+                                        0 ||
+                                    Get.find<MainScreenController>()
+                                        .selectedCity
+                                        .value
+                                        .cityId
+                                        .toString()
+                                        .isEmpty) {
                                   Get.find<MainScreenController>()
                                       .forceCitySelection
                                       .value = true;

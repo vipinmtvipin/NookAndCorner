@@ -182,7 +182,7 @@ class ServiceController extends BaseController {
     getServiceDetails(categoryId.value.toString());
     getServiceTags(categoryId.value.toString());
     getSummeryInfo();
-    _requestPermissions();
+    // _requestPermissions();
   }
 
   Future<void> _requestPermissions() async {
@@ -633,6 +633,11 @@ class ServiceController extends BaseController {
                 serviceId: selectedService.value.servId),
           );
         }
+
+        double servicePercentage = grandTotal.value / 100;
+        advanceAmount.value = servicePercentage * advancePercentage;
+        advanceAmount.value =
+            double.parse(advanceAmount.value.toStringAsFixed(2));
 
         showLoadingDialog();
 

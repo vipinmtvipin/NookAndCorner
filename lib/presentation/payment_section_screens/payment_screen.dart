@@ -53,6 +53,8 @@ class PaymentScreenState extends State<PaymentScreen> {
 
     _initializePaymentUrl();
 
+    Logger.e('WebScreen-----', ': Web URL------: $paymentUrl');
+
     webViewController = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
@@ -151,6 +153,8 @@ class PaymentScreenState extends State<PaymentScreen> {
     String plainTextPayload =
         "merchant_id=${NetworkKeys.ccaMerchantId}&order_id=$oderId&amount=$amount&currency=INR&redirect_url=$callbackUrl&cancel_url=${NetworkKeys.ccAvenueCancelUrl}&language=EN";
     String encRequest = encrypter(plainTextPayload, NetworkKeys.ccaWorkingKey);
+
+    Logger.e('WebScreen-----', ': Web payload------: $plainTextPayload');
 
     // Construct the full URL
     paymentUrl =
