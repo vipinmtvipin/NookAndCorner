@@ -7,10 +7,16 @@ class NetworkKeys {
   NetworkKeys._();
 
   /// BASE URL
-  static const String baseUrl = staging;
+  static const String baseUrl = production;
+
+  static const String staging = 'https://staging-api.nookandcorner.org/api/v1';
+  static const String production = 'https://api.nookandcorner.org/api/v1';
 
   /// FIREBASE
-  static const String firebaseNode = firebaseNodeStaging;
+  static const String firebaseNode = firebaseNodeProduction;
+
+  static const String firebaseNodeStaging = 'chat-stag';
+  static const String firebaseNodeProduction = 'chat';
 
   /// PAYMENT GATEWAY
   static const String ccAvenueUrl = ccAvenueUrlStaging;
@@ -26,7 +32,7 @@ class NetworkKeys {
   static const String ccaWorkingKeyStaging = "E251D59D0357F3AF1295B0B9D4E84776";
 
   static const String ccaMerchantIdProd = "2115707";
-  static const String ccaAccessCodeProd = "ATSZ24KB14BV64ZSVB";
+  static const String ccaAccessCodeProd = "AVSZ24KB14BV64ZSVB";
   static const String ccaWorkingKeyProd = "E251D59D0357F3AF1295B0B9D4E84776";
 
   static const String ccAvenueUrlStaging =
@@ -39,19 +45,13 @@ class NetworkKeys {
       "https://staging-api.nookandcorner.org/api/v1/payu-payment/cancel";
 
   static const String ccAvenueUrlProd =
-      "https://test.ccavenue.com/transaction/transaction.do?command=initiateTransaction";
+      "https://secure.ccavenue.com/transaction/transaction.do?command=initiateTransaction";
   static const String ccaCallbackUrlProd =
-      "https://staging-api.nookandcorner.org/api/v1/payu-payment/success";
+      "https://api.nookandcorner.org/api/v1/payu-payment/success";
   static const String ccaAdvCallbackUrlProd =
-      "https://staging-api.nookandcorner.org/api/v1/payu-payment/advance-payment/success";
+      "https://api.nookandcorner.org/api/v1/payu-payment/advance-payment/success";
   static const String ccAvenueCancelUrlProd =
-      "https://staging-api.nookandcorner.org/api/v1/payu-payment/cancel";
-
-  static const String firebaseNodeStaging = 'chat-stag';
-  static const String firebaseNodeProduction = 'chat';
-
-  static const String staging = 'https://staging-api.nookandcorner.org/api/v1';
-  static const String production = 'https://api.nookandcorner.org';
+      "https://api.nookandcorner.org/api/v1/payu-payment/cancel";
 
   static const String loginMobile = '/auth/verify-phone';
   static const String loginEmail = '/auth/verify-email';

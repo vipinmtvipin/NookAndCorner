@@ -321,7 +321,7 @@ Widget _buildMainScreen() {
                 condition: controller.activeBanners.value.isNotNullOrEmpty,
                 onFalse: const SizedBox.shrink(),
                 child: CarouselWithIndicator(
-                  height: 150,
+                  height: 120,
                   isIndicatorVisible: false,
                   carouselSliderItems: controller.midBanners.value
                       .map((e) => CarouselItem(
@@ -444,7 +444,7 @@ Widget _buildMainScreen() {
                                           condition: (controller.reviewList
                                                       .value.length ==
                                                   controller
-                                                      .reviewCount.value ||
+                                                      .reviewCount.value &&
                                               controller
                                                       .reviewList.value.length >
                                                   5),
