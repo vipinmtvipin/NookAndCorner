@@ -237,12 +237,13 @@ class MyBookingCard extends GetView<MyBookingController> {
                         text: 'Confirm Address',
                         onTap: () async {
                           controller.selectedJob.value = item;
-                          await Get.toNamed(AppRoutes.confirmAddressScreen,
+                          var result = await Get.toNamed(
+                              AppRoutes.confirmAddressScreen,
                               arguments: {
                                 'jobId': item.jobId.toString(),
                                 'from': 'MyBooking'
                               });
-
+                          controller.jobApiStarted = true;
                           controller.getJobs();
                         },
                         color: AppColors.skyBlue,

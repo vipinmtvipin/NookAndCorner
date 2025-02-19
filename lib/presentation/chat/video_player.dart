@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -14,6 +16,7 @@ class VideoPlayerScreen extends StatefulWidget {
 
 class VideoPlayerScreenState extends State<VideoPlayerScreen> {
   var videoUrl = '';
+  var type = '';
   late VideoPlayerController _videoPlayerController;
   ChewieController? _chewieController;
 
@@ -24,19 +27,33 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen> {
     final arguments = Get.arguments as Map<String, dynamic>;
 
     videoUrl = arguments['videoUrl'];
+    type = arguments['type'] ?? '';
 
-    // Initialize the video player controller with the video URL
-    var videoUri = Uri.parse(videoUrl);
-    _videoPlayerController = VideoPlayerController.networkUrl(videoUri)
-      ..initialize().then((_) {
-        setState(() {
-          _chewieController = ChewieController(
-            videoPlayerController: _videoPlayerController,
-            autoPlay: true,
-            looping: false,
-          );
+    if (type == 'file') {
+      var videoFile = File(videoUrl);
+      _videoPlayerController = VideoPlayerController.file(videoFile)
+        ..initialize().then((_) {
+          setState(() {
+            _chewieController = ChewieController(
+              videoPlayerController: _videoPlayerController,
+              autoPlay: true,
+              looping: false,
+            );
+          });
         });
-      });
+    } else {
+      var videoUri = Uri.parse(videoUrl);
+      _videoPlayerController = VideoPlayerController.networkUrl(videoUri)
+        ..initialize().then((_) {
+          setState(() {
+            _chewieController = ChewieController(
+              videoPlayerController: _videoPlayerController,
+              autoPlay: true,
+              looping: false,
+            );
+          });
+        });
+    }
   }
 
   @override

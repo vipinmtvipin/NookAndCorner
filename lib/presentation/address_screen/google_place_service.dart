@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:google_maps_flutter_platform_interface/src/types/location.dart';
 
@@ -9,8 +11,7 @@ class GooglePlacesService {
 
   Future<List<PlaceSuggestion>> fetchPlaceSuggestions(
       String input, LatLngBounds? cityBounds) async {
-    const baseUrl =
-        'https://maps.googleapis.com/maps/api/place/nearbysearch/json';
+    const baseUrl = 'https://places.googleapis.com/v1/places:autocomplete';
     try {
       var location = calculateCenterLocation(
         southwestLat: cityBounds?.southwest.latitude ?? 0.0,
@@ -23,22 +24,44 @@ class GooglePlacesService {
           '${location['latitude']},${location['longitude']}';
       const radius = 50000;
 
-      final response = await _dio.get(baseUrl, queryParameters: {
-        'query': input,
-        'location': centerLocation,
-        'radius': radius,
-        'key': apiKey
-      });
+      final response = await _dio.post(baseUrl,
+          options: Options(headers: {
+            'X-Goog-Api-Key': apiKey,
+          }),
+          data: {
+            "input": input,
+            "locationRestriction": {
+              "circle": {
+                "center": {
+                  "latitude": location['latitude'],
+                  "longitude": location['longitude']
+                },
+                "radius": 50000
+              }
+            }
+          });
 
       if (response.statusCode == 200) {
-        final List suggestions = response.data['results'];
-        var places =
-            suggestions.map((json) => PlaceSuggestion.fromJson(json)).toList();
+        final PlaceSuggestionResponds data =
+            PlaceSuggestionResponds.fromJson(json.decode(response.toString()));
 
-        places.removeWhere(
-            (place) => place.address == 'India' || place.address == 'Mumbai');
+        if (data.suggestions.isNotEmpty &&
+            data.suggestions[0].placePrediction?.text?.text != null) {
+          var places = data.suggestions
+              .map((suggestion) => PlaceSuggestion(
+                    name: suggestion.placePrediction?.text?.text ?? '',
+                    latitude: 0.0,
+                    longitude: 0.0,
+                    placeId: suggestion.placePrediction?.placeId ?? '',
+                    address: suggestion
+                        .placePrediction?.structuredFormat?.mainText?.text,
+                  ))
+              .toList();
 
-        return places;
+          return places;
+        } else {
+          return [];
+        }
       } else {
         throw Exception('Failed to fetch suggestions');
       }
@@ -121,4 +144,169 @@ class PlaceLocationDetails {
       longitude: json['geometry']['location']['lng'] ?? 0.0,
     );
   }
+}
+
+class PlaceSuggestionResponds {
+  PlaceSuggestionResponds({
+    required this.suggestions,
+  });
+
+  final List<Suggestion> suggestions;
+
+  factory PlaceSuggestionResponds.fromJson(Map<String, dynamic> json) {
+    return PlaceSuggestionResponds(
+      suggestions: json["suggestions"] == null
+          ? []
+          : List<Suggestion>.from(
+              json["suggestions"]!.map((x) => Suggestion.fromJson(x))),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        "suggestions": suggestions.map((x) => x.toJson()).toList(),
+      };
+}
+
+class Suggestion {
+  Suggestion({
+    required this.placePrediction,
+  });
+
+  final PlacePrediction? placePrediction;
+
+  factory Suggestion.fromJson(Map<String, dynamic> json) {
+    return Suggestion(
+      placePrediction: json["placePrediction"] == null
+          ? null
+          : PlacePrediction.fromJson(json["placePrediction"]),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        "placePrediction": placePrediction?.toJson(),
+      };
+}
+
+class PlacePrediction {
+  PlacePrediction({
+    required this.place,
+    required this.placeId,
+    required this.text,
+    required this.structuredFormat,
+    required this.types,
+  });
+
+  final String? place;
+  final String? placeId;
+  final TextLocation? text;
+  final StructuredFormat? structuredFormat;
+  final List<String> types;
+
+  factory PlacePrediction.fromJson(Map<String, dynamic> json) {
+    return PlacePrediction(
+      place: json["place"],
+      placeId: json["placeId"],
+      text: json["text"] == null ? null : TextLocation.fromJson(json["text"]),
+      structuredFormat: json["structuredFormat"] == null
+          ? null
+          : StructuredFormat.fromJson(json["structuredFormat"]),
+      types: json["types"] == null
+          ? []
+          : List<String>.from(json["types"]!.map((x) => x)),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        "place": place,
+        "placeId": placeId,
+        "text": text?.toJson(),
+        "structuredFormat": structuredFormat?.toJson(),
+        "types": types.map((x) => x).toList(),
+      };
+}
+
+class StructuredFormat {
+  StructuredFormat({
+    required this.mainText,
+    required this.secondaryText,
+  });
+
+  final TextLocation? mainText;
+  final SecondaryText? secondaryText;
+
+  factory StructuredFormat.fromJson(Map<String, dynamic> json) {
+    return StructuredFormat(
+      mainText: json["mainText"] == null
+          ? null
+          : TextLocation.fromJson(json["mainText"]),
+      secondaryText: json["secondaryText"] == null
+          ? null
+          : SecondaryText.fromJson(json["secondaryText"]),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        "mainText": mainText?.toJson(),
+        "secondaryText": secondaryText?.toJson(),
+      };
+}
+
+class TextLocation {
+  TextLocation({
+    required this.text,
+    required this.matches,
+  });
+
+  final String? text;
+  final List<Match> matches;
+
+  factory TextLocation.fromJson(Map<String, dynamic> json) {
+    return TextLocation(
+      text: json["text"],
+      matches: json["matches"] == null
+          ? []
+          : List<Match>.from(json["matches"]!.map((x) => Match.fromJson(x))),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        "text": text,
+        "matches": matches.map((x) => x?.toJson()).toList(),
+      };
+}
+
+class Match {
+  Match({
+    required this.endOffset,
+  });
+
+  final int? endOffset;
+
+  factory Match.fromJson(Map<String, dynamic> json) {
+    return Match(
+      endOffset: json["endOffset"],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        "endOffset": endOffset,
+      };
+}
+
+class SecondaryText {
+  SecondaryText({
+    required this.text,
+  });
+
+  final String? text;
+
+  factory SecondaryText.fromJson(Map<String, dynamic> json) {
+    return SecondaryText(
+      text: json["text"],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        "text": text,
+      };
 }

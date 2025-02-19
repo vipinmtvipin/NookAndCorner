@@ -7,18 +7,19 @@ class NetworkKeys {
   NetworkKeys._();
 
   /// BASE URL
-  static const String baseUrl = production;
+  static const String baseUrl = staging;
 
   static const String staging = 'https://staging-api.nookandcorner.org/api/v1';
   static const String production = 'https://api.nookandcorner.org/api/v1';
 
   /// FIREBASE
-  static const String firebaseNode = firebaseNodeProduction;
+  static const String firebaseNode = firebaseNodeStaging;
 
   static const String firebaseNodeStaging = 'chat-stag';
   static const String firebaseNodeProduction = 'chat';
 
   /// PAYMENT GATEWAY
+  /// Staging
   static const String ccAvenueUrl = ccAvenueUrlStaging;
   static const String ccaCallbackUrl = ccaCallbackUrlStaging;
   static const String ccaAdvCallbackUrl = ccaAdvCallbackUrlStaging;
@@ -26,6 +27,15 @@ class NetworkKeys {
   static const String ccaMerchantId = ccaMerchantIdStaging;
   static const String ccaAccessCode = ccaAccessCodeStaging;
   static const String ccaWorkingKey = ccaWorkingKeyStaging;
+
+  /// Production
+/*  static const String ccAvenueUrl = ccAvenueUrlProd;
+  static const String ccaCallbackUrl = ccaCallbackUrlProd;
+  static const String ccaAdvCallbackUrl = ccaAdvCallbackUrlProd;
+  static const String ccAvenueCancelUrl = ccAvenueCancelUrlProd;
+  static const String ccaMerchantId = ccaMerchantIdProd;
+  static const String ccaAccessCode = ccaAccessCodeProd;
+  static const String ccaWorkingKey = ccaWorkingKeyProd;*/
 
   static const String ccaMerchantIdStaging = "2115707";
   static const String ccaAccessCodeStaging = "ATSZ24KB14BV64ZSVB";

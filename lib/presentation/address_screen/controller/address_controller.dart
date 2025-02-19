@@ -53,10 +53,14 @@ class AddressController extends BaseController {
   TextEditingController houseFlatController = TextEditingController();
   TextEditingController searchController = TextEditingController();
 
+  final TextEditingController typeAheadController = TextEditingController();
   Rx<BitmapDescriptor> customMarkerIcon = Rx(BitmapDescriptor.defaultMarker);
 
   CityData selectedCity = CityData();
-  LatLngBounds? cityBounds;
+  Rx<LatLngBounds> cityBounds = Rx(LatLngBounds(
+    southwest: LatLng(19.0760, 72.8777),
+    northeast: LatLng(19.1760, 72.9777),
+  ));
 
   @override
   void onInit() {
@@ -78,9 +82,10 @@ class AddressController extends BaseController {
   void onClose() {
     super.onClose();
     streetController.dispose();
-    cityController.dispose();
+    // cityController.dispose();
     searchController.dispose();
     houseFlatController.dispose();
+    typeAheadController.dispose();
   }
 
   Future<void> getAddress() async {
@@ -257,9 +262,10 @@ class AddressController extends BaseController {
 
   void clearAddressInfo() {
     streetController.clear();
-    cityController.clear();
+    // cityController.clear();
     houseFlatController.clear();
     searchController.clear();
+    typeAheadController.clear();
     selectedAddress.value = AddressData.empty();
   }
 
@@ -271,7 +277,7 @@ class AddressController extends BaseController {
       cityController.text = selectedCity.cityName ?? '';
     }
 
-    cityBounds = LatLngBounds(
+    cityBounds.value = LatLngBounds(
       southwest: LatLng(
         double.tryParse(selectedCity.south ?? '0.0') ?? 0.0,
         double.tryParse(selectedCity.west ?? '0.0') ?? 0.0,
@@ -282,7 +288,7 @@ class AddressController extends BaseController {
       ), // Southwest corner of the city
     );
 
-    currentLocation.value = getCityCenter(cityBounds!);
+    currentLocation.value = getCityCenter(cityBounds.value);
     selectedLocation.value = currentLocation.value;
   }
 }

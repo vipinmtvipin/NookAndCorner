@@ -6,8 +6,6 @@ import 'package:customerapp/presentation/common_widgets/nookcorner_button.dart';
 import 'package:customerapp/presentation/common_widgets/nookcorner_text_field.dart';
 import 'package:customerapp/presentation/common_widgets/title_bar_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_places_hoc081098/flutter_google_places_hoc081098.dart';
-import 'package:flutter_google_places_hoc081098/google_maps_webservice_places.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:geocoding/geocoding.dart' as geo;
 import 'package:get/get.dart';
@@ -79,8 +77,8 @@ class AddAddressScreen extends GetView<AddressController> {
                           },
                           // Restrict the camera movement to the city bounds
                           cameraTargetBounds:
-                              CameraTargetBounds(controller.cityBounds),
-                          minMaxZoomPreference: MinMaxZoomPreference(10, 20),
+                              CameraTargetBounds(controller.cityBounds.value),
+                          minMaxZoomPreference: MinMaxZoomPreference(13, 25),
                           markers: {
                             Marker(
                               markerId: const MarkerId('currentLocation'),
@@ -92,7 +90,7 @@ class AddAddressScreen extends GetView<AddressController> {
                               },
                               onDragEnd: (newPosition) {
                                 if (isWithinBounds(
-                                    newPosition, controller.cityBounds!)) {
+                                    newPosition, controller.cityBounds.value)) {
                                   _updateLocation(newPosition);
                                 } else {
                                   Get.snackbar(
@@ -114,6 +112,21 @@ class AddAddressScreen extends GetView<AddressController> {
                               },
                             ),
                           },
+                          onTap: (newPosition) {
+                            if (isWithinBounds(
+                                newPosition, controller.cityBounds.value)) {
+                              _updateLocation(newPosition);
+                            } else {
+                              Get.snackbar(
+                                'Warning',
+                                'Marker must stay within the city bounds.',
+                                backgroundColor: Colors.black,
+                                colorText: Colors.white,
+                                icon: const Icon(Icons.error,
+                                    color: Colors.white),
+                              );
+                            }
+                          },
                         ),
                       ),
                       Positioned(
@@ -125,22 +138,6 @@ class AddAddressScreen extends GetView<AddressController> {
                             // getPlaceDetails(context);
                           },
                           child: PlaceSearchScreen(),
-
-                          /*     TextField(
-                            controller: controller.searchController,
-                            decoration: InputDecoration(
-                              hintText: 'Search for your location',
-                              fillColor: Colors.white,
-                              filled: true,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide.none,
-                              ),
-                              contentPadding: const EdgeInsets.all(10),
-                            ),
-                            readOnly: true,
-                            enabled: false,
-                          ),*/
                         ),
                       ),
                     ],
@@ -156,7 +153,6 @@ class AddAddressScreen extends GetView<AddressController> {
                         NookCornerTextField(
                           textInputAction: TextInputAction.next,
                           controller: controller.cityController,
-                          enabled: false,
                           title: 'City',
                           textStyle: AppTextStyle.txt16,
                           type: NookCornerTextFieldType.email,
@@ -264,53 +260,11 @@ class AddAddressScreen extends GetView<AddressController> {
     // Get the new address based on the location
     List<geo.Placemark> placeMarks = await geo.placemarkFromCoordinates(
         newPosition.latitude, newPosition.longitude);
-  }
 
-  Future<void> getPlaceDetails(BuildContext context) async {
-    LatLng searchCity = controller.getCityCenter(controller.cityBounds!);
+    var location =
+        "${placeMarks[0].name ?? ''}, ${placeMarks[0].subLocality ?? ''}, ${placeMarks[0].street ?? ''}";
 
-    Prediction? prediction = await PlacesAutocomplete.show(
-      context: context,
-      apiKey: "AIzaSyCEpnfYtpqPQ8oWZXBrMdRKJYC0cTn9mH0",
-      mode: Mode.overlay,
-      language: "en",
-      components: [
-        Component(Component.country, "IN"),
-      ],
-    );
-
-    if (prediction != null) {
-      GoogleMapsPlaces places =
-          GoogleMapsPlaces(apiKey: "AIzaSyCEpnfYtpqPQ8oWZXBrMdRKJYC0cTn9mH0");
-      PlacesDetailsResponse detail =
-          await places.getDetailsByPlaceId(prediction.placeId!);
-
-      final double lat = detail.result.geometry!.location.lat;
-      final double lng = detail.result.geometry!.location.lng;
-
-      LatLng location = LatLng(lat, lng);
-
-      if (isWithinBounds(location, controller.cityBounds!)) {
-        controller.searchController.text = prediction.description!;
-        controller.searchController.selection = TextSelection.fromPosition(
-            TextPosition(offset: prediction.description!.length));
-
-        controller.selectedLocation.value = location;
-        controller.currentLocation.value = location;
-
-        controller.mapController
-            ?.animateCamera(CameraUpdate.newLatLngZoom(location, 15));
-      } else {
-        Get.snackbar('Warning', 'Please select location within city bounds',
-            backgroundColor: Colors.black,
-            colorText: Colors.white,
-            icon: const Icon(
-              Icons.error,
-              color: Colors.white,
-            ));
-        return;
-      }
-    }
+    controller.typeAheadController.text = location;
   }
 
   bool isWithinBounds(LatLng location, LatLngBounds bounds) {
@@ -329,7 +283,6 @@ class PlaceSearchScreen extends StatefulWidget {
 }
 
 class PlaceSearchScreenState extends State<PlaceSearchScreen> {
-  final TextEditingController _typeAheadController = TextEditingController();
   late GooglePlacesService _placesService;
 
   AddressController controller = Get.find<AddressController>();
@@ -345,48 +298,90 @@ class PlaceSearchScreenState extends State<PlaceSearchScreen> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 1.0, vertical: 4),
-      child: TypeAheadField(
-        controller: _typeAheadController,
-        builder: (context, controller, focusNode) {
-          return TextField(
-              controller: controller,
-              focusNode: focusNode,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Colors.white, // White background
-                hintText: 'Search Place',
-                hintStyle: TextStyle(color: Colors.grey),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(6.0), // Curved corners
-                  borderSide: BorderSide.none, // No outer border
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(6.0),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: TypeAheadField(
+                controller: controller.typeAheadController,
+                hideOnEmpty: true,
+                hideOnUnfocus: true,
+                hideKeyboardOnDrag: true,
+                hideWithKeyboard: true,
+                builder: (context, controller, focusNode) {
+                  return TextField(
+                      controller: controller,
+                      focusNode: focusNode,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white, // White background
+                        hintText: 'Search Place',
+                        hintStyle: TextStyle(color: Colors.grey),
+                        border: OutlineInputBorder(
+                          borderRadius:
+                              BorderRadius.circular(6.0), // Curved corners
+                          borderSide: BorderSide.none, // No outer border
+                        ),
+                      ));
+                },
+                itemBuilder: (context, suggestion) {
+                  return ListTile(
+                    title: Text(suggestion.name ?? ''),
+                  );
+                },
+                suggestionsCallback: (pattern) async {
+                  if (pattern.isEmpty) return [];
+
+                  return await _placesService.fetchPlaceSuggestions(
+                      pattern, controller.cityBounds.value);
+                },
+                onSelected: (suggestion) async {
+                  CommonUtil().keyboardHide(Get.context!);
+
+                  setState(() {
+                    controller.typeAheadController.text = suggestion.name ?? '';
+                  });
+
+                  // Fetch place details
+                  var locations = await _placesService
+                      .fetchPlaceDetails(suggestion.placeId);
+
+                  setState(() {
+                    LatLng location =
+                        LatLng(locations.latitude, locations.longitude);
+                    controller.selectedLocation.value = location;
+                    controller.currentLocation.value = location;
+
+                    controller.mapController?.animateCamera(
+                        CameraUpdate.newLatLngZoom(location, 17));
+                  });
+                },
+              ),
+            ),
+            SizedBox(width: 1),
+            Visibility(
+              visible: controller.typeAheadController.text.isNotEmpty,
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    controller.typeAheadController.text = '';
+                  });
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: Icon(
+                    Icons.close,
+                    color: Colors.black87,
+                  ),
                 ),
-              ));
-        },
-        itemBuilder: (context, suggestion) {
-          return ListTile(
-            title: Text(suggestion.address ?? ''),
-          );
-        },
-        suggestionsCallback: (pattern) async {
-          if (pattern.isEmpty) return [];
-
-          return await _placesService.fetchPlaceSuggestions(
-              pattern, controller.cityBounds);
-        },
-        onSelected: (suggestion) async {
-          CommonUtil().keyboardHide(Get.context!);
-
-          setState(() {
-            _typeAheadController.text = suggestion.address ?? '';
-            LatLng location = LatLng(suggestion.latitude ?? '19.0760',
-                suggestion.longitude ?? '72.8777');
-            controller.selectedLocation.value = location;
-            controller.currentLocation.value = location;
-
-            controller.mapController
-                ?.animateCamera(CameraUpdate.newLatLngZoom(location, 15));
-          });
-        },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:customerapp/core/constants/constants.dart';
 import 'package:customerapp/core/extensions/date_time_extensions.dart';
@@ -9,6 +11,7 @@ import 'package:customerapp/generated/assets.gen.dart';
 import 'package:customerapp/presentation/chat/message_data.dart';
 import 'package:customerapp/presentation/common_widgets/conditional_widget.dart';
 import 'package:customerapp/presentation/common_widgets/network_image_view.dart';
+import 'package:customerapp/presentation/common_widgets/nookcorner_button.dart';
 import 'package:customerapp/presentation/my_job_screen/controller/mybooking_controller.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -96,9 +99,151 @@ class ChatScreenState extends State<ChatScreen> {
       allowCompression: true,
     );
     if (result != null) {
-      final file = result.files;
-      await myBookingController.uploadFile(file, adminCommonMessage, name);
+      final files = result.files;
+      _showFilePreview(files);
     }
+  }
+
+  void _showFilePreview(List<PlatformFile> files) {
+    showModalBottomSheet(
+      isDismissible: true,
+      enableDrag: true,
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return Column(
+              children: [
+                Expanded(
+                  child: GridView.builder(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 15.0, vertical: 20),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 8.0,
+                      mainAxisSpacing: 8.0,
+                    ),
+                    itemCount: files.length,
+                    itemBuilder: (context, index) {
+                      final file = files[index];
+                      var fileType = 'image';
+                      var fileUrl = file.path!;
+
+                      if (file.extension == 'jpg' ||
+                          file.extension == 'jpeg' ||
+                          file.extension == 'png') {
+                        fileType = 'image';
+                      } else {
+                        fileType = 'video';
+                      }
+
+                      return Stack(
+                        children: [
+                          Positioned.fill(
+                            child: GestureDetector(
+                              onTap: () {
+                                if (fileType == 'image') {
+                                  Get.toNamed(
+                                    AppRoutes.fullScreenImageView,
+                                    arguments: {
+                                      'imageUrl': file.path,
+                                      'type': 'file'
+                                    },
+                                  );
+                                } else {
+                                  Get.toNamed(
+                                    AppRoutes.videoPlayerScreen,
+                                    arguments: {
+                                      'videoUrl': file.path,
+                                      'type': 'file'
+                                    },
+                                  );
+                                }
+                              },
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: ConditionalWidget(
+                                  condition: fileType == 'image',
+                                  onFalse: ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    clipBehavior: Clip.antiAlias,
+                                    child: Stack(
+                                      children: [
+                                        Assets.images.videoThum.image(
+                                          fit: BoxFit.fill,
+                                        ),
+                                        Positioned(
+                                          top: 0,
+                                          left: 0,
+                                          bottom: 0,
+                                          right: 0,
+                                          child: Icon(Icons.play_circle,
+                                              color: Colors.black, size: 50),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    clipBehavior: Clip.antiAlias,
+                                    child: Image.file(
+                                      File(file.path!),
+                                      fit: BoxFit.fill,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            top: 6,
+                            right: 6,
+                            child: Container(
+                              height: 30,
+                              width: 30,
+                              decoration: BoxDecoration(
+                                color: Colors.red.withOpacity(0.7),
+                                shape: BoxShape.circle,
+                              ),
+                              child: GestureDetector(
+                                child: Icon(
+                                  Icons.delete,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                                onTap: () {
+                                  setState(() {
+                                    files.removeAt(index);
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: NookCornerButton(
+                    padding: const EdgeInsets.all(10),
+                    expandedWidth: true,
+                    type: NookCornerButtonType.filled,
+                    onPressed: () async {
+                      Navigator.pop(context);
+                      await myBookingController.uploadFile(
+                          files, adminCommonMessage, name);
+                    },
+                    text: 'Upload',
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -234,7 +379,10 @@ class ChatScreenState extends State<ChatScreen> {
                                     onFalse: GestureDetector(
                                       onTap: () {
                                         Get.toNamed(AppRoutes.videoPlayerScreen,
-                                            arguments: {'videoUrl': fileUrl});
+                                            arguments: {
+                                              'videoUrl': fileUrl,
+                                              'type': ''
+                                            });
                                       },
                                       child: ClipRRect(
                                         borderRadius: BorderRadius.circular(20),
@@ -266,7 +414,10 @@ class ChatScreenState extends State<ChatScreen> {
                                         onTap: () {
                                           Get.toNamed(
                                               AppRoutes.fullScreenImageView,
-                                              arguments: {'imageUrl': fileUrl});
+                                              arguments: {
+                                                'imageUrl': fileUrl,
+                                                'type': ''
+                                              });
                                         },
                                         borderRadius: 20,
                                         url: fileUrl,

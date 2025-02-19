@@ -78,6 +78,7 @@ class BookingListingScreen extends GetView<MyBookingController> {
 
   void navigateAndFetchJobs() async {
     var result = await Get.toNamed(AppRoutes.bookingDetailsScreen);
+    controller.jobApiStarted = true;
     controller.getJobs();
   }
 }

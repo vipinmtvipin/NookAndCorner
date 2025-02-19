@@ -106,6 +106,8 @@ class MyBookingController extends BaseController {
   Rx<List<TimeSlotData>> timeSlots = Rx([]);
   var serviceStatus = ServiceStatus.unknown.obs;
 
+  var jobApiStarted = true;
+
   @override
   void onInit() {
     super.onInit();
@@ -140,7 +142,6 @@ class MyBookingController extends BaseController {
         if (isLoader) {
           showLoadingDialog();
         }
-
         var userId = sessionStorage.read(StorageKeys.userId);
         var request = MyJobRequest(
             userId: userId.toString(), bookingStatus: screenType.name);
@@ -168,6 +169,11 @@ class MyBookingController extends BaseController {
       } catch (e) {
         if (isLoader) {
           hideLoadingDialog();
+        }
+
+        if (jobApiStarted.absolute) {
+          getJobs(isLoader: isLoader);
+          jobApiStarted = false;
         }
         e.printInfo();
       }
@@ -292,6 +298,8 @@ class MyBookingController extends BaseController {
       'paymentType': "Complete",
     });
 
+    jobApiStarted = true;
+
     if (from == 'list') {
       getJobs(isLoader: false);
     } else {
@@ -414,6 +422,7 @@ class MyBookingController extends BaseController {
 
         if (services?.success == true) {
           showToast('Your rating recorded!');
+          jobApiStarted = true;
           getJobs();
         }
         hideLoadingDialog();
