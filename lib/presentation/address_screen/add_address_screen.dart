@@ -78,7 +78,7 @@ class AddAddressScreen extends GetView<AddressController> {
                           // Restrict the camera movement to the city bounds
                           cameraTargetBounds:
                               CameraTargetBounds(controller.cityBounds.value),
-                          minMaxZoomPreference: MinMaxZoomPreference(13, 25),
+                          minMaxZoomPreference: MinMaxZoomPreference(12, 25),
                           markers: {
                             Marker(
                               markerId: const MarkerId('currentLocation'),
