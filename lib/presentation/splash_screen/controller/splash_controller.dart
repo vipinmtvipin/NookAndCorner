@@ -17,7 +17,6 @@ class SplashController extends BaseController {
     // List of permissions to request
     final Map<Permission, PermissionStatus> statuses = await [
       Permission.notification,
-      Permission.location,
     ].request();
 
     var isPermanentlyDenied =

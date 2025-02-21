@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -126,9 +127,8 @@ class ChatScreenState extends State<ChatScreen> {
                     itemCount: files.length,
                     itemBuilder: (context, index) {
                       final file = files[index];
-                      var fileType = 'image';
-                      var fileUrl = file.path!;
 
+                      var fileType = 'image';
                       if (file.extension == 'jpg' ||
                           file.extension == 'jpeg' ||
                           file.extension == 'png') {
@@ -137,28 +137,32 @@ class ChatScreenState extends State<ChatScreen> {
                         fileType = 'video';
                       }
 
+                      var fileTypes = files.map((file) {
+                        if (file.extension == 'jpg' ||
+                            file.extension == 'jpeg' ||
+                            file.extension == 'png') {
+                          return 'image';
+                        } else {
+                          return 'video';
+                        }
+                      }).toList();
+
                       return Stack(
                         children: [
                           Positioned.fill(
                             child: GestureDetector(
                               onTap: () {
-                                if (fileType == 'image') {
-                                  Get.toNamed(
-                                    AppRoutes.fullScreenImageView,
-                                    arguments: {
-                                      'imageUrl': file.path,
-                                      'type': 'file'
-                                    },
-                                  );
-                                } else {
-                                  Get.toNamed(
-                                    AppRoutes.videoPlayerScreen,
-                                    arguments: {
-                                      'videoUrl': file.path,
-                                      'type': 'file'
-                                    },
-                                  );
-                                }
+                                String fileUrls = jsonEncode(
+                                    files.map((e) => e.path).toList());
+                                String fileTypeList = jsonEncode(fileTypes);
+                                Get.toNamed(
+                                  AppRoutes.chatPreviewScreen,
+                                  arguments: {
+                                    'fileUrls': fileUrls,
+                                    'type': fileTypeList,
+                                    'selectedIndex': index,
+                                  },
+                                );
                               },
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(10),

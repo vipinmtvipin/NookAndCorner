@@ -4,6 +4,7 @@ import 'package:customerapp/core/extensions/string_extensions.dart';
 import 'package:customerapp/core/localization/localization_keys.dart';
 import 'package:customerapp/core/network/connectivity_service.dart';
 import 'package:customerapp/core/routes/app_routes.dart';
+import 'package:customerapp/core/utils/logger.dart';
 import 'package:customerapp/domain/model/address/address_request.dart';
 import 'package:customerapp/domain/model/address/address_responds.dart';
 import 'package:customerapp/domain/model/home/city_responds.dart';
@@ -15,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 enum AddressStatus {
   unknown,
@@ -53,6 +55,8 @@ class AddressController extends BaseController {
   TextEditingController houseFlatController = TextEditingController();
   TextEditingController searchController = TextEditingController();
 
+  bool searchEnteringTime = true;
+
   final TextEditingController typeAheadController = TextEditingController();
   Rx<BitmapDescriptor> customMarkerIcon = Rx(BitmapDescriptor.defaultMarker);
 
@@ -67,6 +71,45 @@ class AddressController extends BaseController {
     super.onInit();
     settingSelectedCityInfo();
     getAddress();
+    _requestMultiplePermissions();
+  }
+
+  Future<void> _requestMultiplePermissions() async {
+    // List of permissions to request
+    final Map<Permission, PermissionStatus> statuses = await [
+      Permission.location,
+    ].request();
+
+    var isPermanentlyDenied =
+        statuses.values.any((status) => status.isPermanentlyDenied);
+    if (isPermanentlyDenied) {
+      _showPermissionDialogWithSettings(
+        'Permissions Required',
+        'Please allow the required permissions to continue using the app.',
+      );
+    }
+  }
+
+  void _showPermissionDialogWithSettings(String title, String message) {
+    Get.dialog(
+      AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              openAppSettings();
+              Get.back();
+            },
+            child: Text('Open Settings'),
+          ),
+        ],
+      ),
+    );
   }
 
   LatLng getCityCenter(LatLngBounds cityBounds) {
@@ -277,16 +320,17 @@ class AddressController extends BaseController {
       cityController.text = selectedCity.cityName ?? '';
     }
 
+    var south = double.tryParse(selectedCity.south ?? '0.0') ?? 0.0;
+    var west = double.tryParse(selectedCity.west ?? '0.0') ?? 0.0;
+    var north = double.tryParse(selectedCity.north ?? '0.0') ?? 0.0;
+    var east = double.tryParse(selectedCity.east ?? '0.0') ?? 0.0;
+
     cityBounds.value = LatLngBounds(
-      southwest: LatLng(
-        double.tryParse(selectedCity.south ?? '0.0') ?? 0.0,
-        double.tryParse(selectedCity.west ?? '0.0') ?? 0.0,
-      ),
-      northeast: LatLng(
-        double.tryParse(selectedCity.north ?? '0.0') ?? 0.0,
-        double.tryParse(selectedCity.east ?? '0.0') ?? 0.0,
-      ), // Southwest corner of the city
+      southwest: LatLng(south, west),
+      northeast: LatLng(north, east), // Southwest corner of the city
     );
+
+    Logger.e('cityBounds--------', 'cityBounds: $cityBounds');
 
     currentLocation.value = getCityCenter(cityBounds.value);
     selectedLocation.value = currentLocation.value;

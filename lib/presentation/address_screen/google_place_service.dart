@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:customerapp/core/utils/logger.dart';
 import 'package:dio/dio.dart';
 import 'package:google_maps_flutter_platform_interface/src/types/location.dart';
 
@@ -36,7 +37,7 @@ class GooglePlacesService {
                   "latitude": location['latitude'],
                   "longitude": location['longitude']
                 },
-                "radius": 50000
+                "radius": 30000
               }
             }
           });
@@ -47,7 +48,28 @@ class GooglePlacesService {
 
         if (data.suggestions.isNotEmpty &&
             data.suggestions[0].placePrediction?.text?.text != null) {
-          var places = data.suggestions
+          var places = <PlaceSuggestion>[];
+          for (var suggestion in data.suggestions) {
+            var placeDetails =
+                await fetchPlaceDetails(suggestion.placePrediction!.placeId!);
+
+            if (placeDetails.latitude != 0.0 && placeDetails.longitude != 0.0) {
+              if (isWithinBounds(
+                  LatLng(placeDetails.latitude, placeDetails.longitude),
+                  cityBounds!)) {
+                places.add(PlaceSuggestion(
+                  name: suggestion.placePrediction?.text?.text ?? '',
+                  latitude: placeDetails.latitude,
+                  longitude: placeDetails.longitude,
+                  placeId: suggestion.placePrediction?.placeId ?? '',
+                  address: suggestion
+                      .placePrediction?.structuredFormat?.mainText?.text,
+                ));
+              }
+            }
+          }
+
+          /*  var places = data.suggestions
               .map((suggestion) => PlaceSuggestion(
                     name: suggestion.placePrediction?.text?.text ?? '',
                     latitude: 0.0,
@@ -56,18 +78,25 @@ class GooglePlacesService {
                     address: suggestion
                         .placePrediction?.structuredFormat?.mainText?.text,
                   ))
-              .toList();
+              .toList();*/
 
           return places;
         } else {
           return [];
         }
       } else {
-        throw Exception('Failed to fetch suggestions');
+        return [];
       }
     } catch (e) {
-      throw Exception('Error while fetching suggestions: $e');
+      return [];
     }
+  }
+
+  bool isWithinBounds(LatLng location, LatLngBounds bounds) {
+    return location.latitude >= bounds.southwest.latitude &&
+        location.latitude <= bounds.northeast.latitude &&
+        location.longitude >= bounds.southwest.longitude &&
+        location.longitude <= bounds.northeast.longitude;
   }
 
   Map<String, double> calculateCenterLocation({
@@ -79,6 +108,7 @@ class GooglePlacesService {
     final double centerLat = (southwestLat + northeastLat) / 2;
     final double centerLng = (southwestLng + northeastLng) / 2;
 
+    Logger.e('Center location: $centerLat, $centerLng', '#################');
     return {
       'latitude': centerLat,
       'longitude': centerLng,

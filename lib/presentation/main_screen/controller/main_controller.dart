@@ -76,7 +76,10 @@ class MainScreenController extends BaseController {
 
     ever(forceCitySelection, (value) {
       if (value == true) {
-        showCityPopup();
+        if (selectedCity.value.cityId == null ||
+            selectedCity.value.cityId == 0) {
+          showCityPopup();
+        }
       }
       forceCitySelection.value = false;
     });
@@ -149,26 +152,29 @@ class MainScreenController extends BaseController {
               .execute(selectedCity.value.cityId.toString());
           cityServices.value = services?.data ?? [];
         } else if (cityInfo.value.isNotNullOrEmpty) {
-          await Get.bottomSheet(
-            isDismissible: false,
-            backgroundColor: Colors.white,
-            elevation: 6,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-            ),
-            CityBottomSheet(
-              city: cityInfo.value,
-              height: cityInfo.value.length > 3
-                  ? (cityInfo.value.length > 6 ? 800 : 500)
-                  : 280,
-              padding: const EdgeInsets.only(
-                  top: 40, left: 12, right: 12, bottom: 5),
-              onCitySelected: (city) {
-                Get.back();
-                onCitySelected(city);
-              },
-            ),
-          );
+          if (selectedCity.value.cityId == null ||
+              selectedCity.value.cityId == 0) {
+            await Get.bottomSheet(
+              isDismissible: false,
+              backgroundColor: Colors.white,
+              elevation: 6,
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+              ),
+              CityBottomSheet(
+                city: cityInfo.value,
+                height: cityInfo.value.length > 3
+                    ? (cityInfo.value.length > 6 ? 800 : 500)
+                    : 280,
+                padding: const EdgeInsets.only(
+                    top: 40, left: 12, right: 12, bottom: 5),
+                onCitySelected: (city) {
+                  Get.back();
+                  onCitySelected(city);
+                },
+              ),
+            );
+          }
         }
 
         homeStatus.value = HomeStatus.loaded;
@@ -289,7 +295,6 @@ class MainScreenController extends BaseController {
     // List of permissions to request
     final Map<Permission, PermissionStatus> statuses = await [
       Permission.notification,
-      Permission.location,
     ].request();
 
     var isPermanentlyDenied =

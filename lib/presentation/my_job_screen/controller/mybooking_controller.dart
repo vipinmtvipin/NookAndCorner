@@ -687,10 +687,9 @@ class MyBookingController extends BaseController {
                 lastItem);
           }
         } else {
+          hideLoadingDialog();
           showToast('File Uploaded failed');
         }
-
-        hideLoadingDialog();
       } catch (e) {
         hideLoadingDialog();
         showToast('File Uploaded failed');
@@ -711,8 +710,6 @@ class MyBookingController extends BaseController {
     bool lastItem,
   ) async {
     try {
-      showLoadingDialog();
-
       final Dio dio = Dio(BaseOptions(
         baseUrl: NetworkKeys.baseUrl,
         connectTimeout: const Duration(minutes: 5),

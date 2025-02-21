@@ -71,7 +71,7 @@ class MainScreen extends GetView<MainScreenController> {
                             const SizedBox(width: 8),
                             const Icon(
                               Icons.location_on,
-                              color: AppColors.secondaryColor,
+                              color: AppColors.black,
                               size: 16,
                             ),
                             const SizedBox(width: 3),
@@ -105,7 +105,7 @@ class MainScreen extends GetView<MainScreenController> {
             return controller.loggedIn.value == true
                 ? InkWell(
                     child: Assets.images.bookingIcon.image(
-                      color: AppColors.secondaryColor,
+                      color: Colors.black87,
                       width: getSize(26),
                       height: getSize(26),
                     ),
@@ -130,7 +130,7 @@ class MainScreen extends GetView<MainScreenController> {
                     child: IconButton(
                       icon: Icon(
                         Icons.account_circle_rounded,
-                        color: AppColors.secondaryColor,
+                        color: Colors.black87,
                         size: getSize(26),
                       ),
                       onPressed: () {

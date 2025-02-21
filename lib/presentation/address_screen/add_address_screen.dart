@@ -63,22 +63,14 @@ class AddAddressScreen extends GetView<AddressController> {
                           ),
                           onMapCreated: (mController) {
                             controller.mapController = mController;
-                            // Move the camera to fit the city bounds
-                            /*     if (controller
-                                .selectedAddress.value.location.isNullOrEmpty) {
-                              controller.mapController?.moveCamera(
-                                  CameraUpdate.newLatLngBounds(
-                                      controller.cityBounds!, 0));
-                            } else {*/
                             controller.mapController?.animateCamera(
                                 CameraUpdate.newLatLngZoom(
                                     controller.currentLocation.value, 13));
-                            //   }
                           },
                           // Restrict the camera movement to the city bounds
                           cameraTargetBounds:
                               CameraTargetBounds(controller.cityBounds.value),
-                          minMaxZoomPreference: MinMaxZoomPreference(12, 25),
+                          minMaxZoomPreference: MinMaxZoomPreference(12, 26),
                           markers: {
                             Marker(
                               markerId: const MarkerId('currentLocation'),
@@ -264,6 +256,7 @@ class AddAddressScreen extends GetView<AddressController> {
     var location =
         "${placeMarks[0].name ?? ''}, ${placeMarks[0].subLocality ?? ''}, ${placeMarks[0].street ?? ''}";
 
+    controller.searchEnteringTime = false;
     controller.typeAheadController.text = location;
   }
 
@@ -334,8 +327,11 @@ class PlaceSearchScreenState extends State<PlaceSearchScreen> {
                   );
                 },
                 suggestionsCallback: (pattern) async {
-                  if (pattern.isEmpty) return [];
-
+                  if (pattern.trim().isNullOrEmpty ||
+                      controller.searchEnteringTime == false) {
+                    controller.searchEnteringTime = true;
+                    return [];
+                  }
                   return await _placesService.fetchPlaceSuggestions(
                       pattern, controller.cityBounds.value);
                 },
@@ -344,9 +340,17 @@ class PlaceSearchScreenState extends State<PlaceSearchScreen> {
 
                   setState(() {
                     controller.typeAheadController.text = suggestion.name ?? '';
+
+                    LatLng location =
+                        LatLng(suggestion.latitude, suggestion.longitude);
+                    controller.selectedLocation.value = location;
+                    controller.currentLocation.value = location;
+
+                    controller.mapController?.animateCamera(
+                        CameraUpdate.newLatLngZoom(location, 17));
                   });
 
-                  // Fetch place details
+                  /*    // Fetch place details
                   var locations = await _placesService
                       .fetchPlaceDetails(suggestion.placeId);
 
@@ -358,7 +362,7 @@ class PlaceSearchScreenState extends State<PlaceSearchScreen> {
 
                     controller.mapController?.animateCamera(
                         CameraUpdate.newLatLngZoom(location, 17));
-                  });
+                  });*/
                 },
               ),
             ),
@@ -368,7 +372,8 @@ class PlaceSearchScreenState extends State<PlaceSearchScreen> {
               child: GestureDetector(
                 onTap: () {
                   setState(() {
-                    controller.typeAheadController.text = '';
+                    controller.searchEnteringTime = false;
+                    controller.typeAheadController.clear();
                   });
                 },
                 child: Padding(
