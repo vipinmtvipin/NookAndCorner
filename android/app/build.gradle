@@ -35,7 +35,7 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "org.nookandcorner.customerapp"
-    compileSdk = 34
+    compileSdkVersion 34
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -43,10 +43,14 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
     defaultConfig {
-         applicationId = "org.nookandcorner.customerapp"
-        minSdk = 23
-        targetSdk = 34
+        applicationId = "org.nookandcorner.customerapp"
+        minSdkVersion 24
+        targetSdkVersion 34
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
         multiDexEnabled true
@@ -76,3 +80,4 @@ android {
 flutter {
     source = "../.."
 }
+
