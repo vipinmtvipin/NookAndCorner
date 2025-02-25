@@ -1,7 +1,6 @@
 import 'package:customerapp/core/constants/constants.dart';
 import 'package:customerapp/core/extensions/list_extensions.dart';
 import 'package:customerapp/core/extensions/string_extensions.dart';
-import 'package:customerapp/core/localization/localization_keys.dart';
 import 'package:customerapp/core/network/connectivity_service.dart';
 import 'package:customerapp/core/routes/app_routes.dart';
 import 'package:customerapp/core/utils/logger.dart';
@@ -71,6 +70,11 @@ class AddressController extends BaseController {
     super.onInit();
     settingSelectedCityInfo();
     getAddress();
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
     _requestMultiplePermissions();
   }
 
@@ -80,26 +84,24 @@ class AddressController extends BaseController {
       Permission.location,
     ].request();
 
-    var isPermanentlyDenied =
+    /*    var isPermanentlyDenied =
         statuses.values.any((status) => status.isPermanentlyDenied);
-    if (isPermanentlyDenied) {
+    var isDenied = statuses.values.any((status) => status.isDenied);
+    if (isPermanentlyDenied || isDenied) {
       _showPermissionDialogWithSettings(
         'Permissions Required',
         'Please allow the required permissions to continue using the app.',
       );
-    }
+    }*/
   }
 
   void _showPermissionDialogWithSettings(String title, String message) {
     Get.dialog(
+      barrierDismissible: false,
       AlertDialog(
         title: Text(title),
         content: Text(message),
         actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: Text('Cancel'),
-          ),
           TextButton(
             onPressed: () {
               openAppSettings();
@@ -169,7 +171,7 @@ class AddressController extends BaseController {
         e.printInfo();
       }
     } else {
-      showToast(LocalizationKeys.noNetwork.tr);
+      showOpenSettings();
     }
   }
 
@@ -201,7 +203,7 @@ class AddressController extends BaseController {
         e.printInfo();
       }
     } else {
-      showToast(LocalizationKeys.noNetwork.tr);
+      showOpenSettings();
     }
   }
 
@@ -237,7 +239,7 @@ class AddressController extends BaseController {
         e.printInfo();
       }
     } else {
-      showToast(LocalizationKeys.noNetwork.tr);
+      showOpenSettings();
     }
   }
 
@@ -299,7 +301,7 @@ class AddressController extends BaseController {
         e.printInfo();
       }
     } else {
-      showToast(LocalizationKeys.noNetwork.tr);
+      showOpenSettings();
     }
   }
 

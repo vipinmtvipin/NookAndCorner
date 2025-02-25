@@ -214,7 +214,7 @@ class ServiceController extends BaseController {
         e.printInfo();
       }
     } else {
-      showToast(LocalizationKeys.noNetwork.tr);
+      showOpenSettings();
     }
   }
 
@@ -602,7 +602,7 @@ class ServiceController extends BaseController {
         }
       }
     } else {
-      showToast(LocalizationKeys.noNetwork.tr);
+      showOpenSettings();
     }
   }
 

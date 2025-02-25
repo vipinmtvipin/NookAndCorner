@@ -1,6 +1,5 @@
 import 'package:customerapp/core/constants/constants.dart';
 import 'package:customerapp/core/extensions/string_extensions.dart';
-import 'package:customerapp/core/localization/localization_keys.dart';
 import 'package:customerapp/core/network/connectivity_service.dart';
 import 'package:customerapp/core/routes/app_routes.dart';
 import 'package:customerapp/domain/model/account/profile_request.dart';
@@ -135,7 +134,7 @@ class AccountController extends BaseController {
         e.printInfo();
       }
     } else {
-      showToast(LocalizationKeys.noNetwork.tr);
+      showOpenSettings();
     }
   }
 
@@ -184,7 +183,7 @@ class AccountController extends BaseController {
         showSnackBar("Warning", "${e.toString()}", Colors.black54);
       }
     } else {
-      showToast(LocalizationKeys.noNetwork.tr);
+      showOpenSettings();
     }
   }
 
@@ -212,54 +211,58 @@ class AccountController extends BaseController {
         e.printInfo();
       }
     } else {
-      showToast(LocalizationKeys.noNetwork.tr);
+      showOpenSettings();
     }
   }
 
   verifyAccount(bool isResendOTP, String whereIs) async {
-    try {
-      if (isResendOTP) {
-        showLoadingDialog();
-      }
-
-      var from = 'mobile';
-      var userName = '';
-
-      if (whereIs == "initial") {
-        if (phoneController.text.isNotNullOrEmpty) {
-          userName = phoneController.text;
-          from = 'mobile';
-        } else {
-          userName = emailController.text;
-          from = 'email';
+    if (await _connectivityService.isConnected()) {
+      try {
+        if (isResendOTP) {
+          showLoadingDialog();
         }
-      } else {
-        if (whereIs == 'mobile') {
-          userName = phoneController.text;
-          from = 'mobile';
-        } else {
-          userName = emailController.text;
-          from = 'email';
-        }
-      }
 
-      LoginRequest request =
-          LoginRequest(username: userName, password: '', from: from);
+        var from = 'mobile';
+        var userName = '';
 
-      var responds = await _verifyAccountUseCase.execute(request);
-      if (responds != null) {
-        hideLoadingDialog();
-        if (responds.success == true) {
-          if (isResendOTP) {
-            showToast("OTP has been sent to your device");
+        if (whereIs == "initial") {
+          if (phoneController.text.isNotNullOrEmpty) {
+            userName = phoneController.text;
+            from = 'mobile';
+          } else {
+            userName = emailController.text;
+            from = 'email';
           }
         } else {
-          showToast(responds.message ?? "Invalid access");
+          if (whereIs == 'mobile') {
+            userName = phoneController.text;
+            from = 'mobile';
+          } else {
+            userName = emailController.text;
+            from = 'email';
+          }
         }
+
+        LoginRequest request =
+            LoginRequest(username: userName, password: '', from: from);
+
+        var responds = await _verifyAccountUseCase.execute(request);
+        if (responds != null) {
+          hideLoadingDialog();
+          if (responds.success == true) {
+            if (isResendOTP) {
+              showToast("OTP has been sent to your device");
+            }
+          } else {
+            showToast(responds.message ?? "Invalid access");
+          }
+        }
+      } catch (e) {
+        hideLoadingDialog();
+        showSnackBar("Error", e.toString(), Colors.black54);
       }
-    } catch (e) {
-      hideLoadingDialog();
-      showSnackBar("Error", e.toString(), Colors.black54);
+    } else {
+      showOpenSettings();
     }
   }
 

@@ -1,6 +1,5 @@
 import 'package:customerapp/core/constants/constants.dart';
 import 'package:customerapp/core/extensions/string_extensions.dart';
-import 'package:customerapp/core/localization/localization_keys.dart';
 import 'package:customerapp/core/network/connectivity_service.dart';
 import 'package:customerapp/core/routes/app_routes.dart';
 import 'package:customerapp/core/utils/logger.dart';
@@ -112,7 +111,7 @@ class AuthController extends BaseController {
         }
       }
     } else {
-      showToast(LocalizationKeys.noNetwork.tr);
+      showOpenSettings();
     }
   }
 
@@ -270,7 +269,7 @@ class AuthController extends BaseController {
         }
       }
     } else {
-      showToast(LocalizationKeys.noNetwork.tr);
+      showOpenSettings();
     }
   }
 
@@ -409,7 +408,7 @@ class AuthController extends BaseController {
         showSnackBar("Error", e.toString(), Colors.black54);
       }
     } else {
-      showToast(LocalizationKeys.noNetwork.tr);
+      showOpenSettings();
     }
   }
 

@@ -202,22 +202,25 @@ Widget _buildMainScreen() {
   final GlobalKey reviewListKey = GlobalKey();
   var controller = Get.find<MainScreenController>();
 
-  return RefreshIndicator(
-    color: Colors.black,
-    backgroundColor: Colors.white,
-    strokeWidth: 2,
-    onRefresh: () {
-      controller.getCity();
+  Future<void> refreshData() async {
+    controller.getCity();
 
-      controller.getReviews('5', '0', "refresh", false);
+    controller.getReviews('5', '0', "refresh", false);
+  }
 
-      return Future<void>.value();
-    },
-    child: Padding(
-      padding: const EdgeInsets.only(
-        top: 15,
-      ),
+  return Padding(
+    padding: const EdgeInsets.only(
+      top: 15,
+    ),
+    child: RefreshIndicator(
+      color: Colors.black,
+      backgroundColor: Colors.white,
+      strokeWidth: 2,
+      onRefresh: () {
+        return refreshData();
+      },
       child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
         controller: controller.scrollController,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,5 +1,7 @@
 import 'package:customerapp/core/theme/color_constant.dart';
+import 'package:customerapp/presentation/main_screen/controller/main_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
 
 class MainShimmerWidget extends StatelessWidget {
@@ -7,14 +9,23 @@ class MainShimmerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        children: [
-          _buildShipmentCard(context),
-          const SizedBox(height: 1),
-          _buildBottomTextView(context),
-        ],
+    return RefreshIndicator(
+      color: Colors.black,
+      backgroundColor: Colors.white,
+      strokeWidth: 2,
+      onRefresh: () {
+        return refreshData();
+      },
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            _buildShipmentCard(context),
+            const SizedBox(height: 1),
+            _buildBottomTextView(context),
+          ],
+        ),
       ),
     );
   }
@@ -158,6 +169,14 @@ class MainShimmerWidget extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Future<void> refreshData() async {
+    var controller = Get.find<MainScreenController>();
+
+    controller.getCity();
+
+    controller.getReviews('5', '0', "refresh", false);
   }
 }
 

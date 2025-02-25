@@ -31,35 +31,39 @@
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Our app needs access to your camera to allow you to scan directly within the app.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Our app needs access to your location to provide you with the best possible experience.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Our app needs access to your location to provide you with the best possible experience.</string>
+	<key>NSLocationUsageDescription</key>
+	<string>Our app needs access to your location to provide you with the best possible experience.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Our app needs access to your location to provide you with the best possible experience.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Our app needs access to your photo library to allow you to upload photos.</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>We need permission to send you notifications.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
+		<string>UIInterfaceOrientationLandscapeRight</string>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
-	<key>UIBackgroundModes</key>
-    <array>
-        <string>fetch</string>
-        <string>remote-notification</string>
-    </array>
-
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>We need access to your location to provide better services.</string>
-    <key>NSLocationAlwaysUsageDescription</key>
-    <string>We need access to your location to provide better services.</string>
-    <key>NSUserTrackingUsageDescription</key>
-    <string>We need permission to send you notifications.</string>
-
 </dict>
 </plist>

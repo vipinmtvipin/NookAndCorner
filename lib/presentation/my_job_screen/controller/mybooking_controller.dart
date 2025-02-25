@@ -178,7 +178,7 @@ class MyBookingController extends BaseController {
         e.printInfo();
       }
     } else {
-      showToast(LocalizationKeys.noNetwork.tr);
+      showOpenSettings();
     }
   }
 
@@ -263,7 +263,7 @@ class MyBookingController extends BaseController {
         e.printInfo();
       }
     } else {
-      showToast(LocalizationKeys.noNetwork.tr);
+      showOpenSettings();
     }
   }
 
@@ -325,7 +325,7 @@ class MyBookingController extends BaseController {
         e.printInfo();
       }
     } else {
-      showToast(LocalizationKeys.noNetwork.tr);
+      showOpenSettings();
     }
   }
 
@@ -404,7 +404,7 @@ class MyBookingController extends BaseController {
         e.printInfo();
       }
     } else {
-      showToast(LocalizationKeys.noNetwork.tr);
+      showOpenSettings();
     }
   }
 
@@ -431,7 +431,7 @@ class MyBookingController extends BaseController {
         e.printInfo();
       }
     } else {
-      showToast(LocalizationKeys.noNetwork.tr);
+      showOpenSettings();
     }
   }
 
@@ -471,7 +471,7 @@ class MyBookingController extends BaseController {
         e.printInfo();
       }
     } else {
-      showToast(LocalizationKeys.noNetwork.tr);
+      showOpenSettings();
     }
   }
 
@@ -506,7 +506,7 @@ class MyBookingController extends BaseController {
         showSnackBar("Error", e.toString(), Colors.black);
       }
     } else {
-      showToast(LocalizationKeys.noNetwork.tr);
+      showOpenSettings();
     }
   }
 
@@ -696,7 +696,7 @@ class MyBookingController extends BaseController {
         e.printInfo();
       }
     } else {
-      showToast(LocalizationKeys.noNetwork.tr);
+      showOpenSettings();
     }
   }
 

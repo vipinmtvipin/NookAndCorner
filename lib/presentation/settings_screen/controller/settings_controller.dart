@@ -1,6 +1,5 @@
 import 'package:customerapp/core/constants/constants.dart';
 import 'package:customerapp/core/extensions/string_extensions.dart';
-import 'package:customerapp/core/localization/localization_keys.dart';
 import 'package:customerapp/core/network/connectivity_service.dart';
 import 'package:customerapp/domain/model/common_responds.dart';
 import 'package:customerapp/domain/model/settings/address_request.dart';
@@ -111,7 +110,7 @@ class SettingsController extends BaseController {
         e.printInfo();
       }
     } else {
-      showToast(LocalizationKeys.noNetwork.tr);
+      showOpenSettings();
     }
   }
 
@@ -138,7 +137,7 @@ class SettingsController extends BaseController {
         e.printInfo();
       }
     } else {
-      showToast(LocalizationKeys.noNetwork.tr);
+      showOpenSettings();
     }
   }
 

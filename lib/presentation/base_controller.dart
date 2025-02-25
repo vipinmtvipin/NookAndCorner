@@ -1,3 +1,4 @@
+import 'package:app_settings/app_settings.dart';
 import 'package:customerapp/core/theme/color_constant.dart';
 import 'package:customerapp/generated/assets.gen.dart';
 import 'package:flutter/material.dart';
@@ -68,5 +69,25 @@ class BaseController extends GetxController {
           ),
         ),
         colorText: Colors.white);
+  }
+
+  void showOpenSettings() {
+    Get.dialog(
+      barrierDismissible: false,
+      AlertDialog(
+        title: Text('No Network'),
+        content: Text('Please enable network to continue using the app.'),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              AppSettings.openAppSettingsPanel(
+                  AppSettingsPanelType.internetConnectivity);
+              Get.back();
+            },
+            child: Text('Open Settings'),
+          ),
+        ],
+      ),
+    );
   }
 }

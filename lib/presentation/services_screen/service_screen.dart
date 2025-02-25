@@ -80,10 +80,11 @@ class ServiceScreen extends GetView<ServiceController> {
             controller.initialApisCall();
             return Future<void>.value();
           },
-          child: Obx(
-            () => SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: Column(
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            scrollDirection: Axis.vertical,
+            child: Obx(
+              () => Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

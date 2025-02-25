@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:customerapp/core/constants/constants.dart';
 import 'package:customerapp/core/extensions/bool_extension.dart';
 import 'package:customerapp/core/extensions/list_extensions.dart';
-import 'package:customerapp/core/localization/localization_keys.dart';
 import 'package:customerapp/core/network/connectivity_service.dart';
 import 'package:customerapp/core/notifications/notification_msg_util.dart';
 import 'package:customerapp/domain/model/home/active_banner_responds.dart';
@@ -88,13 +87,13 @@ class MainScreenController extends BaseController {
   @override
   void onReady() {
     super.onReady();
-    _requestMultiplePermissions();
-
     getCity();
     getReviews('5', '0', "", false);
     updatePushToken();
     getPendingJobs();
     startPendingJobTimer();
+
+    _requestMultiplePermissions();
   }
 
   showPendingNotification() async {
@@ -182,7 +181,7 @@ class MainScreenController extends BaseController {
         homeStatus.value = HomeStatus.loaded;
       }
     } else {
-      showToast(LocalizationKeys.noNetwork.tr);
+      showOpenSettings();
     }
   }
 
@@ -230,7 +229,7 @@ class MainScreenController extends BaseController {
         e.printInfo();
       }
     } else {
-      showToast(LocalizationKeys.noNetwork.tr);
+      showOpenSettings();
     }
   }
 
@@ -299,9 +298,11 @@ class MainScreenController extends BaseController {
 
     var isPermanentlyDenied =
         statuses.values.any((status) => status.isPermanentlyDenied);
-    if (isPermanentlyDenied) {
+
+    var isDenied = statuses.values.any((status) => status.isDenied);
+    if (isPermanentlyDenied || isDenied) {
       _showPermissionDialogWithSettings(
-        'Permissions Required',
+        'Notification : Permissions Required',
         'Please allow the required permissions to continue using the app.',
       );
     }
@@ -309,14 +310,11 @@ class MainScreenController extends BaseController {
 
   void _showPermissionDialogWithSettings(String title, String message) {
     Get.dialog(
+      barrierDismissible: false,
       AlertDialog(
         title: Text(title),
         content: Text(message),
         actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: Text('Cancel'),
-          ),
           TextButton(
             onPressed: () {
               openAppSettings();
