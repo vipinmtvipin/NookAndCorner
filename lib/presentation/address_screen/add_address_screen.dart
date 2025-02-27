@@ -304,7 +304,7 @@ class PlaceSearchScreenState extends State<PlaceSearchScreen> {
                 hideOnEmpty: true,
                 hideOnUnfocus: true,
                 hideKeyboardOnDrag: true,
-                hideWithKeyboard: true,
+                hideWithKeyboard: false,
                 builder: (context, controller, focusNode) {
                   return TextField(
                       controller: controller,

@@ -191,7 +191,7 @@ class ConfirmAddressScreen extends GetView<AddressController> {
                       text: 'Add Address',
                       onPressed: () {
                         controller.selectedAddress.value = AddressData.empty();
-                        navigateAndFetchAddress();
+                        navigateAndFetchAddress(addressUpdate: true);
                       },
                     ),
                   ),
@@ -244,10 +244,10 @@ class ConfirmAddressScreen extends GetView<AddressController> {
     );
   }
 
-  void navigateAndFetchAddress() async {
+  void navigateAndFetchAddress({bool addressUpdate = false}) async {
     var result = await Get.toNamed(AppRoutes.addAddressScreen);
     controller.selectedAddress.value = AddressData.empty();
-    controller.getAddress();
+    controller.getAddress(addressUpdate: addressUpdate);
   }
 }
 

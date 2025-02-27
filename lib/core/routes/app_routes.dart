@@ -8,6 +8,7 @@ import 'package:customerapp/presentation/address_screen/binding/address_binding.
 import 'package:customerapp/presentation/chat/chat_screen.dart';
 import 'package:customerapp/presentation/chat/full_image_view.dart';
 import 'package:customerapp/presentation/chat/preview_screen.dart';
+import 'package:customerapp/presentation/chat/preview_url_screen.dart';
 import 'package:customerapp/presentation/chat/video_player.dart';
 import 'package:customerapp/presentation/forget_password_screen/forget_password_screen.dart';
 import 'package:customerapp/presentation/main_screen/binding/main_binding.dart';
@@ -63,6 +64,7 @@ class AppRoutes {
   static const String videoPlayerScreen = '/video-player-screen';
 
   static const String chatPreviewScreen = '/chat-preview-screen';
+  static const String chatPreviewUrlScreen = '/chat-preview-url-screen';
 
   static List<GetPage> pages = [
     GetPage(
@@ -206,6 +208,10 @@ class AppRoutes {
     GetPage(
       name: chatPreviewScreen,
       page: () => const PreviewScreen(),
+    ),
+    GetPage(
+      name: chatPreviewUrlScreen,
+      page: () => const PreviewUrlScreen(),
     ),
   ];
 }

@@ -260,7 +260,9 @@ class MyBookingController extends BaseController {
         hideLoadingDialog();
       } catch (e) {
         hideLoadingDialog();
-        e.printInfo();
+        showServerErrorAlert(() {
+          getTimeSlots(request);
+        });
       }
     } else {
       showOpenSettings();
@@ -322,7 +324,9 @@ class MyBookingController extends BaseController {
         hideLoadingDialog();
       } catch (e) {
         hideLoadingDialog();
-        e.printInfo();
+        showServerErrorAlert(() {
+          cancelJob();
+        });
       }
     } else {
       showOpenSettings();
@@ -375,7 +379,9 @@ class MyBookingController extends BaseController {
         hideLoadingDialog();
       } catch (e) {
         hideLoadingDialog();
-        e.printInfo();
+        showServerErrorAlert(() {
+          updateAddOn();
+        });
       }
     } else {
       showToast(LocalizationKeys.noNetwork.tr);
@@ -401,7 +407,9 @@ class MyBookingController extends BaseController {
         hideLoadingDialog();
       } catch (e) {
         hideLoadingDialog();
-        e.printInfo();
+        showServerErrorAlert(() {
+          reviewJob(comment);
+        });
       }
     } else {
       showOpenSettings();
@@ -428,7 +436,9 @@ class MyBookingController extends BaseController {
         hideLoadingDialog();
       } catch (e) {
         hideLoadingDialog();
-        e.printInfo();
+        showServerErrorAlert(() {
+          ratingJob(rating);
+        });
       }
     } else {
       showOpenSettings();
@@ -468,7 +478,9 @@ class MyBookingController extends BaseController {
         hideLoadingDialog();
       } catch (e) {
         hideLoadingDialog();
-        e.printInfo();
+        showServerErrorAlert(() {
+          reScheduleJob();
+        });
       }
     } else {
       showOpenSettings();
@@ -692,8 +704,9 @@ class MyBookingController extends BaseController {
         }
       } catch (e) {
         hideLoadingDialog();
-        showToast('File Uploaded failed');
-        e.printInfo();
+        showServerErrorAlert(() {
+          uploadFile(files, adminMessage, userName);
+        });
       }
     } else {
       showOpenSettings();
@@ -789,7 +802,17 @@ class MyBookingController extends BaseController {
         showToast('File Uploaded failed');
       }
     } catch (e) {
-      showToast('File Uploaded failed');
+      showServerErrorAlert(() {
+        _uploadToAws(
+          preSignedUrl,
+          imageUrl,
+          file,
+          adminMessage,
+          name,
+          singleItem,
+          lastItem,
+        );
+      });
     } finally {
       hideLoadingDialog();
     }

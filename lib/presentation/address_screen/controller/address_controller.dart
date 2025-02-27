@@ -1,4 +1,5 @@
 import 'package:customerapp/core/constants/constants.dart';
+import 'package:customerapp/core/extensions/bool_extension.dart';
 import 'package:customerapp/core/extensions/list_extensions.dart';
 import 'package:customerapp/core/extensions/string_extensions.dart';
 import 'package:customerapp/core/network/connectivity_service.dart';
@@ -133,7 +134,7 @@ class AddressController extends BaseController {
     typeAheadController.dispose();
   }
 
-  Future<void> getAddress() async {
+  Future<void> getAddress({bool addressUpdate = false}) async {
     if (await _connectivityService.isConnected()) {
       try {
         showLoadingDialog();
@@ -152,7 +153,11 @@ class AddressController extends BaseController {
         addressList.value = addresses?.data ?? [];
         if (addressList.value.isNotNullOrEmpty) {
           addressList.value.firstWhere((element) {
-            if (element.isPrimary == true) {
+            if (addressUpdate.absolute) {
+              selectedAddress.value = addressList.value.last;
+              selectedAddressIndex.value = addressList.value.length - 1;
+              return true;
+            } else if (element.isPrimary == true) {
               selectedAddress.value = element;
               selectedAddressIndex.value = addressList.value.indexOf(element);
               return true;
@@ -164,38 +169,6 @@ class AddressController extends BaseController {
         }
 
         addressStatus.value = AddressStatus.loaded;
-
-        hideLoadingDialog();
-      } catch (e) {
-        hideLoadingDialog();
-        e.printInfo();
-      }
-    } else {
-      showOpenSettings();
-    }
-  }
-
-  Future<void> deleteAddress() async {
-    if (await _connectivityService.isConnected()) {
-      try {
-        showLoadingDialog();
-
-        final value = sessionStorage.read(StorageKeys.selectedCity);
-        if (value != null) {
-          selectedCity = CityData.fromJson(value);
-        }
-
-        GetAddressRequest request = GetAddressRequest(
-          userId: sessionStorage.read(StorageKeys.userId).toString(),
-          cityId: selectedCity.cityId.toString(),
-        );
-
-        var addresses = await _getAddressUseCase.execute(request);
-
-        if (addresses?.success == true) {
-          showToast('Address deleted successfully');
-          //  getAddress();
-        }
 
         hideLoadingDialog();
       } catch (e) {
@@ -236,7 +209,9 @@ class AddressController extends BaseController {
         hideLoadingDialog();
       } catch (e) {
         hideLoadingDialog();
-        e.printInfo();
+        showServerErrorAlert(() {
+          confirmAddress();
+        });
       }
     } else {
       showOpenSettings();
@@ -260,7 +235,7 @@ class AddressController extends BaseController {
             addressId: selectedAddress.value.addressId.toString(),
             addresslineOne: streetController.text,
             addresslineTwo: houseFlatController.text,
-            location: cityController.text,
+            location: typeAheadController.text,
             addressType: addressType.value,
             lat: selectedLocation.value.latitude.toString(),
             lng: selectedLocation.value.longitude.toString(),
@@ -271,7 +246,7 @@ class AddressController extends BaseController {
           request = AddressRequest(
             addresslineOne: streetController.text,
             addresslineTwo: houseFlatController.text,
-            location: cityController.text,
+            location: typeAheadController.text,
             addressType: addressType.value,
             lat: selectedLocation.value.latitude.toString(),
             lng: selectedLocation.value.longitude.toString(),
@@ -298,7 +273,9 @@ class AddressController extends BaseController {
         hideLoadingDialog();
       } catch (e) {
         hideLoadingDialog();
-        e.printInfo();
+        showServerErrorAlert(() {
+          saveAddress();
+        });
       }
     } else {
       showOpenSettings();

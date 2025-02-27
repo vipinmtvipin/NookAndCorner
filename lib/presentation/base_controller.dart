@@ -90,4 +90,22 @@ class BaseController extends GetxController {
       ),
     );
   }
+
+  void showServerErrorAlert(Function() reTry) {
+    Get.dialog(
+      AlertDialog(
+        title: Text('Warning'),
+        content: Text('Something went wrong, Please try again.'),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              reTry();
+              Get.back();
+            },
+            child: Text('Retry'),
+          ),
+        ],
+      ),
+    );
+  }
 }

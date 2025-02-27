@@ -382,11 +382,33 @@ class ChatScreenState extends State<ChatScreen> {
                                     condition: fileType == 'image',
                                     onFalse: GestureDetector(
                                       onTap: () {
-                                        Get.toNamed(AppRoutes.videoPlayerScreen,
-                                            arguments: {
-                                              'videoUrl': fileUrl,
-                                              'type': ''
-                                            });
+                                        if (messageData.fileUrl!.length == 1) {
+                                          Get.toNamed(
+                                              AppRoutes.videoPlayerScreen,
+                                              arguments: {
+                                                'videoUrl': fileUrl,
+                                                'type': ''
+                                              });
+                                        } else {
+                                          Get.toNamed(
+                                              AppRoutes.chatPreviewUrlScreen,
+                                              arguments: {
+                                                'fileUrls': jsonEncode(
+                                                    messageData.fileUrl),
+                                                'type': jsonEncode(messageData
+                                                    .fileUrl!
+                                                    .map((e) {
+                                                  if (e.contains('jpg') ||
+                                                      e.contains('jpeg') ||
+                                                      e.contains('png')) {
+                                                    return 'image';
+                                                  } else {
+                                                    return 'video';
+                                                  }
+                                                }).toList()),
+                                                'selectedIndex': index,
+                                              });
+                                        }
                                       },
                                       child: ClipRRect(
                                         borderRadius: BorderRadius.circular(20),
@@ -416,12 +438,34 @@ class ChatScreenState extends State<ChatScreen> {
                                       clipBehavior: Clip.antiAlias,
                                       child: NetworkImageView(
                                         onTap: () {
-                                          Get.toNamed(
-                                              AppRoutes.fullScreenImageView,
-                                              arguments: {
-                                                'imageUrl': fileUrl,
-                                                'type': ''
-                                              });
+                                          if (messageData.fileUrl!.length ==
+                                              1) {
+                                            Get.toNamed(
+                                                AppRoutes.fullScreenImageView,
+                                                arguments: {
+                                                  'imageUrl': fileUrl,
+                                                  'type': ''
+                                                });
+                                          } else {
+                                            Get.toNamed(
+                                                AppRoutes.chatPreviewUrlScreen,
+                                                arguments: {
+                                                  'fileUrls': jsonEncode(
+                                                      messageData.fileUrl),
+                                                  'type': jsonEncode(messageData
+                                                      .fileUrl!
+                                                      .map((e) {
+                                                    if (e.contains('jpg') ||
+                                                        e.contains('jpeg') ||
+                                                        e.contains('png')) {
+                                                      return 'image';
+                                                    } else {
+                                                      return 'video';
+                                                    }
+                                                  }).toList()),
+                                                  'selectedIndex': index,
+                                                });
+                                          }
                                         },
                                         borderRadius: 20,
                                         url: fileUrl,
