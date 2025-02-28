@@ -77,4 +77,42 @@ class AddressRepositoryIml extends AddressRepository {
       throw error.errorMessage;
     }
   }
+
+  @override
+  Future<CommonResponds?> deleteAddress(ConfirmAddressRequest request) async {
+    try {
+      Response response =
+          await GetIt.I.get<ApiService>().post(NetworkKeys.deleteAddress,
+              data: request.toJson(),
+              options: Options(
+                contentType: 'application/json',
+              ));
+
+      final CommonResponds data = commonRespondsFromJson(response.toString());
+
+      return data;
+    } on DioException catch (e) {
+      var error = DioExceptionData.fromDioError(e);
+      throw error.errorMessage;
+    }
+  }
+
+  @override
+  Future<CommonResponds?> primaryAddress(ConfirmAddressRequest request) async {
+    try {
+      Response response =
+          await GetIt.I.get<ApiService>().post(NetworkKeys.primaryAddress,
+              data: request.toJson(),
+              options: Options(
+                contentType: 'application/json',
+              ));
+
+      final CommonResponds data = commonRespondsFromJson(response.toString());
+
+      return data;
+    } on DioException catch (e) {
+      var error = DioExceptionData.fromDioError(e);
+      throw error.errorMessage;
+    }
+  }
 }

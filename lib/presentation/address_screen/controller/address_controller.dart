@@ -9,7 +9,9 @@ import 'package:customerapp/domain/model/address/address_request.dart';
 import 'package:customerapp/domain/model/address/address_responds.dart';
 import 'package:customerapp/domain/model/home/city_responds.dart';
 import 'package:customerapp/domain/usecases/address/confirm_address_use_case.dart';
+import 'package:customerapp/domain/usecases/address/delete_address_use_case.dart';
 import 'package:customerapp/domain/usecases/address/get_address_use_case.dart';
+import 'package:customerapp/domain/usecases/address/primary_address_use_case.dart';
 import 'package:customerapp/domain/usecases/address/save_addrress_use_case.dart';
 import 'package:customerapp/presentation/base_controller.dart';
 import 'package:flutter/material.dart';
@@ -28,10 +30,17 @@ enum AddressStatus {
 class AddressController extends BaseController {
   final SaveAddressUseCase _saveAddressUseCase;
   final GetAddressUseCase _getAddressUseCase;
+  final DeleteAddressUseCase _deleteAddressUseCase;
+  final PrimaryAddressUseCase _primaryAddressUseCase;
   final ConfirmAddressUseCase _confirmAddressUseCase;
 
-  AddressController(this._getAddressUseCase, this._saveAddressUseCase,
-      this._confirmAddressUseCase);
+  AddressController(
+    this._getAddressUseCase,
+    this._saveAddressUseCase,
+    this._confirmAddressUseCase,
+    this._deleteAddressUseCase,
+    this._primaryAddressUseCase,
+  );
 
   late final _connectivityService = getIt<ConnectivityService>();
   Rx<List<AddressData>> addressList = Rx([]);
@@ -169,6 +178,63 @@ class AddressController extends BaseController {
         }
 
         addressStatus.value = AddressStatus.loaded;
+
+        hideLoadingDialog();
+      } catch (e) {
+        hideLoadingDialog();
+        e.printInfo();
+      }
+    } else {
+      showOpenSettings();
+    }
+  }
+
+  Future<void> deleteAddress() async {
+    if (await _connectivityService.isConnected()) {
+      try {
+        showLoadingDialog();
+
+        ConfirmAddressRequest request = ConfirmAddressRequest(
+          userId: sessionStorage.read(StorageKeys.userId).toString(),
+          addressId: selectedAddress.value.addressId.toString(),
+          jobId: jobId,
+          status: 'delete',
+        );
+
+        var addresses = await _deleteAddressUseCase.execute(request);
+
+        if (addresses?.success == true) {
+          getAddress();
+          showToast('Address deleted successfully');
+        }
+
+        hideLoadingDialog();
+      } catch (e) {
+        hideLoadingDialog();
+        e.printInfo();
+      }
+    } else {
+      showOpenSettings();
+    }
+  }
+
+  Future<void> setAsPrimaryAddress() async {
+    if (await _connectivityService.isConnected()) {
+      try {
+        showLoadingDialog();
+
+        ConfirmAddressRequest request = ConfirmAddressRequest(
+          userId: sessionStorage.read(StorageKeys.userId).toString(),
+          addressId: selectedAddress.value.addressId.toString(),
+          jobId: jobId,
+          status: 'primary',
+        );
+
+        var addresses = await _primaryAddressUseCase.execute(request);
+
+        if (addresses?.success == true) {
+          getAddress();
+        }
 
         hideLoadingDialog();
       } catch (e) {

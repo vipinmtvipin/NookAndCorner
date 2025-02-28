@@ -70,6 +70,8 @@ class AddressScreen extends GetView<AddressController> {
                                 controller.cityController.text = controller
                                     .selectedCity.cityName.toCapitalized;
 
+                                controller.typeAheadController.text =
+                                    address.location.toCapitalized;
                                 controller.streetController.text =
                                     address.addresslineOne.toCapitalized;
                                 controller.houseFlatController.text =
@@ -86,6 +88,34 @@ class AddressScreen extends GetView<AddressController> {
                                 );
 
                                 navigateAndFetchAddress('edit');
+                              } else if (type == 'Delete') {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text('Delete Address'),
+                                      content: Text(
+                                          'Are you sure you want to delete this address?'),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          child: Text('Cancel'),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                        TextButton(
+                                          child: Text('Delete'),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                            controller.deleteAddress();
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              } else {
+                                controller.setAsPrimaryAddress();
                               }
                             });
                       },
@@ -180,17 +210,55 @@ class AddressCardWidget extends StatelessWidget {
                 ),
                 const SizedBox(height: 5),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Row(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            onTap('Edit');
+                          },
+                          child: Text(
+                            "Edit",
+                            style: AppTextStyle.txtBold14.copyWith(
+                                color: AppColors.primaryColor,
+                                decoration: TextDecoration.underline),
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        GestureDetector(
+                          onTap: () {
+                            onTap('Delete');
+                          },
+                          child: Text(
+                            "Delete",
+                            style: AppTextStyle.txtBold14.copyWith(
+                                color: AppColors.primaryColor,
+                                decoration: TextDecoration.underline),
+                          ),
+                        ),
+                      ],
+                    ),
                     GestureDetector(
                       onTap: () {
-                        onTap('Edit');
+                        onTap('Primary');
                       },
-                      child: Text(
-                        "Edit",
-                        style: AppTextStyle.txtBold14.copyWith(
+                      child: Container(
+                        height: 22,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8.0, vertical: 1),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          border: Border.all(
                             color: AppColors.primaryColor,
-                            decoration: TextDecoration.underline),
+                          ),
+                        ),
+                        child: Text(
+                          "Set as primary",
+                          style: AppTextStyle.txt12
+                              .copyWith(color: AppColors.primaryColor),
+                        ),
                       ),
                     ),
                   ],
