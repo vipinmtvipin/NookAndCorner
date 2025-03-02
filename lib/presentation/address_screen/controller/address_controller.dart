@@ -192,8 +192,11 @@ class AddressController extends BaseController {
   Future<void> deleteAddress() async {
     if (await _connectivityService.isConnected()) {
       try {
+        if (selectedAddress.value.isPrimary.absolute) {
+          showToast('Primary address cannot be deleted');
+          return;
+        }
         showLoadingDialog();
-
         ConfirmAddressRequest request = ConfirmAddressRequest(
           userId: sessionStorage.read(StorageKeys.userId).toString(),
           addressId: selectedAddress.value.addressId.toString(),

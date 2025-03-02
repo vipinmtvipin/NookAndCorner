@@ -81,9 +81,9 @@ class AddressRepositoryIml extends AddressRepository {
   @override
   Future<CommonResponds?> deleteAddress(ConfirmAddressRequest request) async {
     try {
-      Response response =
-          await GetIt.I.get<ApiService>().post(NetworkKeys.deleteAddress,
-              data: request.toJson(),
+      Response response = await GetIt.I
+          .get<ApiService>()
+          .delete(NetworkKeys.address + '${request.addressId}',
               options: Options(
                 contentType: 'application/json',
               ));
@@ -100,9 +100,10 @@ class AddressRepositoryIml extends AddressRepository {
   @override
   Future<CommonResponds?> primaryAddress(ConfirmAddressRequest request) async {
     try {
-      Response response =
-          await GetIt.I.get<ApiService>().post(NetworkKeys.primaryAddress,
-              data: request.toJson(),
+      Response response = await GetIt.I
+          .get<ApiService>()
+          .patch(NetworkKeys.address + '${request.addressId}',
+              queryParameters: {"userId": request.userId},
               options: Options(
                 contentType: 'application/json',
               ));

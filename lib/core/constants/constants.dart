@@ -96,8 +96,7 @@ class NetworkKeys {
   static const String user = '/users';
 
   static const String confirmAddress = '/job/confirm';
-  static const String deleteAddress = '/address/delete';
-  static const String primaryAddress = '/address/primary';
+  static const String address = '/address/';
   static const String updateAddon = '/job/update-addon';
 
   static const String fileUpload = '/firebase-chat/presigned-url';
