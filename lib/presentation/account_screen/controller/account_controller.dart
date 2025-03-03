@@ -208,7 +208,9 @@ class AccountController extends BaseController {
         hideLoadingDialog();
       } catch (e) {
         hideLoadingDialog();
-        e.printInfo();
+        showServerErrorAlert(() {
+          deleteAccount();
+        });
       }
     } else {
       showOpenSettings();

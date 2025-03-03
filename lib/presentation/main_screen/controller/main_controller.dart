@@ -330,7 +330,7 @@ class MainScreenController extends BaseController {
   void startPendingJobTimer() {
     try {
       _jobTimer ??= Timer.periodic(
-        const Duration(minutes: 15),
+        const Duration(seconds: 15),
         (_) async {
           showPendingNotification();
         },

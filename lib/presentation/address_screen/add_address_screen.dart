@@ -37,10 +37,17 @@ class AddAddressScreen extends GetView<AddressController> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 TitleBarWidget(
-                  title:
-                      controller.selectedAddress.value.location.isNotNullOrEmpty
-                          ? 'Address Details'
-                          : 'Add Address',
+                  title: (controller.selectedAddress.value.addressId
+                              .toString()
+                              .isNotNullOrEmpty &&
+                          controller.selectedAddress.value.addressId != 0 &&
+                          controller.selectedAddress.value.addressId != null &&
+                          controller.selectedAddress.value.addressId
+                                  .toString()
+                                  .toLowerCase() !=
+                              'null')
+                      ? 'Address Details'
+                      : 'Add Address',
                 ),
                 const SizedBox(
                   height: 20,
@@ -205,14 +212,27 @@ class AddAddressScreen extends GetView<AddressController> {
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 16.0),
                           child: NookCornerButton(
-                            text: controller.selectedAddress.value.location
-                                    .isNotNullOrEmpty
+                            text: (controller.selectedAddress.value.addressId
+                                        .toString()
+                                        .isNotNullOrEmpty &&
+                                    controller
+                                            .selectedAddress.value.addressId !=
+                                        0 &&
+                                    controller
+                                            .selectedAddress.value.addressId !=
+                                        null &&
+                                    controller.selectedAddress.value.addressId
+                                            .toString()
+                                            .toLowerCase() !=
+                                        'null')
                                 ? 'Update Address'
                                 : 'Save Address',
                             onPressed: () {
                               if (controller.cityController.text.isEmpty ||
                                   controller.streetController.text.isEmpty ||
-                                  controller.houseFlatController.text.isEmpty) {
+                                  controller.houseFlatController.text.isEmpty ||
+                                  controller
+                                      .typeAheadController.value.text.isEmpty) {
                                 Get.snackbar(
                                     'Error', 'Please fill all the fields',
                                     backgroundColor: Colors.black,

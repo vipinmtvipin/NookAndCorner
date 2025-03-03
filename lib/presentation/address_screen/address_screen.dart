@@ -240,24 +240,27 @@ class AddressCardWidget extends StatelessWidget {
                         ),
                       ],
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        onTap('Primary');
-                      },
-                      child: Container(
-                        height: 22,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8.0, vertical: 1),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                          border: Border.all(
-                            color: AppColors.primaryColor,
+                    Visibility(
+                      visible: data.isPrimary == false,
+                      child: GestureDetector(
+                        onTap: () {
+                          onTap('Primary');
+                        },
+                        child: Container(
+                          height: 22,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0, vertical: 1),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(
+                              color: AppColors.primaryColor,
+                            ),
                           ),
-                        ),
-                        child: Text(
-                          "Set as primary",
-                          style: AppTextStyle.txt12
-                              .copyWith(color: AppColors.primaryColor),
+                          child: Text(
+                            "Set as primary",
+                            style: AppTextStyle.txt12
+                                .copyWith(color: AppColors.primaryColor),
+                          ),
                         ),
                       ),
                     ),

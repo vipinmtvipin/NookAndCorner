@@ -211,7 +211,9 @@ class ServiceController extends BaseController {
         hideLoadingDialog();
       } catch (e) {
         hideLoadingDialog();
-        e.printInfo();
+        showServerErrorAlert(() {
+          getServiceDetails(categoryId, fromTag: fromTag);
+        });
       }
     } else {
       showOpenSettings();
@@ -250,7 +252,9 @@ class ServiceController extends BaseController {
         hideLoadingDialog();
       } catch (e) {
         hideLoadingDialog();
-        e.printInfo();
+        showServerErrorAlert(() {
+          getServiceByTagClick(tagId);
+        });
       }
     } else {
       showToast(LocalizationKeys.noNetwork.tr);

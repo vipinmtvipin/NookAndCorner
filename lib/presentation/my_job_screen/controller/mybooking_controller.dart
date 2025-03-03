@@ -175,7 +175,6 @@ class MyBookingController extends BaseController {
           getJobs(isLoader: isLoader);
           jobApiStarted = false;
         }
-        e.printInfo();
       }
     } else {
       showOpenSettings();

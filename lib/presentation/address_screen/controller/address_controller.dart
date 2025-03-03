@@ -85,7 +85,7 @@ class AddressController extends BaseController {
   @override
   void onReady() {
     super.onReady();
-    _requestMultiplePermissions();
+    //  _requestMultiplePermissions();
   }
 
   Future<void> _requestMultiplePermissions() async {
@@ -214,7 +214,9 @@ class AddressController extends BaseController {
         hideLoadingDialog();
       } catch (e) {
         hideLoadingDialog();
-        e.printInfo();
+        showServerErrorAlert(() {
+          deleteAddress();
+        });
       }
     } else {
       showOpenSettings();
@@ -242,7 +244,9 @@ class AddressController extends BaseController {
         hideLoadingDialog();
       } catch (e) {
         hideLoadingDialog();
-        e.printInfo();
+        showServerErrorAlert(() {
+          setAsPrimaryAddress();
+        });
       }
     } else {
       showOpenSettings();
@@ -299,7 +303,11 @@ class AddressController extends BaseController {
 
         AddressRequest request;
 
-        if (selectedAddress.value.location.isNotNullOrEmpty) {
+        if (selectedAddress.value.addressId.toString().isNotNullOrEmpty &&
+            selectedAddress.value.addressId != 0 &&
+            selectedAddress.value.addressId != null &&
+            selectedAddress.value.addressId.toString().toLowerCase() !=
+                'null') {
           request = AddressRequest(
             addressId: selectedAddress.value.addressId.toString(),
             addresslineOne: streetController.text,
@@ -327,7 +335,11 @@ class AddressController extends BaseController {
         var services = await _saveAddressUseCase.execute(request);
 
         if (services != null && services.success == true) {
-          if (selectedAddress.value.location.isNotNullOrEmpty) {
+          if (selectedAddress.value.addressId.toString().isNotNullOrEmpty &&
+              selectedAddress.value.addressId != 0 &&
+              selectedAddress.value.addressId != null &&
+              selectedAddress.value.addressId.toString().toLowerCase() !=
+                  'null') {
             showToast('Address updated successfully');
             addressStatus.value = AddressStatus.updated;
           } else {
