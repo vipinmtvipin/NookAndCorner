@@ -324,7 +324,7 @@ Widget _buildMainScreen() {
                 condition: controller.activeBanners.value.isNotNullOrEmpty,
                 onFalse: const SizedBox.shrink(),
                 child: CarouselWithIndicator(
-                  height: 110,
+                  height: 140,
                   isIndicatorVisible: false,
                   carouselSliderItems: controller.midBanners.value
                       .map((e) => CarouselItem(

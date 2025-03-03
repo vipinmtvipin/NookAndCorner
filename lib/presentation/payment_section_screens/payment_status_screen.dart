@@ -4,6 +4,7 @@ import 'package:customerapp/generated/assets.gen.dart';
 import 'package:customerapp/presentation/common_widgets/conditional_widget.dart';
 import 'package:customerapp/presentation/common_widgets/nookcorner_button.dart';
 import 'package:customerapp/presentation/common_widgets/title_bar_widget.dart';
+import 'package:customerapp/presentation/main_screen/controller/main_controller.dart';
 import 'package:customerapp/presentation/services_screen/controller/service_controller.dart';
 import 'package:customerapp/presentation/summery_screen/summery_screen.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -30,7 +31,15 @@ class PaymentStatusScreen extends GetView<ServiceController> {
       top: false,
       bottom: false,
       child: Scaffold(
-        body: paymentView(),
+        body: WillPopScope(
+            onWillPop: () async {
+              try {
+                Get.find<MainScreenController>().pendingJobs = true;
+                Get.offAllNamed(AppRoutes.mainScreen);
+              } catch (_) {}
+              return false;
+            },
+            child: paymentView()),
         bottomNavigationBar:
             controller.paymentStatus.value == PaymentStatus.success
                 ? Padding(
@@ -61,7 +70,10 @@ class PaymentStatusScreen extends GetView<ServiceController> {
               TitleBarWidget(
                 title: "Payment",
                 onBack: () {
-                  Get.offAndToNamed(AppRoutes.mainScreen);
+                  try {
+                    Get.find<MainScreenController>().pendingJobs = true;
+                  } catch (_) {}
+                  Get.offAllNamed(AppRoutes.mainScreen);
                 },
               ),
               Flexible(

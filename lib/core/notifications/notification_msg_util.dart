@@ -5,7 +5,8 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 class NotificationMsgUtil {
-  static Future<void> parse(RemoteNotification? notification) async {
+  static Future<void> parse(RemoteNotification? notification,
+      {String payload = ''}) async {
     if (notification != null) {
       AndroidNotificationDetails androidPlatformChannelSpecifics;
       if (notification.android?.imageUrl != null) {
@@ -27,7 +28,7 @@ class NotificationMsgUtil {
           enableLights: true,
           enableVibration: true,
           playSound: true,
-          icon: '@mipmap/ic_launcher',
+          icon: '@drawable/ic_notification',
           styleInformation: bigPictureStyleInformation,
         );
       } else {
@@ -41,7 +42,7 @@ class NotificationMsgUtil {
           enableLights: true,
           enableVibration: true,
           playSound: true,
-          icon: '@mipmap/ic_launcher',
+          icon: '@drawable/ic_notification',
         );
       }
 
@@ -53,6 +54,7 @@ class NotificationMsgUtil {
         notification.title ?? '',
         notification.body ?? '',
         platformChannelSpecifics,
+        payload: payload,
       );
     }
   }
@@ -74,7 +76,7 @@ class NotificationMsgUtil {
           enableLights: true,
           enableVibration: true,
           playSound: true,
-          icon: '@mipmap/ic_launcher',
+          icon: '@drawable/ic_notification',
         ),
       ),
       androidScheduleMode: AndroidScheduleMode.exact,
@@ -99,7 +101,7 @@ class NotificationMsgUtil {
       enableLights: true,
       enableVibration: true,
       playSound: true,
-      icon: '@mipmap/ic_launcher',
+      icon: '@drawable/ic_notification',
     );
     const NotificationDetails platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);

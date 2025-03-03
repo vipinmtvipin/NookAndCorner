@@ -103,6 +103,7 @@ class MainScreenController extends BaseController {
           title: 'Remainder: Pending Job',
           body: 'You have a pending job, please confirm the address.',
         ),
+        payload: 'pending_jobs',
       );
     }
   }
@@ -330,7 +331,7 @@ class MainScreenController extends BaseController {
   void startPendingJobTimer() {
     try {
       _jobTimer ??= Timer.periodic(
-        const Duration(seconds: 15),
+        const Duration(minutes: 10),
         (_) async {
           showPendingNotification();
         },

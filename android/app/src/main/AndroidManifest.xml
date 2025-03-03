@@ -2,8 +2,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.VIBRATE" />
@@ -24,13 +22,13 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCEpnfYtpqPQ8oWZXBrMdRKJYC0cTn9mH0"/>
 
-      <!--  <meta-data
+        <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_notification" />
 
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_color"
-            android:resource="@color/launcher_background" />-->
+         <!--   <meta-data
+        android:name="com.google.firebase.messaging.default_notification_color"
+        android:resource="@color/launcher_background" />-->
 
         <activity
             android:name=".MainActivity"

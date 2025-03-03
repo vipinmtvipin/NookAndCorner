@@ -61,170 +61,191 @@ class ConfirmAddressScreen extends GetView<AddressController> {
       top: false,
       bottom: false,
       child: Scaffold(
-        body: Container(
-            padding: getPadding(left: 16, top: 50, right: 16),
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  TitleBarWidget(
-                      onBack: () {
-                        if (controller.confirmFrom.value == 'payment') {
-                          try {
-                            Get.find<MainScreenController>().pendingJobs = true;
-                          } catch (_) {}
-                          Get.offAndToNamed(AppRoutes.mainScreen);
-                        }
-                      },
-                      title: controller.confirmFrom.value == 'profile'
-                          ? 'Update Address'
-                          : "Confirm Address"),
-                  SizedBox(height: 5),
-                  Obx(
-                    () => Flexible(
-                      child: ConditionalWidget(
-                        condition:
-                            controller.addressList.value.isNotNullOrEmpty,
-                        onFalse: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            NotDataFound(
-                              message: "No address yet, please add one.",
-                              size: 150,
-                              style: AppTextStyle.txtBold16,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(20.0),
-                              child: NookCornerButton(
-                                type: NookCornerButtonType.outlined,
-                                text: 'Add Address',
-                                onPressed: () {
-                                  controller.selectedAddress.value =
-                                      AddressData.empty();
-                                  navigateAndFetchAddress();
-                                },
+        body: WillPopScope(
+          onWillPop: () async {
+            try {
+              Get.find<MainScreenController>().pendingJobs = true;
+              Get.offAllNamed(AppRoutes.mainScreen);
+            } catch (_) {}
+            return false;
+          },
+          child: Container(
+              padding: getPadding(left: 16, top: 50, right: 16),
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    TitleBarWidget(
+                        onBack: () {
+                          if (controller.confirmFrom.value == 'payment') {
+                            try {
+                              Get.find<MainScreenController>().pendingJobs =
+                                  true;
+                            } catch (_) {}
+                            //   Get.offAndToNamed(AppRoutes.mainScreen);
+                            Get.offAllNamed(AppRoutes.mainScreen);
+                          }
+                        },
+                        title: controller.confirmFrom.value == 'profile'
+                            ? 'Update Address'
+                            : "Confirm Address"),
+                    SizedBox(height: 5),
+                    Obx(
+                      () => Flexible(
+                        child: ConditionalWidget(
+                          condition:
+                              controller.addressList.value.isNotNullOrEmpty,
+                          onFalse: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              NotDataFound(
+                                message: "No address yet, please add one.",
+                                size: 150,
+                                style: AppTextStyle.txtBold16,
                               ),
-                            ),
-                          ],
-                        ),
-                        child: ListView.builder(
-                          itemCount: controller.addressList.value.length,
-                          itemBuilder: (context, index) {
-                            var address = controller.addressList.value[index];
-                            return GestureDetector(
-                              onTap: () {
-                                controller.selectedAddress.value = address;
-                                controller.selectedAddressIndex.value = index;
+                              Padding(
+                                padding: const EdgeInsets.all(20.0),
+                                child: NookCornerButton(
+                                  type: NookCornerButtonType.outlined,
+                                  text: 'Add Address',
+                                  onPressed: () {
+                                    controller.selectedAddress.value =
+                                        AddressData.empty();
+                                    navigateAndFetchAddress();
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                          child: ListView.builder(
+                            itemCount: controller.addressList.value.length,
+                            itemBuilder: (context, index) {
+                              var address = controller.addressList.value[index];
+                              return GestureDetector(
+                                onTap: () {
+                                  controller.selectedAddress.value = address;
+                                  controller.selectedAddressIndex.value = index;
 
-                                if (controller.confirmFrom.value == 'profile') {
-                                  AccountController mController =
-                                      Get.find<AccountController>();
-                                  mController.updatedAddressId =
-                                      address.addressId.toString();
-                                  mController.primaryAddress.value =
-                                      PrimaryAddress(
-                                    addressId: address.addressId,
-                                    addressType: address.addressType,
-                                    addresslineOne: address.addresslineOne,
-                                    addresslineTwo: address.addresslineTwo,
-                                    location: address.location,
-                                    lat: address.lat,
-                                    lng: address.lng,
-                                    name: address.name,
-                                    userId: address.userId,
-                                    delete: address.delete,
-                                    addressName: address.addressName,
-                                    address: address.address,
-                                    cityId: address.cityId,
-                                    createdAt: address.createdAt,
-                                    updatedAt: address.updatedAt,
-                                  );
-                                  Get.back(result: true);
-                                }
-                              },
-                              child: AddressCardWidget(
-                                  index: index,
-                                  data: address,
-                                  onTap: (type) {
-                                    controller.selectedAddress.value = address;
-                                    if (type == 'Edit') {
-                                      controller.cityController.text =
-                                          address.location.toCapitalized;
-                                      controller.streetController.text =
-                                          address.addresslineOne.toCapitalized;
-                                      controller.houseFlatController.text =
-                                          address.addresslineTwo.toCapitalized;
-                                      controller.addressType.value =
-                                          address.addressType.toCapitalized;
-                                      controller.selectedLocation.value =
-                                          LatLng(
-                                        double.tryParse(address.lat ?? '0.0') ??
-                                            0.0,
-                                        double.tryParse(address.lng ?? '0.0') ??
-                                            0.0,
-                                      );
-                                      controller.currentLocation.value = LatLng(
-                                        double.tryParse(address.lat ?? '0.0') ??
-                                            0.0,
-                                        double.tryParse(address.lng ?? '0.0') ??
-                                            0.0,
-                                      );
-                                      navigateAndFetchAddress();
-                                    } else {
-                                      //  controller.deleteAddress();
-                                    }
-                                  }),
-                            );
-                          },
+                                  if (controller.confirmFrom.value ==
+                                      'profile') {
+                                    AccountController mController =
+                                        Get.find<AccountController>();
+                                    mController.updatedAddressId =
+                                        address.addressId.toString();
+                                    mController.primaryAddress.value =
+                                        PrimaryAddress(
+                                      addressId: address.addressId,
+                                      addressType: address.addressType,
+                                      addresslineOne: address.addresslineOne,
+                                      addresslineTwo: address.addresslineTwo,
+                                      location: address.location,
+                                      lat: address.lat,
+                                      lng: address.lng,
+                                      name: address.name,
+                                      userId: address.userId,
+                                      delete: address.delete,
+                                      addressName: address.addressName,
+                                      address: address.address,
+                                      cityId: address.cityId,
+                                      createdAt: address.createdAt,
+                                      updatedAt: address.updatedAt,
+                                    );
+                                    Get.back(result: true);
+                                  }
+                                },
+                                child: AddressCardWidget(
+                                    index: index,
+                                    data: address,
+                                    onTap: (type) {
+                                      controller.selectedAddress.value =
+                                          address;
+                                      if (type == 'Edit') {
+                                        controller.cityController.text =
+                                            address.location.toCapitalized;
+                                        controller.streetController.text =
+                                            address
+                                                .addresslineOne.toCapitalized;
+                                        controller.houseFlatController.text =
+                                            address
+                                                .addresslineTwo.toCapitalized;
+                                        controller.addressType.value =
+                                            address.addressType.toCapitalized;
+                                        controller.selectedLocation.value =
+                                            LatLng(
+                                          double.tryParse(
+                                                  address.lat ?? '0.0') ??
+                                              0.0,
+                                          double.tryParse(
+                                                  address.lng ?? '0.0') ??
+                                              0.0,
+                                        );
+                                        controller.currentLocation.value =
+                                            LatLng(
+                                          double.tryParse(
+                                                  address.lat ?? '0.0') ??
+                                              0.0,
+                                          double.tryParse(
+                                                  address.lng ?? '0.0') ??
+                                              0.0,
+                                        );
+                                        navigateAndFetchAddress();
+                                      } else {
+                                        //  controller.deleteAddress();
+                                      }
+                                    }),
+                              );
+                            },
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  // Payment Summary Section
-                  const SizedBox(height: 10),
+                    // Payment Summary Section
+                    const SizedBox(height: 10),
 
-                  Visibility(
-                    visible: controller.addressList.value.isNotNullOrEmpty,
-                    child: NookCornerButton(
-                      type: NookCornerButtonType.outlined,
-                      text: 'Add Address',
-                      onPressed: () {
-                        controller.selectedAddress.value = AddressData.empty();
-                        navigateAndFetchAddress(addressUpdate: true);
-                      },
+                    Visibility(
+                      visible: controller.addressList.value.isNotNullOrEmpty,
+                      child: NookCornerButton(
+                        type: NookCornerButtonType.outlined,
+                        text: 'Add Address',
+                        onPressed: () {
+                          controller.selectedAddress.value =
+                              AddressData.empty();
+                          navigateAndFetchAddress(addressUpdate: true);
+                        },
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
-                  Visibility(
-                    visible: controller.confirmFrom.value != 'profile',
-                    child: Column(
-                      children: [
-                        Text(
-                          serviceName,
-                          textAlign: TextAlign.center,
-                          style: AppTextStyle.txtBold14.copyWith(
-                            letterSpacing: getHorizontalSize(
-                              0,
+                    Visibility(
+                      visible: controller.confirmFrom.value != 'profile',
+                      child: Column(
+                        children: [
+                          Text(
+                            serviceName,
+                            textAlign: TextAlign.center,
+                            style: AppTextStyle.txtBold14.copyWith(
+                              letterSpacing: getHorizontalSize(
+                                0,
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 10),
-                        PaymentSummaryRow(
-                          title: 'Advance Amount',
-                          value: advanceAmount.toString(),
-                          isBold: false,
-                          valueColor: AppColors.black,
-                        ),
-                        PaymentSummaryRow(
-                            title: 'Service On', value: serviceDate),
-                        const SizedBox(height: 5),
-                      ],
+                          const SizedBox(height: 10),
+                          PaymentSummaryRow(
+                            title: 'Advance Amount',
+                            value: advanceAmount.toString(),
+                            isBold: false,
+                            valueColor: AppColors.black,
+                          ),
+                          PaymentSummaryRow(
+                              title: 'Service On', value: serviceDate),
+                          const SizedBox(height: 5),
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 5),
-                ])),
+                    const SizedBox(height: 5),
+                  ])),
+        ),
         bottomNavigationBar: controller.confirmFrom.value != 'profile'
             ? Padding(
                 padding: const EdgeInsets.all(16.0),

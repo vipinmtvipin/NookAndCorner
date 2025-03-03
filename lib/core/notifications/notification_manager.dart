@@ -2,10 +2,13 @@ import 'dart:async';
 
 import 'package:customerapp/core/constants/constants.dart';
 import 'package:customerapp/core/notifications/notification_msg_util.dart';
+import 'package:customerapp/core/routes/app_routes.dart';
 import 'package:customerapp/core/utils/logger.dart';
+import 'package:customerapp/presentation/my_job_screen/controller/mybooking_controller.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -37,13 +40,25 @@ class NotificationManager {
 
     // Android Notification Settings
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings(
+      '@drawable/ic_notification',
+    );
 
     const InitializationSettings initializationSettings =
         InitializationSettings(android: initializationSettingsAndroid);
 
-    await GetIt.I<FlutterLocalNotificationsPlugin>()
-        .initialize(initializationSettings);
+    await GetIt.I<FlutterLocalNotificationsPlugin>().initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse:
+          (NotificationResponse notificationResponse) async {
+        if (notificationResponse.payload != null) {
+          if (notificationResponse.payload == 'pending_jobs') {
+            Get.toNamed(AppRoutes.bookingListingScreen,
+                arguments: {"title": MyBookingStatus.pending.name});
+          }
+        }
+      },
+    );
 
     // Set up Android notification channel
     const AndroidNotificationChannel channel = AndroidNotificationChannel(
