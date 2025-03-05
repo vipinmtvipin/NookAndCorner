@@ -27,7 +27,7 @@ void callbackDispatcher() {
 
 void handleNotificationClick(String? payload) {
   if (payload != null) {
-    Future.delayed(Duration(seconds: 2), () {
+    Future.delayed(Duration(seconds: 3), () {
       if (payload == 'pending_jobs') {
         Get.toNamed(
           AppRoutes.bookingListingScreen,

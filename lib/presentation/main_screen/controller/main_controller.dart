@@ -81,6 +81,7 @@ class MainScreenController extends BaseController {
             selectedCity.value.cityId == 0) {
           showCityPopup();
         }
+        getPendingJobs();
       }
       forceCitySelection.value = false;
     });
