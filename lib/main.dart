@@ -21,7 +21,7 @@ void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
     if (task == 'PendingNotification') {
       showScheduledPendingNotification(
-        'Remainder: Pending Job',
+        'Reminder: Pending Job',
         'You have a pending job, please confirm the address.',
         'pending_jobs',
       );

@@ -27,7 +27,7 @@ class HomeRepositoryIml extends HomeRepository {
       return data;
     } on DioException catch (e) {
       var error = DioExceptionData.fromDioError(e);
-      throw error.errorMessage;
+      throw error.errorMessage ?? '';
     }
   }
 

@@ -105,7 +105,7 @@ class MainScreenController extends BaseController {
       if (pendingJobs.absolute) {
         await NotificationMsgUtil.parse(
           RemoteNotification(
-            title: 'Remainder: Pending Job',
+            title: 'Reminder: Pending Job',
             body: 'You have a pending job, please confirm the address.',
           ),
           payload: 'pending_jobs',

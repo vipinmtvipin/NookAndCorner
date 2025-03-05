@@ -65,7 +65,7 @@ class NotificationMsgUtil {
     try {
       await GetIt.I<FlutterLocalNotificationsPlugin>().periodicallyShow(
         11,
-        'Remainder: Pending Job',
+        'Reminder: Pending Job',
         'You have a pending job, please confirm the address.',
         RepeatInterval.everyMinute,
         const NotificationDetails(
