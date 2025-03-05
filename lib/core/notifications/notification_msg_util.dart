@@ -33,7 +33,9 @@ class NotificationMsgUtil {
         );
       } else {
         androidPlatformChannelSpecifics = AndroidNotificationDetails(
-          'nook_corner_id',
+          payload == 'pending_payment'
+              ? 'nook_corner_pending'
+              : 'nook_corner_ids',
           'nook_corner_channel',
           channelDescription: 'Nook and Corner',
           importance: Importance.max,
@@ -50,7 +52,7 @@ class NotificationMsgUtil {
           NotificationDetails(android: androidPlatformChannelSpecifics);
 
       await GetIt.I<FlutterLocalNotificationsPlugin>().show(
-        0,
+        payload == 'pending_payment' ? 1 : 0,
         notification.title ?? '',
         notification.body ?? '',
         platformChannelSpecifics,

@@ -1,3 +1,4 @@
+import 'package:customerapp/core/extensions/string_extensions.dart';
 import 'package:dio/dio.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -19,10 +20,11 @@ class RequestHeaderInterceptor extends Interceptor {
     customHeaders['Content-Type'] = 'application/json';
 
     if (_needAuthorizationHeader(options)) {
-      //* Request methods PUT, POST, PATCH, DELETE needs access token,
-      // * which needs to be passed with "Authorization" header as Bearer token.
-      customHeaders['Authorization'] =
-          'Bearer ${sessionStorage.read(StorageKeys.token) ?? ''}';
+      String token = sessionStorage.read(StorageKeys.token) ?? '';
+      if (token.isNotNullOrEmpty) {
+        customHeaders['Authorization'] =
+            'Bearer ${sessionStorage.read(StorageKeys.token) ?? ''}';
+      }
     }
 
     return customHeaders;

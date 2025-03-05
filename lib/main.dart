@@ -19,7 +19,19 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 @pragma('vm:entry-point')
 void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
-    showScheduledPendingNotification();
+    if (task == 'PendingNotification') {
+      showScheduledPendingNotification(
+        'Remainder: Pending Job',
+        'You have a pending job, please confirm the address.',
+        'pending_jobs',
+      );
+    } else if (task == 'PaymentPendingNotification') {
+      showScheduledPendingNotification(
+        'Payment Due',
+        'Hi there! Just a quick reminder about your balance service payment, please click here when you can. Thanks!',
+        'pending_payment',
+      );
+    }
 
     return Future.value(true);
   });
@@ -33,12 +45,21 @@ void handleNotificationClick(String? payload) {
           AppRoutes.bookingListingScreen,
           arguments: {"title": MyBookingStatus.pending.name},
         );
+      } else if (payload == 'pending_payment') {
+        Get.toNamed(
+          AppRoutes.bookingListingScreen,
+          arguments: {"title": MyBookingStatus.completed.name},
+        );
       }
     });
   }
 }
 
-Future<void> showScheduledPendingNotification() async {
+Future<void> showScheduledPendingNotification(
+  String title,
+  String message,
+  String payload,
+) async {
   try {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
@@ -56,11 +77,11 @@ Future<void> showScheduledPendingNotification() async {
         NotificationDetails(android: androidPlatformChannelSpecifics);
 
     await flutterLocalNotificationsPlugin.show(
-      303,
-      'Remainder: Pending Job',
-      'You have a pending job, please confirm the address.',
+      payload == 'pending_jobs' ? 303 : 304,
+      title,
+      message,
       platformChannelSpecifics,
-      payload: 'pending_jobs',
+      payload: payload,
     );
   } catch (e) {
     debugPrint('Failed to show scheduled pending notification: $e');
@@ -105,6 +126,9 @@ Future<void> initNotificationSection() async {
         if (notificationResponse.payload == 'pending_jobs') {
           Get.toNamed(AppRoutes.bookingListingScreen,
               arguments: {"title": MyBookingStatus.pending.name});
+        } else if (notificationResponse.payload == 'pending_payment') {
+          Get.toNamed(AppRoutes.bookingListingScreen,
+              arguments: {"title": MyBookingStatus.completed.name});
         }
       }
     },

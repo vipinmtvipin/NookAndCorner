@@ -9,6 +9,7 @@ import 'package:customerapp/presentation/main_screen/controller/main_controller.
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:workmanager/workmanager.dart';
 
 import '../../core/routes/app_routes.dart';
 import '../../core/theme/app_text_style.dart';
@@ -62,6 +63,9 @@ class AccountScreen extends GetView<AccountController> {
                           mainController.loggedIn.value = false;
                           mainController.selectedCity.value = CityData();
                           mainController.cityServices.value = [];
+                          mainController.pendingJobs = false;
+                          mainController.pendingPayments = false;
+                          Workmanager().cancelAll();
                         } catch (_) {}
                         onTapLoginNavigation();
                       },

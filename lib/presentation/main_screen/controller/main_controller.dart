@@ -55,7 +55,7 @@ class MainScreenController extends BaseController {
   Rx<List<CityData>> cityInfo = Rx([]);
   Timer? _jobTimer;
   Rx<CityData> selectedCity = Rx(CityData());
-  Rx<List<ActiveBannerData>> activeBanners = Rx([]);
+  Rx<List<BannerData>> activeBanners = Rx([]);
   Rx<List<MidBannerData>> midBanners = Rx([]);
   Rx<List<CityServiceData>> cityServices = Rx([]);
   Rx<bool> loggedIn = Rx(false);
@@ -63,6 +63,8 @@ class MainScreenController extends BaseController {
   Rx<bool> forceCitySelection = Rx(false);
   bool pendingJobs = false;
   bool pendingJobsRegistered = false;
+  bool pendingPayments = false;
+  bool pendingPaymentRegistered = false;
 
   Rx<List<ReviewData>> reviewList = Rx<List<ReviewData>>([]);
   final ScrollController scrollController = ScrollController();
@@ -93,7 +95,6 @@ class MainScreenController extends BaseController {
     getCity();
     getReviews('5', '0', "", false);
     updatePushToken();
-    getPendingJobs();
     startPendingJobTimer();
 
     _requestMultiplePermissions();
@@ -124,7 +125,34 @@ class MainScreenController extends BaseController {
           );
         }
       } else {
-        Workmanager().cancelAll();
+        Workmanager().cancelByUniqueName('PendingNotification');
+      }
+
+      if (pendingPayments.absolute) {
+        await NotificationMsgUtil.parse(
+          RemoteNotification(
+            title: 'Payment Due',
+            body:
+                'Hi there! Just a quick reminder about your balance service payment, please click here when you can. Thanks!',
+          ),
+          payload: 'pending_payment',
+        );
+
+        if (!pendingPaymentRegistered) {
+          pendingPaymentRegistered = true;
+          await Workmanager().registerPeriodicTask(
+            'PaymentPendingNotification',
+            'PaymentPendingNotification',
+            constraints: Constraints(
+              networkType: NetworkType.not_required,
+              requiresBatteryNotLow: false,
+              requiresCharging: false,
+            ),
+            existingWorkPolicy: ExistingWorkPolicy.replace,
+          );
+        }
+      } else {
+        Workmanager().cancelByUniqueName('PaymentPendingNotification');
       }
     } catch (e) {
       e.printInfo();
@@ -154,7 +182,6 @@ class MainScreenController extends BaseController {
         }
       } catch (e) {
         e.printInfo();
-        pendingJobs = false;
       }
     }
   }
@@ -166,8 +193,17 @@ class MainScreenController extends BaseController {
         final responds = await _homeUseCase.execute();
 
         cityInfo.value = responds.item1.data?.rows ?? [];
-        activeBanners.value = responds.item2.data ?? [];
+        activeBanners.value = responds.item2.data?.banners ?? [];
         midBanners.value = responds.item3.data ?? [];
+
+        if (responds.item2.data?.pendingJobs != null &&
+            responds.item2.data?.pendingJobs != 0) {
+          pendingJobs = true;
+        }
+        if (responds.item2.data?.pendingPayments != null &&
+            responds.item2.data?.pendingPayments != 0) {
+          pendingPayments = true;
+        }
 
         if (selectedCity.value.cityId != null &&
             selectedCity.value.cityId != 0 &&

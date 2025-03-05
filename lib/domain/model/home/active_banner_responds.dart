@@ -8,43 +8,62 @@ String bannerRespondsToJson(ActiveBannerResponds data) =>
 
 class ActiveBannerResponds {
   ActiveBannerResponds({
-    this.success,
-    this.message,
-    this.statusCode,
-    this.error,
-    this.data,
+    required this.success,
+    required this.message,
+    required this.data,
   });
 
   final bool? success;
   final String? message;
-  final int? statusCode;
-  final String? error;
-  final List<ActiveBannerData>? data;
+  final ActiveBannerData? data;
 
   factory ActiveBannerResponds.fromJson(Map<String, dynamic> json) {
     return ActiveBannerResponds(
       success: json["success"],
       message: json["message"],
-      statusCode: json["statusCode"],
-      error: json["error"],
-      data: json["data"] == null
-          ? []
-          : List<ActiveBannerData>.from(
-              json["data"]!.map((x) => ActiveBannerData.fromJson(x))),
+      data:
+          json["data"] == null ? null : ActiveBannerData.fromJson(json["data"]),
     );
   }
 
   Map<String, dynamic> toJson() => {
         "success": success,
         "message": message,
-        "statusCode": statusCode,
-        "error": error,
-        "data": data?.map((x) => x?.toJson()).toList(),
+        "data": data?.toJson(),
       };
 }
 
 class ActiveBannerData {
   ActiveBannerData({
+    required this.banners,
+    required this.pendingJobs,
+    required this.pendingPayments,
+  });
+
+  final List<BannerData> banners;
+  final int? pendingJobs;
+  final int? pendingPayments;
+
+  factory ActiveBannerData.fromJson(Map<String, dynamic> json) {
+    return ActiveBannerData(
+      banners: json["banners"] == null
+          ? []
+          : List<BannerData>.from(
+              json["banners"]!.map((x) => BannerData.fromJson(x))),
+      pendingJobs: json["pendingJobs"] ?? 0,
+      pendingPayments: json["pendingPayments"] ?? 0,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        "banners": banners.map((x) => x.toJson()).toList(),
+        "pendingJobs": pendingJobs ?? 0,
+        "pendingPayments": pendingPayments ?? 0,
+      };
+}
+
+class BannerData {
+  BannerData({
     required this.bannerId,
     required this.routePath,
     required this.image,
@@ -60,8 +79,8 @@ class ActiveBannerData {
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
-  factory ActiveBannerData.fromJson(Map<String, dynamic> json) {
-    return ActiveBannerData(
+  factory BannerData.fromJson(Map<String, dynamic> json) {
+    return BannerData(
       bannerId: json["bannerId"],
       routePath: json["routePath"],
       image: json["image"],
@@ -79,8 +98,4 @@ class ActiveBannerData {
         "createdAt": createdAt?.toIso8601String(),
         "updatedAt": updatedAt?.toIso8601String(),
       };
-
-  static List<ActiveBannerData> fromJsonList(List<dynamic> jsonList) {
-    return jsonList.map((json) => ActiveBannerData.fromJson(json)).toList();
-  }
 }
