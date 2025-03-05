@@ -9,7 +9,6 @@ import 'package:customerapp/core/extensions/list_extensions.dart';
 import 'package:customerapp/core/localization/localization_keys.dart';
 import 'package:customerapp/core/network/connectivity_service.dart';
 import 'package:customerapp/core/network/logging_interceptor.dart';
-import 'package:customerapp/core/notifications/notification_msg_util.dart';
 import 'package:customerapp/core/routes/app_routes.dart';
 import 'package:customerapp/core/utils/common_util.dart';
 import 'package:customerapp/domain/model/my_jobs/file_upload_request.dart';
@@ -45,6 +44,7 @@ import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
+import 'package:workmanager/workmanager.dart';
 
 enum MyBookingStatus { unknown, scheduled, pending, cancelled, completed }
 
@@ -155,12 +155,14 @@ class MyBookingController extends BaseController {
               Get.find<MainScreenController>().pendingJobs = true;
             } else {
               Get.find<MainScreenController>().pendingJobs = false;
+              Workmanager().cancelAll();
             }
           } catch (_) {}
-          await NotificationMsgUtil.scheduleRepeatingNotification();
+          //await NotificationMsgUtil.scheduleRepeatingNotification();
         } else {
           Get.find<MainScreenController>().pendingJobs = false;
-          NotificationMsgUtil.cancelPeriodicNotification();
+          Workmanager().cancelAll();
+          //NotificationMsgUtil.cancelPeriodicNotification();
         }
 
         if (isLoader) {

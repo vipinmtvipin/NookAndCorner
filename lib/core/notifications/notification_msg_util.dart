@@ -60,27 +60,29 @@ class NotificationMsgUtil {
   }
 
   static Future<void> scheduleRepeatingNotification() async {
-    await GetIt.I<FlutterLocalNotificationsPlugin>().periodicallyShow(
-      11,
-      'Remainder: Pending Job',
-      'You have a pending job, please confirm the address.',
-      RepeatInterval.everyMinute,
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'periodic_channel',
-          'Periodic Notifications',
-          channelDescription: 'Shows notifications every minutes',
-          importance: Importance.high,
-          priority: Priority.high,
-          showWhen: false,
-          enableLights: true,
-          enableVibration: true,
-          playSound: true,
-          icon: '@drawable/ic_notification',
+    try {
+      await GetIt.I<FlutterLocalNotificationsPlugin>().periodicallyShow(
+        11,
+        'Remainder: Pending Job',
+        'You have a pending job, please confirm the address.',
+        RepeatInterval.everyMinute,
+        const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'periodic_channel',
+            'Periodic Notifications',
+            channelDescription: 'Shows notifications every minutes',
+            importance: Importance.high,
+            priority: Priority.high,
+            showWhen: false,
+            enableLights: true,
+            enableVibration: true,
+            playSound: true,
+            icon: '@drawable/ic_notification',
+          ),
         ),
-      ),
-      androidScheduleMode: AndroidScheduleMode.exact,
-    );
+        androidScheduleMode: AndroidScheduleMode.exact,
+      );
+    } catch (_) {}
   }
 
   static Future<void> showPeriodicNotification() async {

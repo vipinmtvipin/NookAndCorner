@@ -26,6 +26,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:workmanager/workmanager.dart';
 
 enum HomeStatus {
   unknown,
@@ -61,6 +62,7 @@ class MainScreenController extends BaseController {
   Rx<int> reviewCount = Rx(0);
   Rx<bool> forceCitySelection = Rx(false);
   bool pendingJobs = false;
+  bool pendingJobsRegistered = false;
 
   Rx<List<ReviewData>> reviewList = Rx<List<ReviewData>>([]);
   final ScrollController scrollController = ScrollController();
@@ -97,14 +99,34 @@ class MainScreenController extends BaseController {
   }
 
   showPendingNotification() async {
-    if (pendingJobs.absolute) {
-      await NotificationMsgUtil.parse(
-        RemoteNotification(
-          title: 'Remainder: Pending Job',
-          body: 'You have a pending job, please confirm the address.',
-        ),
-        payload: 'pending_jobs',
-      );
+    try {
+      if (pendingJobs.absolute) {
+        await NotificationMsgUtil.parse(
+          RemoteNotification(
+            title: 'Remainder: Pending Job',
+            body: 'You have a pending job, please confirm the address.',
+          ),
+          payload: 'pending_jobs',
+        );
+
+        if (!pendingJobsRegistered) {
+          pendingJobsRegistered = true;
+          await Workmanager().registerPeriodicTask(
+            'PendingNotification',
+            'PendingNotification',
+            constraints: Constraints(
+              networkType: NetworkType.not_required,
+              requiresBatteryNotLow: false,
+              requiresCharging: false,
+            ),
+            existingWorkPolicy: ExistingWorkPolicy.replace,
+          );
+        }
+      } else {
+        Workmanager().cancelAll();
+      }
+    } catch (e) {
+      e.printInfo();
     }
   }
 
@@ -127,6 +149,7 @@ class MainScreenController extends BaseController {
           pendingJobs = true;
         } else {
           pendingJobs = false;
+          Workmanager().cancelAll();
         }
       } catch (e) {
         e.printInfo();
@@ -331,7 +354,7 @@ class MainScreenController extends BaseController {
   void startPendingJobTimer() {
     try {
       _jobTimer ??= Timer.periodic(
-        const Duration(minutes: 10),
+        const Duration(seconds: 15),
         (_) async {
           showPendingNotification();
         },

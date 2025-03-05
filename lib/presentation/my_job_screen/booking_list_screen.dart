@@ -45,10 +45,16 @@ class BookingListingScreen extends GetView<MyBookingController> {
                   Flexible(
                     child: ConditionalWidget(
                       condition: controller.jobList.value.isNotNullOrEmpty,
-                      onFalse: NotDataFound(
-                        message: "No Services yet, be the first to book.",
-                        size: 150,
-                        style: AppTextStyle.txtBold16,
+                      onFalse: SingleChildScrollView(
+                        physics: AlwaysScrollableScrollPhysics(),
+                        child: Padding(
+                          padding: EdgeInsets.only(top: Get.height * 0.25),
+                          child: NotDataFound(
+                            message: "No Services yet, be the first to book.",
+                            size: 150,
+                            style: AppTextStyle.txtBold16,
+                          ),
+                        ),
                       ),
                       child: ListView.builder(
                         itemCount: controller.jobList.value.length,
