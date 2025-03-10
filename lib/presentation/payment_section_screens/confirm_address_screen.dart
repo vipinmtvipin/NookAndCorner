@@ -64,7 +64,9 @@ class ConfirmAddressScreen extends GetView<AddressController> {
         body: WillPopScope(
           onWillPop: () async {
             try {
-              Get.find<MainScreenController>().pendingJobs = true;
+              if (controller.confirmFrom.value == 'payment') {
+                Get.find<MainScreenController>().pendingJobs = true;
+              }
               Get.offAllNamed(AppRoutes.mainScreen);
             } catch (_) {}
             return false;
@@ -82,7 +84,6 @@ class ConfirmAddressScreen extends GetView<AddressController> {
                               Get.find<MainScreenController>().pendingJobs =
                                   true;
                             } catch (_) {}
-                            //   Get.offAndToNamed(AppRoutes.mainScreen);
                             Get.offAllNamed(AppRoutes.mainScreen);
                           }
                         },

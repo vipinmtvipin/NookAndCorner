@@ -32,10 +32,12 @@ import 'package:customerapp/domain/usecases/summery/summery_use_case.dart';
 import 'package:customerapp/presentation/base_controller.dart';
 import 'package:customerapp/presentation/main_screen/controller/main_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:workmanager/workmanager.dart';
 
 enum ServiceStatus {
   unknown,
@@ -176,6 +178,20 @@ class ServiceController extends BaseController {
     categoryImage.value = arguments['categoryImage'] ?? '';
 
     initialApisCall();
+
+    SystemChannels.lifecycle.setMessageHandler((message) async {
+      if (message == AppLifecycleState.paused.toString()) {
+        if (paymentStatus.value == PaymentStatus.success) {
+          Get.find<MainScreenController>().pendingJobs = true;
+        }
+      } else if (message == AppLifecycleState.resumed.toString()) {
+        if (paymentStatus.value == PaymentStatus.success) {
+          Get.find<MainScreenController>().pendingJobs = false;
+          Workmanager().cancelAll();
+        }
+      }
+      return null;
+    });
   }
 
   void initialApisCall() {

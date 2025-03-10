@@ -14,11 +14,14 @@ import 'package:customerapp/domain/usecases/address/get_address_use_case.dart';
 import 'package:customerapp/domain/usecases/address/primary_address_use_case.dart';
 import 'package:customerapp/domain/usecases/address/save_addrress_use_case.dart';
 import 'package:customerapp/presentation/base_controller.dart';
+import 'package:customerapp/presentation/main_screen/controller/main_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:workmanager/workmanager.dart';
 
 enum AddressStatus {
   unknown,
@@ -80,6 +83,20 @@ class AddressController extends BaseController {
     super.onInit();
     settingSelectedCityInfo();
     getAddress();
+
+    SystemChannels.lifecycle.setMessageHandler((message) async {
+      if (message == AppLifecycleState.paused.toString()) {
+        if (confirmFrom.value == 'payment') {
+          Get.find<MainScreenController>().pendingJobs = true;
+        }
+      } else if (message == AppLifecycleState.resumed.toString()) {
+        if (confirmFrom.value == 'payment') {
+          Get.find<MainScreenController>().pendingJobs = false;
+          Workmanager().cancelAll();
+        }
+      }
+      return null;
+    });
   }
 
   @override
