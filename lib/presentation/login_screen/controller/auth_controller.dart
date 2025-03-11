@@ -207,6 +207,7 @@ class AuthController extends BaseController {
       Get.offAndToNamed(AppRoutes.mainScreen);
       try {
         Get.find<MainScreenController>().forceCitySelection.value = true;
+        Get.find<MainScreenController>().updatePushToken();
       } catch (e) {
         Logger.e("Error in controller", e);
       }

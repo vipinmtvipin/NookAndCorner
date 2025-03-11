@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:customerapp/core/constants/constants.dart';
+import 'package:customerapp/core/extensions/string_extensions.dart';
 import 'package:customerapp/core/notifications/notification_msg_util.dart';
 import 'package:customerapp/core/routes/app_routes.dart';
 import 'package:customerapp/core/utils/logger.dart';
@@ -86,11 +87,21 @@ class NotificationManager {
           message.notification,
         );
       }
+      if (message.data.isNotEmpty) {
+        NotificationMsgUtil.parseSilentPush(
+          message.data,
+        );
+      }
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       if (message.notification != null) {
         NotificationMsgUtil.parse(message.notification);
+      }
+      if (message.data.isNotEmpty) {
+        NotificationMsgUtil.parseSilentPush(
+          message.data,
+        );
       }
     });
 
@@ -101,6 +112,11 @@ class NotificationManager {
       Future.delayed(const Duration(seconds: 1), () {
         if (initialMessage.notification != null) {
           NotificationMsgUtil.parse(initialMessage.notification);
+        }
+        if (initialMessage.data.isNotEmpty) {
+          NotificationMsgUtil.parseSilentPush(
+            initialMessage.data,
+          );
         }
       });
     }
@@ -113,8 +129,26 @@ Future<void> getPushToken() async {
   if (token != null) {
     sessionStorage.write(StorageKeys.pushToken, token);
   }
+
+  FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
+    if (newToken.isNotNullOrEmpty) {
+      sessionStorage.write(StorageKeys.pushToken, newToken);
+    }
+  });
 }
 
 Future<void> _firebaseBackgroundMessage(RemoteMessage message) async {
   debugPrint('FirebaseMessaging -Some notification Received in background..');
+  try {
+    if (message.data.isNotEmpty) {
+      NotificationMsgUtil.parseSilentPush(
+        message.data,
+      );
+    }
+  } catch (e) {
+    Logger.e(
+      'Error in background message',
+      e.toString(),
+    );
+  }
 }

@@ -206,6 +206,8 @@ Widget _buildMainScreen() {
     controller.getCity();
 
     controller.getReviews('5', '0', "refresh", false);
+
+    controller.updatePushToken();
   }
 
   return Padding(

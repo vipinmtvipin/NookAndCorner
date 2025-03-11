@@ -177,6 +177,8 @@ class MainShimmerWidget extends StatelessWidget {
     controller.getCity();
 
     controller.getReviews('5', '0', "refresh", false);
+
+    controller.updatePushToken();
   }
 }
 

@@ -37,7 +37,6 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:workmanager/workmanager.dart';
 
 enum ServiceStatus {
   unknown,
@@ -186,8 +185,7 @@ class ServiceController extends BaseController {
         }
       } else if (message == AppLifecycleState.resumed.toString()) {
         if (paymentStatus.value == PaymentStatus.success) {
-          Get.find<MainScreenController>().pendingJobs = false;
-          Workmanager().cancelAll();
+          //   Get.find<MainScreenController>().pendingJobs = false;
         }
       }
       return null;

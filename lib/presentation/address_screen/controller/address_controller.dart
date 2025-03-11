@@ -21,7 +21,6 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:workmanager/workmanager.dart';
 
 enum AddressStatus {
   unknown,
@@ -91,8 +90,7 @@ class AddressController extends BaseController {
         }
       } else if (message == AppLifecycleState.resumed.toString()) {
         if (confirmFrom.value == 'payment') {
-          Get.find<MainScreenController>().pendingJobs = false;
-          Workmanager().cancelAll();
+          //  Get.find<MainScreenController>().pendingJobs = false;
         }
       }
       return null;
