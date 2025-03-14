@@ -1,3 +1,4 @@
+import 'package:customerapp/core/utils/logger.dart';
 import 'package:customerapp/presentation/main_screen/controller/main_controller.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -139,65 +140,82 @@ class NotificationMsgUtil {
     await flutterLocalNotificationsPlugin.cancel(11);
   }
 
-  static void parseSilentPush(Map<String, dynamic> data) {
-    if (data.containsKey('type') || data.containsKey('count')) {
-      var count = int.tryParse(data['count'].toString()) ?? 0;
-      var type = data['type'] ?? '';
-      if (count > 0) {
-        if (type == 'pending_job') {
-          parse(
-              RemoteNotification(
-                title: 'Reminder: Pending Job',
-                body: 'You have a pending job, please confirm the address.',
-              ),
-              payload: 'pending_jobs');
-          Workmanager().registerPeriodicTask(
-            'PendingNotification',
-            'PendingNotification',
-            constraints: Constraints(
-              networkType: NetworkType.not_required,
-              requiresBatteryNotLow: false,
-              requiresCharging: false,
-            ),
-            existingWorkPolicy: ExistingWorkPolicy.replace,
-          );
-          try {
-            Get.find<MainScreenController>().pendingJobs = true;
-          } catch (_) {}
-        } else if (type == 'pending_payment') {
-          parse(
-              RemoteNotification(
-                title: 'Payment Due',
-                body:
-                    'Hi there! Just a quick reminder about your balance service payment, please click here when you can. Thanks!',
-              ),
-              payload: 'pending_payment');
+  static cancelNotification(int id) async {
+    final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+        GetIt.I<FlutterLocalNotificationsPlugin>();
 
-          Workmanager().registerPeriodicTask(
-            'PaymentPendingNotification',
-            'PaymentPendingNotification',
-            constraints: Constraints(
-              networkType: NetworkType.not_required,
-              requiresBatteryNotLow: false,
-              requiresCharging: false,
-            ),
-            existingWorkPolicy: ExistingWorkPolicy.replace,
-          );
-        }
-        try {
-          Get.find<MainScreenController>().pendingPayments = true;
-        } catch (_) {}
-      } else {
-        if (type == 'pending_job') {
-          try {
-            Get.find<MainScreenController>().pendingJobs = false;
-            Workmanager().cancelByUniqueName('PendingNotification');
-          } catch (_) {}
-        } else if (type == 'pending_payment') {
-          try {
-            Get.find<MainScreenController>().pendingPayments = false;
-            Workmanager().cancelByUniqueName('PaymentPendingNotification');
-          } catch (_) {}
+    await flutterLocalNotificationsPlugin.cancel(id);
+  }
+
+  static void parseSilentPush(Map<String, dynamic> data) {
+    if (data.isNotEmpty) {
+      Logger.e('Silent Push: $data', 'NotificationMsgUtil ${data.toString()}');
+      if (data.containsKey('pending_job') ||
+          data.containsKey('pending_payment')) {
+        var type =
+            data.containsKey('pending_job') ? 'pending_job' : 'pending_payment';
+
+        var count = int.tryParse(data['$type'].toString()) ?? 0;
+        if (count > 0) {
+          if (type == 'pending_job') {
+            parse(
+                RemoteNotification(
+                  title: 'Reminder: Pending Job',
+                  body: 'You have a pending job, please confirm the address.',
+                ),
+                payload: 'pending_jobs');
+            Workmanager().registerPeriodicTask(
+              'PendingNotification',
+              'PendingNotification',
+              constraints: Constraints(
+                networkType: NetworkType.not_required,
+                requiresBatteryNotLow: false,
+                requiresCharging: false,
+              ),
+              existingWorkPolicy: ExistingWorkPolicy.replace,
+            );
+            try {
+              Get.find<MainScreenController>().pendingJobs = true;
+            } catch (_) {}
+          } else if (type == 'pending_payment') {
+            parse(
+                RemoteNotification(
+                  title: 'Payment Due',
+                  body:
+                      'Hi there! Just a quick reminder about your balance service payment, please click here when you can. Thanks!',
+                ),
+                payload: 'pending_payment');
+
+            Workmanager().registerPeriodicTask(
+              'PaymentPendingNotification',
+              'PaymentPendingNotification',
+              constraints: Constraints(
+                networkType: NetworkType.not_required,
+                requiresBatteryNotLow: false,
+                requiresCharging: false,
+              ),
+              existingWorkPolicy: ExistingWorkPolicy.replace,
+            );
+            try {
+              Get.find<MainScreenController>().pendingPayments = true;
+            } catch (_) {}
+          }
+        } else {
+          if (type == 'pending_job') {
+            try {
+              Get.find<MainScreenController>().pendingJobs = false;
+              Workmanager().cancelByUniqueName('PendingNotification');
+            } catch (_) {
+              Workmanager().cancelByUniqueName('PendingNotification');
+            }
+          } else if (type == 'pending_payment') {
+            try {
+              Get.find<MainScreenController>().pendingPayments = false;
+              Workmanager().cancelByUniqueName('PaymentPendingNotification');
+            } catch (_) {
+              Workmanager().cancelByUniqueName('PaymentPendingNotification');
+            }
+          }
         }
       }
     }
