@@ -71,6 +71,9 @@ class MainScreenController extends BaseController {
   final ScrollController scrollController = ScrollController();
   @override
   void onInit() {
+    sessionStorage.write(StorageKeys.pendingJobCount, 1);
+    sessionStorage.write(StorageKeys.pendingPaymentCount, 1);
+
     loggedIn.value = sessionStorage.read(StorageKeys.loggedIn) ?? false;
     final value = sessionStorage.read(StorageKeys.selectedCity);
     if (value != null) {
@@ -103,7 +106,12 @@ class MainScreenController extends BaseController {
 
   showPendingNotification() async {
     try {
-      if (pendingJobs.absolute) {
+      int countPendingJobs =
+          sessionStorage.read(StorageKeys.pendingJobCount) ?? 0;
+      int countPendingPayments =
+          sessionStorage.read(StorageKeys.pendingPaymentCount) ?? 0;
+
+      if (pendingJobs.absolute && countPendingJobs > 0) {
         await NotificationMsgUtil.parse(
           RemoteNotification(
             title: 'Reminder: Pending Job',
@@ -129,7 +137,7 @@ class MainScreenController extends BaseController {
         Workmanager().cancelByUniqueName('PendingNotification');
       }
 
-      if (pendingPayments.absolute) {
+      if (pendingPayments.absolute && countPendingPayments > 0) {
         await NotificationMsgUtil.parse(
           RemoteNotification(
             title: 'Payment Due',

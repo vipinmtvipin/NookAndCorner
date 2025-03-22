@@ -1,9 +1,12 @@
+import 'package:customerapp/core/constants/constants.dart';
 import 'package:customerapp/core/utils/logger.dart';
 import 'package:customerapp/presentation/main_screen/controller/main_controller.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:workmanager/workmanager.dart';
@@ -149,6 +152,10 @@ class NotificationMsgUtil {
 
   static void parseSilentPush(Map<String, dynamic> data) {
     if (data.isNotEmpty) {
+      try {
+        FirebaseCrashlytics.instance
+            .log('Silent Push Data:  ${data.toString()}');
+      } catch (_) {}
       Logger.e('Silent Push: $data', 'NotificationMsgUtil ${data.toString()}');
       if (data.containsKey('pending_job') ||
           data.containsKey('pending_payment')) {
@@ -203,17 +210,19 @@ class NotificationMsgUtil {
         } else {
           if (type == 'pending_job') {
             try {
+              GetStorage().write(StorageKeys.pendingJobCount, 0);
+              Workmanager().cancelByUniqueName('PendingNotification');
               Get.find<MainScreenController>().pendingJobs = false;
-              Workmanager().cancelByUniqueName('PendingNotification');
             } catch (_) {
-              Workmanager().cancelByUniqueName('PendingNotification');
+              Workmanager().cancelAll();
             }
           } else if (type == 'pending_payment') {
             try {
+              GetStorage().write(StorageKeys.pendingPaymentCount, 0);
+              Workmanager().cancelByUniqueName('PaymentPendingNotification');
               Get.find<MainScreenController>().pendingPayments = false;
-              Workmanager().cancelByUniqueName('PaymentPendingNotification');
             } catch (_) {
-              Workmanager().cancelByUniqueName('PaymentPendingNotification');
+              Workmanager().cancelAll();
             }
           }
         }

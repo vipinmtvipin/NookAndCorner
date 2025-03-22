@@ -29,7 +29,7 @@ class NetworkKeys {
   static const String ccaWorkingKey = ccaWorkingKeyStaging;
 
   /// Production
-/*  static const String ccAvenueUrl = ccAvenueUrlProd;
+  /*static const String ccAvenueUrl = ccAvenueUrlProd;
   static const String ccaCallbackUrl = ccaCallbackUrlProd;
   static const String ccaAdvCallbackUrl = ccaAdvCallbackUrlProd;
   static const String ccAvenueCancelUrl = ccAvenueCancelUrlProd;
@@ -136,4 +136,6 @@ class StorageKeys {
   static const String address = 'address';
   static const String selectedCity = 'city';
   static const String from = 'from';
+  static const String pendingJobCount = 'pendingJobCount';
+  static const String pendingPaymentCount = 'pendingPaymentCount';
 }

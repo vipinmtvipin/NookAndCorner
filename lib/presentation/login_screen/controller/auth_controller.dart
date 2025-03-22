@@ -17,6 +17,7 @@ import 'package:customerapp/presentation/base_controller.dart';
 import 'package:customerapp/presentation/main_screen/controller/main_controller.dart';
 import 'package:customerapp/presentation/services_screen/controller/service_controller.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -193,7 +194,7 @@ class AuthController extends BaseController {
     }
   }
 
-  void _onOnTapLogInSuccess(LoginData? responds) {
+  void _onOnTapLogInSuccess(LoginData? responds) async {
     sessionStorage.write(StorageKeys.username, responds?.user?.username ?? "");
     sessionStorage.write(StorageKeys.userId, responds?.user?.userId ?? "");
     sessionStorage.write(StorageKeys.email, responds?.user?.email ?? "");
@@ -208,6 +209,9 @@ class AuthController extends BaseController {
       try {
         Get.find<MainScreenController>().forceCitySelection.value = true;
         Get.find<MainScreenController>().updatePushToken();
+
+        await FirebaseCrashlytics.instance
+            .setUserIdentifier(responds?.user?.userId.toString() ?? "_");
       } catch (e) {
         Logger.e("Error in controller", e);
       }

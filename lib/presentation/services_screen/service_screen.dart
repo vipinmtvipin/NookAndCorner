@@ -113,7 +113,7 @@ class ServiceScreen extends GetView<ServiceController> {
                         interactive: true,
                         thumbVisibility: true,
                         radius: const Radius.circular(20),
-                        thickness: 5,
+                        thickness: 3,
                         trackVisibility: true,
                         child: SingleChildScrollView(
                           controller: controller.scrollController,

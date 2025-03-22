@@ -37,7 +37,7 @@ watch: ##@ generate code using build_runner and delete conflicting outputs
 ##@
 
 build_android_dev: ##@ build android debug (dev)
-	fvm flutter build apk  --debug
+	fvm flutter build apk --debug
 
 build_android_prod: ##@ build android release (prod)
 	fvm flutter build apk --release

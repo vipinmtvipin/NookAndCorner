@@ -4,6 +4,7 @@ import 'package:customerapp/firebase_options.dart';
 import 'package:customerapp/presentation/my_job_screen/controller/mybooking_controller.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
@@ -98,6 +99,9 @@ void main() async {
     await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
     // set observer
     FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance);
+
+    // Enable Crashlytics
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
   } catch (e) {
     debugPrint("Failed to initialize Firebase: $e");
   }
@@ -111,11 +115,26 @@ void main() async {
 }
 
 Future<void> initNotificationSection() async {
+  final bool? result = await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          IOSFlutterLocalNotificationsPlugin>()
+      ?.requestPermissions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+
   const AndroidInitializationSettings initializationSettingsAndroid =
       AndroidInitializationSettings('@drawable/ic_notification');
-
+  const DarwinInitializationSettings iosSettings = DarwinInitializationSettings(
+    requestAlertPermission: true,
+    requestBadgePermission: true,
+    requestSoundPermission: true,
+    requestCriticalPermission: true,
+  );
   final InitializationSettings initializationSettings = InitializationSettings(
     android: initializationSettingsAndroid,
+    iOS: iosSettings,
   );
 
   await flutterLocalNotificationsPlugin.initialize(

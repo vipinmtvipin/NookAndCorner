@@ -28,6 +28,15 @@ class NotificationManager {
   }
 
   Future<void> _initializeNotifications() async {
+    final bool? result = await GetIt.I<FlutterLocalNotificationsPlugin>()
+        .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin>()
+        ?.requestPermissions(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
+
     // iOS Notification Settings
     await FirebaseMessaging.instance.requestPermission(
       alert: true,
@@ -44,9 +53,17 @@ class NotificationManager {
         AndroidInitializationSettings(
       '@drawable/ic_notification',
     );
+    const DarwinInitializationSettings iosSettings =
+        DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+      requestCriticalPermission: true,
+    );
 
     const InitializationSettings initializationSettings =
-        InitializationSettings(android: initializationSettingsAndroid);
+        InitializationSettings(
+            android: initializationSettingsAndroid, iOS: iosSettings);
 
     await GetIt.I<FlutterLocalNotificationsPlugin>().initialize(
       initializationSettings,
