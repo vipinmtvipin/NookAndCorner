@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:customerapp/core/extensions/list_extensions.dart';
 import 'package:customerapp/core/extensions/sheet_extension.dart';
+import 'package:customerapp/core/extensions/string_extensions.dart';
 import 'package:customerapp/core/routes/app_routes.dart';
 import 'package:customerapp/core/theme/app_text_style.dart';
 import 'package:customerapp/core/theme/color_constant.dart';
@@ -19,6 +22,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:path_provider/path_provider.dart';
 
 class MainScreen extends GetView<MainScreenController> {
   const MainScreen({super.key});
@@ -181,6 +185,8 @@ class MainScreen extends GetView<MainScreenController> {
           : _buildShimmerMainScreen()),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+          readAndPrintPushLog();
+
           Get.toNamed(AppRoutes.contactScreen);
         },
         elevation: 6,
@@ -611,5 +617,26 @@ class NotDataFound extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+Future<void> readAndPrintPushLog() async {
+  try {
+    final dir = await getApplicationDocumentsDirectory();
+    final file = File('${dir.path}/pushnotification.txt');
+
+    if (await file.exists()) {
+      final contents = await file.readAsString();
+      print('=== Push Notification Log ===');
+      print(contents);
+
+      contents.showToast();
+
+      print('=== End of Log ===');
+    } else {
+      print('Log file does not exist.');
+    }
+  } catch (e) {
+    print('Error reading push log: $e');
   }
 }

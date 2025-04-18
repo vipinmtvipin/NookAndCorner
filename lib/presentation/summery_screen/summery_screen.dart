@@ -737,7 +737,7 @@ class AddOnServiceItem extends StatelessWidget {
       child: SizedBox(
         width: 120,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2),
+          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -748,17 +748,18 @@ class AddOnServiceItem extends StatelessWidget {
                   borderRadius: 10,
                   url: addon.logo ?? '',
                   width: 60,
-                  height: 50,
+                  height: 48,
                   fit: BoxFit.contain,
                 ),
               ),
-              const SizedBox(height: 5),
+              const SizedBox(height: 2),
               ResponsiveText(
                 text: addon.titile ?? '',
+                maxLines: 2,
                 style: AppTextStyle.txt12,
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 5),
+              const SizedBox(height: 2),
               ElevatedButton(
                 onPressed: () {
                   controller.addAddOn(addon);

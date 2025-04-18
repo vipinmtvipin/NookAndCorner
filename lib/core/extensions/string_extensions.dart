@@ -34,7 +34,7 @@ extension StringUtil on String? {
     Fluttertoast.showToast(
         msg: this!,
         gravity: gravity ?? ToastGravity.BOTTOM,
-        toastLength: Toast.LENGTH_SHORT,
+        toastLength: Toast.LENGTH_LONG,
         timeInSecForIosWeb: 2);
   }
 

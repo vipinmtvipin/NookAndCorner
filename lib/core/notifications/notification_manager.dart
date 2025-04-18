@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:customerapp/core/constants/constants.dart';
 import 'package:customerapp/core/extensions/string_extensions.dart';
@@ -12,6 +13,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:path_provider/path_provider.dart';
 
 class NotificationManager {
   Future init() async {
@@ -99,6 +101,11 @@ class NotificationManager {
     FirebaseMessaging.onBackgroundMessage(_firebaseBackgroundMessage);
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      logPushNotification(
+          'Message :onMessage : ${message.toMap().toString() ?? ''}');
+      logPushNotification(
+          'Data :onMessage :  ${message.data.toString() ?? ''}');
+
       if (message.notification != null) {
         NotificationMsgUtil.parse(
           message.notification,
@@ -112,6 +119,10 @@ class NotificationManager {
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      logPushNotification(
+          'Message :onMessageOpenedApp : ${message.toMap().toString() ?? ''}');
+      logPushNotification(
+          'Data :onMessageOpenedApp :  ${message.data.toString() ?? ''}');
       if (message.notification != null) {
         NotificationMsgUtil.parse(message.notification);
       }
@@ -127,6 +138,10 @@ class NotificationManager {
 
     if (initialMessage != null) {
       Future.delayed(const Duration(seconds: 1), () {
+        logPushNotification(
+            'Message :initialMessage : ${initialMessage.toMap().toString() ?? ''}');
+        logPushNotification(
+            'Data :initialMessage :  ${initialMessage.data.toString() ?? ''}');
         if (initialMessage.notification != null) {
           NotificationMsgUtil.parse(initialMessage.notification);
         }
@@ -157,6 +172,11 @@ Future<void> getPushToken() async {
 Future<void> _firebaseBackgroundMessage(RemoteMessage message) async {
   debugPrint('FirebaseMessaging -Some notification Received in background..');
   try {
+    logPushNotification(
+        'Message :_firebaseBackgroundMessage : ${message.toMap().toString() ?? ''}');
+    logPushNotification(
+        'Data :_firebaseBackgroundMessage :  ${message.data.toString() ?? ''}');
+
     if (message.data.isNotEmpty) {
       NotificationMsgUtil.parseSilentPush(
         message.data,
@@ -167,5 +187,20 @@ Future<void> _firebaseBackgroundMessage(RemoteMessage message) async {
       'Error in background message',
       e.toString(),
     );
+  }
+}
+
+Future<void> logPushNotification(String message) async {
+  try {
+    final dir = await getApplicationDocumentsDirectory(); // Internal storage
+    final file = File('${dir.path}/pushnotification.txt');
+
+    final now = DateTime.now().toIso8601String();
+    final logEntry = '[$now]   --  $message\n';
+
+    await file.writeAsString(logEntry, mode: FileMode.append);
+    print('Logged notification to file');
+  } catch (e) {
+    print('Error logging notification: $e');
   }
 }

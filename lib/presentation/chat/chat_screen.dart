@@ -53,43 +53,45 @@ class ChatScreenState extends State<ChatScreen> {
 
   var jobId = '';
   void _sendMessage() {
-    final message = Message(
-      from: 'user',
-      message: _messageController.text,
-      timestamp: Timestamp.now(),
-      userId: userId,
-      fileUrl: [],
-      name: name,
-    );
-    _chatService.sendMessage(
-      userId,
-      jobId,
-      message,
-    );
-    _messageController.clear();
-    final messageAdmin = Message(
-      from: 'admin',
-      message: adminCommonMessage,
-      timestamp: Timestamp.now(),
-      userId: userId,
-      fileUrl: [],
-      name: "Admin",
-    );
-    _chatService.sendMessage(
-      userId,
-      jobId,
-      messageAdmin,
-    );
+    if (_messageController.text.trim().isNotNullOrEmpty) {
+      final message = Message(
+        from: 'user',
+        message: _messageController.text,
+        timestamp: Timestamp.now(),
+        userId: userId,
+        fileUrl: [],
+        name: name,
+      );
+      _chatService.sendMessage(
+        userId,
+        jobId,
+        message,
+      );
+      _messageController.clear();
+      final messageAdmin = Message(
+        from: 'admin',
+        message: adminCommonMessage,
+        timestamp: Timestamp.now(),
+        userId: userId,
+        fileUrl: [],
+        name: "Admin",
+      );
+      _chatService.sendMessage(
+        userId,
+        jobId,
+        messageAdmin,
+      );
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (scrollController.hasClients) {
-        scrollController.animateTo(
-          scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      }
-    });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (scrollController.hasClients) {
+          scrollController.animateTo(
+            scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        }
+      });
+    }
   }
 
   Future<void> _pickFile() async {
